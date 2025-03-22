@@ -1,0 +1,13 @@
+[images]
+  remote_images = [
+    "https://source.unsplash.com/.*",
+    "https://images.unsplash.com/.*",
+    "https://ext.same-assets.com/.*",
+    "https://ugc.same-assets.com/.*",
+    "https://prototyprio.gumlet.io/.*",
+    "https://prototyprwp.gumlet.io/.*"
+  ]
+
+[build]
+  command = "bun run build"
+  publish = "out"
