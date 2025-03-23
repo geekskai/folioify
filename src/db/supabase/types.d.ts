@@ -37,6 +37,223 @@ export type Database = {
         };
         Relationships: [];
       };
+      // 添加缺少的表定义
+      MCP_AI_Note_Management: {
+        Row: {
+          id: number;
+          icon: string;
+          title: string;
+          count: string;
+          server: string;
+          descript: string;
+        };
+        Insert: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Update: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      MCP_Application_Integration_Tools: {
+        Row: {
+          id: number;
+          icon: string;
+          title: string;
+          count: string;
+          server: string;
+          descript: string;
+        };
+        Insert: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Update: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      MCP_Browser_Automation: {
+        Row: {
+          id: number;
+          icon: string;
+          title: string;
+          count: string;
+          server: string;
+          descript: string;
+        };
+        Insert: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Update: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      MCP_Data_and_App_Ecosystems: {
+        Row: {
+          id: number;
+          icon: string;
+          title: string;
+          count: string;
+          server: string;
+          descript: string;
+        };
+        Insert: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Update: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      MCP_Git_Workflow_Management: {
+        Row: {
+          id: number;
+          icon: string;
+          title: string;
+          count: string;
+          server: string;
+          descript: string;
+        };
+        Insert: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Update: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      MCP_Image_Generation_and_Manipulation: {
+        Row: {
+          id: number;
+          icon: string;
+          title: string;
+          count: string;
+          server: string;
+          descript: string;
+        };
+        Insert: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Update: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      MCP_Weather_and_Location_Data: {
+        Row: {
+          id: number;
+          icon: string;
+          title: string;
+          count: string;
+          server: string;
+          descript: string;
+        };
+        Insert: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Update: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      MCP_web_search: {
+        Row: {
+          id: number;
+          icon: string;
+          title: string;
+          count: string;
+          server: string;
+          descript: string;
+        };
+        Insert: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Update: {
+          count?: string;
+          descript?: string;
+          icon?: string;
+          id?: number;
+          server?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
       submit: {
         Row: {
           id: number;

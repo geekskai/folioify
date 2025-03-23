@@ -3,6 +3,25 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { createClient } from "@/db/supabase/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Tables } from "@/db/supabase/types";
+
+// 定义工具项的通用类型
+type ToolItem = {
+  id: number;
+  icon?: string;
+  title: string;
+  count?: string | number;
+  server?: string;
+  descript?: string;
+};
+
+// 定义部分显示的类型
+type SectionData = {
+  id: string;
+  title: string;
+  data: ToolItem[];
+  count: number;
+};
 
 export async function ToolboxSection() {
   const supabase = createClient();
@@ -45,7 +64,7 @@ export async function ToolboxSection() {
     .select("*");
 
   // 创建一个包含所有表格数据的数组
-  const allSections = [
+  const allSections: SectionData[] = [
     {
       id: "featured",
       title: "Featured",
