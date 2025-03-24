@@ -26,11 +26,6 @@ export function SectionContainer({ section }: SectionContainerProps) {
   // 处理页码变化
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // 滚动到顶部
-    // window.scrollTo({
-    //   top: document.getElementById(`section-${section.id}`)?.offsetTop || 0,
-    //   behavior: "smooth",
-    // });
   };
 
   return (
