@@ -6,7 +6,7 @@ import { HeroSection } from "./HeroSection";
 
 export function Hero() {
   return (
-    <section className="relative bg-gradient-to-br from-purple-50 to-white overflow-hidden  py-16 md:py-24">
+    <section className="relative bg-gradient-to-br from-purple-50 to-white py-16 md:py-24">
       <HeroSection />
 
       {/* 右侧装饰性元素 */}

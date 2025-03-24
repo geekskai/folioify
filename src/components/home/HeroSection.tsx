@@ -3,9 +3,9 @@ import Image from "next/image";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative py-16">
       <div className="container relative z-10 mx-auto px-4 text-center">
-        <h1 className="text-3xl flex  justify-center gap-1 sm:text-5xl font-bold tracking-tight mb-2">
+        <h1 className="text-3xl flex  justify-center gap-1 sm:text-5xl font-bold tracking-tight">
           Extend your AI agent with{" "}
           <span className="block text-purple-600">2,690</span> capabilities.
         </h1>
@@ -19,7 +19,7 @@ export function HeroSection() {
         <SearchBar />
 
         {/* 特色标签 */}
-        <div className="flex flex-wrap justify-center gap-4 mt-10">
+        {/* <div className="flex flex-wrap justify-center gap-4 mt-10">
           <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center">
             <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
             <span className="text-sm font-medium">安全下载</span>
@@ -32,7 +32,7 @@ export function HeroSection() {
             <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
             <span className="text-sm font-medium">免费使用</span>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* 装饰性元素 */}
