@@ -160,7 +160,22 @@ export async function ToolboxSection() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {section.data.map((tool) => (
-                <Link key={tool.id} href={tool.server || "#"} className="group">
+                <Link
+                  key={tool.id}
+                  href={
+                    tool.server
+                      ? `https://www.npmjs.com/search?q=${tool.server.replace(
+                          "@",
+                          ""
+                        )}`
+                      : `https://www.npmjs.com/search?q=${encodeURIComponent(
+                          tool.title
+                        )}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group"
+                >
                   <Card className="overflow-hidden h-full transition-all hover:shadow-md bg-white rounded-xl border border-gray-100">
                     <div className="p-5 h-full justify-between flex flex-col gap-2">
                       <div className="flex items-start justify-between">
