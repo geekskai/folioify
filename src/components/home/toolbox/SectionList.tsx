@@ -1,13 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Card } from "@/components/ui/card";
 import { createClient } from "@/db/supabase/client";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Tables } from "@/db/supabase/types";
-import { SectionList } from "./toolbox/SectionList";
+import { SectionContainer } from "./SectionContainer";
 
 // 定义工具项的通用类型
-type ToolItem = {
+export type ToolItem = {
   id: number;
   icon?: string;
   title: string;
@@ -17,50 +12,50 @@ type ToolItem = {
 };
 
 // 定义部分显示的类型
-type SectionData = {
+export type SectionData = {
   id: string;
   title: string;
   data: ToolItem[];
   count: number;
 };
 
-export async function ToolboxSection() {
+export async function SectionList() {
   const supabase = createClient();
 
   // 获取所有表格数据
-  const { data: featuredList, error: featuredError } = await supabase
+  const { data: featuredList } = await supabase
     .from("MCP_Featured_List")
     .select("*");
 
-  const { data: aiNoteData, error: aiNoteError } = await supabase
+  const { data: aiNoteData } = await supabase
     .from("MCP_AI_Note_Management")
     .select("*");
 
-  const { data: applicationData, error: applicationError } = await supabase
+  const { data: applicationData } = await supabase
     .from("MCP_Application_Integration_Tools")
     .select("*");
 
-  const { data: browserData, error: browserError } = await supabase
+  const { data: browserData } = await supabase
     .from("MCP_Browser_Automation")
     .select("*");
 
-  const { data: dataAppData, error: dataAppError } = await supabase
+  const { data: dataAppData } = await supabase
     .from("MCP_Data_and_App_Ecosystems")
     .select("*");
 
-  const { data: gitWorkflowData, error: gitWorkflowError } = await supabase
+  const { data: gitWorkflowData } = await supabase
     .from("MCP_Git_Workflow_Management")
     .select("*");
 
-  const { data: imageData, error: imageError } = await supabase
+  const { data: imageData } = await supabase
     .from("MCP_Image_Generation_and_Manipulation")
     .select("*");
 
-  const { data: weatherData, error: weatherError } = await supabase
+  const { data: weatherData } = await supabase
     .from("MCP_Weather_and_Location_Data")
     .select("*");
 
-  const { data: webSearchData, error: webSearchError } = await supabase
+  const { data: webSearchData } = await supabase
     .from("MCP_web_search")
     .select("*");
 
@@ -123,10 +118,10 @@ export async function ToolboxSection() {
   ];
 
   return (
-    <section className="py-8 md:py-12">
-      <div className="container mx-auto px-4">
-        <SectionList />
-      </div>
-    </section>
+    <>
+      {allSections.map((section) => (
+        <SectionContainer key={section.id} section={section} />
+      ))}
+    </>
   );
 }
