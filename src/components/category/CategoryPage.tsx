@@ -98,8 +98,8 @@ export function CategoryPage({ group }: CategoryPageProps) {
         // 模拟获取所有分类数据
         const sections = generateCategorySections();
         // 根据当前分类组调整顺序，将当前分类组放在最前面
-        const sortedSections = sortSectionsByGroup(sections, group);
-        setCategorySections(sortedSections);
+        // const sortedSections = sortSectionsByGroup(sections, group);
+        setCategorySections(sections);
       } catch (error) {
         console.error("Error fetching category data:", error);
       } finally {
