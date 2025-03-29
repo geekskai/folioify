@@ -139,28 +139,35 @@ export function SearchBar() {
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-md z-10 overflow-hidden"
+          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg z-50 overflow-hidden border border-gray-100"
         >
-          {suggestions.map((suggestion, index) => (
-            <div
-              key={index}
-              className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer"
-              onClick={() => handleSuggestionClick(suggestion)}
-            >
-              <Search size={14} className="text-gray-400 mr-2 flex-shrink-0" />
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">{suggestion.n}</span>
-                {suggestion.c > 0 && (
-                  <span className="text-xs text-gray-400">
-                    热度:{" "}
-                    {suggestion.c > 1000
-                      ? `${(suggestion.c / 1000).toFixed(1)}K`
-                      : suggestion.c}
+          <div className="py-2">
+            {suggestions.map((suggestion, index) => (
+              <div
+                key={index}
+                className="flex items-center px-5 py-3 hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                <Search
+                  size={16}
+                  className="text-gray-400 mr-3 flex-shrink-0"
+                />
+                <div className="flex justify-between w-full">
+                  <span className="text-sm font-medium text-gray-800">
+                    {suggestion.n}
                   </span>
-                )}
+                  {suggestion.c > 0 && (
+                    <span className="text-xs text-gray-500 mt-0.5">
+                      热度:{" "}
+                      {suggestion.c > 1000
+                        ? `${(suggestion.c / 1000).toFixed(1)}K`
+                        : suggestion.c}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
