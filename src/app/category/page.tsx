@@ -3,13 +3,17 @@ import { Suspense } from "react";
 import { CategoryPage } from "@/components/category/CategoryPage";
 import { CategorySkeleton } from "@/components/category/CategorySkeleton";
 
-// 修改 PageProps 接口以符合 Next.js 的类型要求
-interface PageProps {
-  params: object;
-  searchParams: { [key: string]: string | string[] | undefined };
-}
+// 定义参数类型为 Promise
+type Params = Promise<object>;
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-export default async function Page({ searchParams }: PageProps) {
+export default async function Page(props: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
+  // 等待解析 Promise
+  const searchParams = await props.searchParams;
+
   // 获取 group 参数，确保它是字符串类型
   const group =
     typeof searchParams.group === "string"
