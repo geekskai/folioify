@@ -6,12 +6,13 @@ import { CategorySkeleton } from "@/components/category/CategorySkeleton";
 // 添加导出配置，设置为动态渲染
 export const dynamic = "force-dynamic";
 
-export default function Page({
-  searchParams,
-}: {
-  params: object;
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+// 使用 Next.js 15 推荐的类型定义方式
+type Props = {
+  params: Record<string, never>;
+  searchParams: Record<string, string | string[] | undefined>;
+};
+
+export default function Page({ searchParams }: Props) {
   // 获取 group 参数，确保它是字符串类型
   const group =
     typeof searchParams.group === "string"
