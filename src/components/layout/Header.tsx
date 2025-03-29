@@ -15,6 +15,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { label: "Home", href: "/" },
+  { label: "MCP Server", href: "/mcp-server" },
   { label: "Toolbox", href: "/toolbox" },
   { label: "Topics", href: "/topics" },
   { label: "Newsletter", href: "/newsletter" },
@@ -34,7 +35,9 @@ export function Header() {
               width={32}
               height={32}
             />
-            <span className="inline-block font-semibold text-xl">Prototypr</span>
+            <span className="inline-block font-semibold text-xl">
+              Prototypr
+            </span>
           </Link>
 
           <nav className="hidden md:flex gap-6 ml-6">
@@ -85,7 +88,7 @@ export function Header() {
                   className="text-lg font-medium transition-colors hover:text-primary"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Sign in
+                  Submit a tool
                 </Link>
               </nav>
             </SheetContent>
