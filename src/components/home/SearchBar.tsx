@@ -194,7 +194,7 @@ export function SearchBar() {
             type="submit"
             className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 h-10 ml-2"
           >
-            搜索
+            Search
           </Button>
         </div>
       </form>
