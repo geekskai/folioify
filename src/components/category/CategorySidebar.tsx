@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 interface Category {
   id: string;
@@ -21,6 +21,14 @@ export function CategorySidebar({
   const [localActiveCategory, setLocalActiveCategory] =
     useState(activeCategory);
 
+  // 使用useMemo预先计算每个分类的高亮状态
+  const categoryActiveStates = useMemo(() => {
+    return categories.reduce((acc, category) => {
+      acc[category.id] = category.id === localActiveCategory;
+      return acc;
+    }, {} as Record<string, boolean>);
+  }, [categories, localActiveCategory]);
+
   // 当props中的activeCategory变化时，更新本地状态
   useEffect(() => {
     setLocalActiveCategory(activeCategory);
@@ -37,17 +45,26 @@ export function CategorySidebar({
   return (
     <ul className="space-y-2">
       {categories.map((category) => {
-        const isActive = localActiveCategory === category.id;
+        // 使用预计算的高亮状态
+        const isActive = categoryActiveStates[category.id];
 
         return (
           <li key={category.id}>
             <button
               onClick={() => handleClick(category.id)}
-              className={`block w-full text-left px-4 py-2 rounded-md transition-colors ${
-                isActive
-                  ? "bg-indigo-100 text-indigo-700 font-medium"
-                  : "hover:bg-gray-100"
-              }`}
+              // 使用CSS变量来控制高亮颜色，减少重绘
+              style={
+                {
+                  "--highlight-bg": isActive
+                    ? "rgb(238, 242, 255)"
+                    : "transparent",
+                  "--highlight-text": isActive ? "rgb(79, 70, 229)" : "inherit",
+                  "--highlight-weight": isActive ? "500" : "normal",
+                } as React.CSSProperties
+              }
+              className={`block w-full text-left px-4 py-2 rounded-md 
+                bg-[var(--highlight-bg)] text-[var(--highlight-text)] font-[var(--highlight-weight)]
+                hover:bg-gray-100 transition-colors duration-150`}
             >
               {category.name}
             </button>
