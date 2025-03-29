@@ -1,19 +1,17 @@
-// 修改这个文件以解决searchParams错误
+// 修改这个文件以解决静态生成错误
 import { Suspense } from "react";
 import { CategoryPage } from "@/components/category/CategoryPage";
 import { CategorySkeleton } from "@/components/category/CategorySkeleton";
 
-// 定义参数类型为 Promise
-type Params = Promise<object>;
-type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+// 添加导出配置，设置为动态渲染
+export const dynamic = "force-dynamic";
 
-export default async function Page(props: {
-  params: Params;
-  searchParams: SearchParams;
+export default function Page({
+  searchParams,
+}: {
+  params: object;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  // 等待解析 Promise
-  const searchParams = await props.searchParams;
-
   // 获取 group 参数，确保它是字符串类型
   const group =
     typeof searchParams.group === "string"
