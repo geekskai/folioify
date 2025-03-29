@@ -18,7 +18,7 @@ export default function Home() {
         <JustLaunchedSection />
 
         {/* 特色工具 */}
-        <FeaturedToolsSection />
+        {/* <FeaturedToolsSection /> */}
 
         {/* 工具箱部分 */}
         {/* <ToolboxSection /> */}
