@@ -6,17 +6,13 @@ export function HeroSection() {
     <section className="relative py-12 md:py-16 overflow-hidden">
       <div className="container relative z-10 mx-auto px-4 text-center">
         <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold tracking-tight mb-4">
-          <span className="block mb-2 md:mb-0 md:inline">
-            Extend your AI agent
-          </span>{" "}
-          <span className="block md:inline">
-            with <span className="text-purple-600">2,690</span> capabilities.
-          </span>
+          Discover The Best AI Websites & Tools
         </h1>
 
         <p className="text-sm md:text-base py-3 md:py-4 text-muted-foreground max-w-2xl mx-auto">
-          Explore powerful MCP tools to expand your AI agent's capabilities and
-          scalability.
+          <span className="font-bold text-indigo-600">25142</span> AIs and{" "}
+          <span className="font-bold text-indigo-600">233</span>
+          categories in the best AI tools directory.
         </p>
 
         {/* 使用客户端搜索组件 */}
@@ -45,13 +41,13 @@ export function HeroSection() {
       <div className="absolute right-0 top-1/4 z-0 hidden sm:block">
         <div className="w-10 h-10 sm:w-16 sm:h-16 bg-yellow-400 rounded-lg transform rotate-12 shadow-lg"></div>
       </div>
-      <div className="absolute right-8 sm:right-16 bottom-1/4 z-0">
+      <div className="absolute right-8 sm:right-16 bottom-1/4 z-0 hidden sm:block">
         <div className="w-16 h-16 sm:w-24 sm:h-24 bg-blue-400 rounded-lg transform -rotate-6 shadow-lg"></div>
       </div>
       <div className="absolute right-20 sm:right-32 top-1/2 z-0 hidden sm:block">
         <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-400 rounded-lg transform rotate-45 shadow-lg"></div>
       </div>
-      <div className="absolute right-4 sm:right-8 bottom-4 sm:bottom-8 z-0">
+      <div className="absolute right-4 sm:right-8 bottom-4 sm:bottom-8 hidden sm:block z-0">
         <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-300 rounded-full shadow-lg"></div>
       </div>
 
