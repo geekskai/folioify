@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export function HeroSection() {
   return (
-    <section className="relative py-12 md:py-16 overflow-hidden">
+    <section className="relative py-12">
       <div className="container relative z-10 mx-auto px-4 text-center">
         <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold tracking-tight mb-4">
           Discover The Best AI Websites & Tools
@@ -16,9 +16,9 @@ export function HeroSection() {
         </p>
 
         {/* 使用客户端搜索组件 */}
-        <div className="mt-2 md:mt-4">
-          <SearchBar />
-        </div>
+        {/* <div className="mt-2 md:mt-4"> */}
+        <SearchBar />
+        {/* </div> */}
 
         {/* 特色标签 */}
         {/* <div className="flex flex-wrap justify-center gap-4 mt-10">
