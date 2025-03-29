@@ -5,24 +5,21 @@ import { Input } from "@/components/ui/input";
 import { Search, X, Mic, Camera } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useDebounce } from "@/hooks/useDebounce";
 
-// 模拟搜索建议数据
-const SUGGESTIONS = [
-  "Android 游戏下载",
-  "Android 12 新功能",
-  "Android 应用商店",
-  "Android 开发教程",
-  "Android 系统更新",
-  "Android 手机推荐",
-];
+// 导入搜索数据和类型
+import { searchTools, SearchItem } from "@/data/search-data";
 
 export function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<SearchItem[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  // 使用防抖减少搜索频率
+  const debouncedSearchTerm = useDebounce(searchQuery, 300);
 
   // 处理搜索提交
   const handleSearch = (e: React.FormEvent) => {
@@ -34,15 +31,16 @@ export function SearchBar() {
   };
 
   // 处理搜索建议点击
-  const handleSuggestionClick = (suggestion: string) => {
-    setSearchQuery(suggestion);
-    router.push(`/search?q=${encodeURIComponent(suggestion)}`);
+  const handleSuggestionClick = (suggestion: SearchItem) => {
+    setSearchQuery(suggestion.n);
+    router.push(`/tools/${suggestion.h}`);
     setShowSuggestions(false);
   };
 
   // 清除搜索内容
   const clearSearch = () => {
     setSearchQuery("");
+    setSuggestions([]);
     inputRef.current?.focus();
   };
 
@@ -79,16 +77,14 @@ export function SearchBar() {
 
   // 当搜索查询变化时，更新建议
   useEffect(() => {
-    if (searchQuery.trim()) {
-      // 在实际应用中，这里应该调用API获取搜索建议
-      const filtered = SUGGESTIONS.filter((item) =>
-        item.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setSuggestions(filtered);
+    if (debouncedSearchTerm.trim()) {
+      // 使用辅助函数搜索工具
+      const searchResults = searchTools(debouncedSearchTerm).slice(0, 8);
+      setSuggestions(searchResults);
     } else {
       setSuggestions([]);
     }
-  }, [searchQuery]);
+  }, [debouncedSearchTerm]);
 
   return (
     <div className="relative w-full max-w-2xl mx-auto">
@@ -101,7 +97,7 @@ export function SearchBar() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setShowSuggestions(true)}
-            placeholder="搜索应用、游戏或软件包..."
+            placeholder="搜索AI工具、应用或服务..."
             className="border-none shadow-none focus-visible:ring-0 bg-transparent flex-1 text-gray-700 py-3"
           />
           {searchQuery && (
@@ -139,7 +135,7 @@ export function SearchBar() {
         </div>
       </form>
 
-      {/* 调整搜索建议下拉框样式 */}
+      {/* 搜索建议下拉框 */}
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
@@ -148,11 +144,21 @@ export function SearchBar() {
           {suggestions.map((suggestion, index) => (
             <div
               key={index}
-              className="flex items-center px-4 py-1.5 hover:bg-gray-50 cursor-pointer"
+              className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer"
               onClick={() => handleSuggestionClick(suggestion)}
             >
               <Search size={14} className="text-gray-400 mr-2 flex-shrink-0" />
-              <span className="text-gray-700 text-sm">{suggestion}</span>
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">{suggestion.n}</span>
+                {suggestion.c > 0 && (
+                  <span className="text-xs text-gray-400">
+                    热度:{" "}
+                    {suggestion.c > 1000
+                      ? `${(suggestion.c / 1000).toFixed(1)}K`
+                      : suggestion.c}
+                  </span>
+                )}
+              </div>
             </div>
           ))}
         </div>

@@ -15,10 +15,10 @@ export default function Home() {
         <ToolCategories />
 
         {/* 最新发布工具 */}
-        {/* <JustLaunchedSection /> */}
+        <JustLaunchedSection />
 
         {/* 特色工具 */}
-        {/* <FeaturedToolsSection /> */}
+        <FeaturedToolsSection />
 
         {/* 工具箱部分 */}
         {/* <ToolboxSection /> */}
