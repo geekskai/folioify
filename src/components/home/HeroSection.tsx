@@ -3,20 +3,26 @@ import Image from "next/image";
 
 export function HeroSection() {
   return (
-    <section className="relative py-16">
+    <section className="relative py-12 md:py-16 overflow-hidden">
       <div className="container relative z-10 mx-auto px-4 text-center">
-        <h1 className="text-3xl flex  justify-center gap-1 sm:text-5xl font-bold tracking-tight">
-          Extend your AI agent with{" "}
-          <span className="block text-purple-600">2,690</span> capabilities.
+        <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold tracking-tight mb-4">
+          <span className="block mb-2 md:mb-0 md:inline">
+            Extend your AI agent
+          </span>{" "}
+          <span className="block md:inline">
+            with <span className="text-purple-600">2,690</span> capabilities.
+          </span>
         </h1>
 
-        <p className="text-base py-4 text-muted-foreground max-w-2xl mx-auto">
-          Explore powerful MCP tools to expand your AI agent’s capabilities and
+        <p className="text-sm md:text-base py-3 md:py-4 text-muted-foreground max-w-2xl mx-auto">
+          Explore powerful MCP tools to expand your AI agent's capabilities and
           scalability.
         </p>
 
         {/* 使用客户端搜索组件 */}
-        <SearchBar />
+        <div className="mt-2 md:mt-4">
+          <SearchBar />
+        </div>
 
         {/* 特色标签 */}
         {/* <div className="flex flex-wrap justify-center gap-4 mt-10">
@@ -35,21 +41,21 @@ export function HeroSection() {
         </div> */}
       </div>
 
-      {/* 装饰性元素 */}
-      <div className="absolute right-0 top-1/4 z-0">
-        <div className="w-16 h-16 bg-yellow-400 rounded-lg transform rotate-12 shadow-lg"></div>
+      {/* 装饰性元素 - 移动端隐藏部分元素，调整尺寸 */}
+      <div className="absolute right-0 top-1/4 z-0 hidden sm:block">
+        <div className="w-10 h-10 sm:w-16 sm:h-16 bg-yellow-400 rounded-lg transform rotate-12 shadow-lg"></div>
       </div>
-      <div className="absolute right-16 bottom-1/4 z-0">
-        <div className="w-24 h-24 bg-blue-400 rounded-lg transform -rotate-6 shadow-lg"></div>
+      <div className="absolute right-8 sm:right-16 bottom-1/4 z-0">
+        <div className="w-16 h-16 sm:w-24 sm:h-24 bg-blue-400 rounded-lg transform -rotate-6 shadow-lg"></div>
       </div>
-      <div className="absolute right-32 top-1/2 z-0">
-        <div className="w-12 h-12 bg-green-400 rounded-lg transform rotate-45 shadow-lg"></div>
+      <div className="absolute right-20 sm:right-32 top-1/2 z-0 hidden sm:block">
+        <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-400 rounded-lg transform rotate-45 shadow-lg"></div>
       </div>
-      <div className="absolute right-8 bottom-8 z-0">
-        <div className="w-10 h-10 bg-pink-300 rounded-full shadow-lg"></div>
+      <div className="absolute right-4 sm:right-8 bottom-4 sm:bottom-8 z-0">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-300 rounded-full shadow-lg"></div>
       </div>
 
-      {/* 左侧装饰元素 */}
+      {/* 左侧装饰元素 - 仅在中等屏幕以上显示 */}
       <div className="absolute left-10 top-1/3 z-0 hidden md:block">
         <div className="w-14 h-14 bg-purple-300 rounded-lg transform rotate-12 shadow-lg"></div>
       </div>

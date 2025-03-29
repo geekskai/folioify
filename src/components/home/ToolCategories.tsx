@@ -3,8 +3,8 @@ import { categories } from "@/data/categories";
 
 export function ToolCategories() {
   return (
-    <div className="mb-8 overflow-x-auto">
-      <div className="flex space-x-2 pb-2">
+    <div className="mb-8">
+      <div className="flex flex-wrap gap-2">
         {categories.map((category) => (
           <Link
             key={category.id}
