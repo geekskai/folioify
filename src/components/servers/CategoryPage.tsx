@@ -182,7 +182,7 @@ export function CategoryPage({ group }: CategoryPageProps) {
     setActiveSection(sectionId);
 
     // 更新URL参数
-    router.push(`/category?group=${sectionId}`, { scroll: false });
+    router.push(`/mcp-servers?group=${sectionId}`, { scroll: false });
 
     const element = sectionRefs.current[sectionId];
     if (element) {

@@ -15,7 +15,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { label: "Home", href: "/" },
-  { label: "MCP Server", href: "/mcp-server" },
+  { label: "MCP Servers", href: "/mcp-servers" },
   { label: "Toolbox", href: "/toolbox" },
   { label: "Topics", href: "/topics" },
   { label: "Newsletter", href: "/newsletter" },
