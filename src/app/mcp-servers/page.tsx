@@ -3,10 +3,8 @@ import { Suspense } from "react";
 import { CategorySkeleton } from "@/components/category/CategorySkeleton";
 import { CategoryPage } from "@/components/servers/CategoryPage";
 
-type SearchParams = {
-  group?: string;
-  sort?: string;
-};
+// 定义 searchParams 为 Promise 类型
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function ServerPage({
   searchParams,

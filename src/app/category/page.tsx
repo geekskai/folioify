@@ -4,7 +4,7 @@ import { CategoryPage } from "@/components/category/CategoryPage";
 import { CategorySkeleton } from "@/components/category/CategorySkeleton";
 
 // 添加动态渲染配置
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 // 定义 searchParams 为 Promise 类型
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
