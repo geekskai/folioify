@@ -10,6 +10,12 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      A_MCP_category: {
+        Row: {
+          id: number;
+          name: string;
+        };
+      };
       MCP_Featured_List: {
         Row: {
           id: number;

@@ -8,6 +8,7 @@ import { CategorySkeleton } from "./CategorySkeleton";
 import { HeroSection } from "./HeroSection";
 import { FeaturedSection } from "./FeaturedSection";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/db/supabase/client";
 
 interface CategoryPageProps {
   group: string;
@@ -16,11 +17,7 @@ interface CategoryPageProps {
 interface CategorySection {
   id: string;
   name: string;
-  tools: Array<{
-    id: number;
-    name: string;
-    count: number;
-  }>;
+  // tools?: any[];
 }
 
 // 模拟特色工具数据
@@ -81,6 +78,7 @@ export function CategoryPage({ group }: CategoryPageProps) {
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const initialScrollDone = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const supabase = createClient();
 
   // 确保activeSection始终与URL参数同步
   useEffect(() => {
@@ -90,24 +88,27 @@ export function CategoryPage({ group }: CategoryPageProps) {
     }
   }, [group, activeSection]);
 
+  // 获取分类数据
   useEffect(() => {
-    const fetchCategoryData = async () => {
+    const fetchCategories = async () => {
       setIsLoading(true);
       try {
-        // 模拟获取所有分类数据
-        const sections = generateCategorySections();
-        // 根据当前分类组调整顺序，将当前分类组放在最前面
-        // const sortedSections = sortSectionsByGroup(sections, group);
-        setCategorySections(sections);
+        const { data: A_MCP_category } = await supabase
+          .from("A_MCP_category")
+          .select("*");
+
+        const categories = A_MCP_category || [];
+
+        setCategorySections(categories);
       } catch (error) {
-        console.error("Error fetching category data:", error);
+        console.error("获取分类数据失败:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCategoryData();
-  }, [group]);
+    fetchCategories();
+  }, []);
 
   // 初始化滚动到指定分类
   useEffect(() => {
@@ -205,7 +206,7 @@ export function CategoryPage({ group }: CategoryPageProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 添加Hero部分 */}
-      <HeroSection categoryCount={233} />
+      <HeroSection categoryCount={categorySections.length} />
 
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-64 shrink-0">
@@ -235,119 +236,11 @@ export function CategoryPage({ group }: CategoryPageProps) {
               className="mb-8 pt-4" // 减小底部间距，添加顶部内边距用于滚动定位
             >
               <h2 className="text-2xl font-bold mb-4">{section.name}</h2>
-              <CategoryToolList tools={section.tools} />
+              {/* <CategoryToolList tools={section.tools || []} /> */}
             </div>
           ))}
         </div>
       </div>
     </div>
   );
-}
-
-// 根据当前分类组排序分类部分
-function sortSectionsByGroup(
-  sections: CategorySection[],
-  currentGroup: string
-): CategorySection[] {
-  return [...sections].sort((a, b) => {
-    if (a.id === currentGroup) return -1;
-    if (b.id === currentGroup) return 1;
-    return 0;
-  });
-}
-
-// 生成所有分类数据
-function generateCategorySections(): CategorySection[] {
-  const categories = [
-    { id: "text-writing", name: "Text&Writing" },
-    { id: "image", name: "Image" },
-    { id: "video", name: "Video" },
-    { id: "code-it", name: "Code&IT" },
-    { id: "voice", name: "Voice" },
-    { id: "business", name: "Business" },
-    { id: "marketing", name: "Marketing" },
-    { id: "ai-detector", name: "AI Detector" },
-    { id: "chatbot", name: "Chatbot" },
-    { id: "design-art", name: "Design&Art" },
-    { id: "life-assistant", name: "Life Assistant" },
-    { id: "3d", name: "3D" },
-    { id: "education", name: "Education" },
-    { id: "prompt", name: "Prompt" },
-    { id: "productivity", name: "Productivity" },
-    { id: "other", name: "Other" },
-  ];
-
-  return categories.map((category) => ({
-    id: category.id,
-    name: category.name,
-    tools: generateToolsForCategory(category.id),
-  }));
-}
-
-// 模拟生成分类工具数据
-function generateToolsForCategory(group: string) {
-  if (group === "text-writing") {
-    return [
-      { id: 1, name: "AI Blog Writer", count: 522 },
-      { id: 2, name: "Handwriting", count: 56 },
-      { id: 3, name: "Essay Writer", count: 295 },
-      { id: 4, name: "Report Writing", count: 280 },
-      { id: 5, name: "AI Story Writing", count: 472 },
-      { id: 6, name: "Paraphraser", count: 572 },
-      { id: 7, name: "Pick-up Lines Generator", count: 44 },
-      { id: 8, name: "Writing Assistants", count: 2341 },
-      { id: 9, name: "AI Content Generator", count: 4064 },
-      { id: 10, name: "Quotes Generator", count: 24 },
-      { id: 11, name: "Translate", count: 587 },
-      { id: 12, name: "Copywriting", count: 893 },
-      { id: 13, name: "Letter Writer", count: 175 },
-      { id: 14, name: "AI Rewriter", count: 671 },
-      { id: 15, name: "AI Bio Generator", count: 147 },
-      { id: 16, name: "AI Poem & Poetry Generator", count: 69 },
-      { id: 17, name: "Transcription", count: 591 },
-      { id: 18, name: "AI Creative Writing", count: 597 },
-      { id: 19, name: "AI Email Writer", count: 796 },
-      { id: 20, name: "AI Product Description Generator", count: 2158 },
-    ];
-  } else if (group === "image") {
-    return [
-      { id: 21, name: "Text to Image", count: 795 },
-      { id: 22, name: "AI Photo & Image Generator", count: 1983 },
-      { id: 23, name: "AI Illustration Generator", count: 483 },
-      { id: 24, name: "AI Avatar Generator", count: 410 },
-      { id: 25, name: "AI Background Generator", count: 345 },
-      { id: 26, name: "AI Banner Generator", count: 271 },
-    ];
-  }
-
-  // 为其他分类生成一些示例数据
-  return Array.from({ length: 6 }, (_, i) => ({
-    id: i + 100,
-    name: `${getCategoryName(group)} Tool ${i + 1}`,
-    count: Math.floor(Math.random() * 1000),
-  }));
-}
-
-// 辅助函数，根据分类ID获取分类名称
-function getCategoryName(group: string): string {
-  const categoryMap: Record<string, string> = {
-    "text-writing": "Text&Writing",
-    image: "Image",
-    video: "Video",
-    "code-it": "Code&IT",
-    voice: "Voice",
-    business: "Business",
-    marketing: "Marketing",
-    "ai-detector": "AI Detector",
-    chatbot: "Chatbot",
-    "design-art": "Design&Art",
-    "life-assistant": "Life Assistant",
-    "3d": "3D",
-    education: "Education",
-    prompt: "Prompt",
-    productivity: "Productivity",
-    other: "Other",
-  };
-
-  return categoryMap[group] || group;
 }
