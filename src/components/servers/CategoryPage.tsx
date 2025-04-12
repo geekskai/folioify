@@ -80,6 +80,8 @@ export function CategoryPage({ category }: CategoryPageProps) {
     totalItems: 0,
   });
   const [isContentLoading, setIsContentLoading] = useState(false);
+  const [totalItemsCount, setTotalItemsCount] = useState(0);
+  console.log(`🚀 ~ totalItemsCount:`, totalItemsCount);
   // const [featuredTools, setFeaturedTools] = useState<FeaturedTool[]>([]);
 
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -126,6 +128,43 @@ export function CategoryPage({ category }: CategoryPageProps) {
     fetchCategories();
   }, [supabase]);
 
+  // 获取所有表的总数量
+  useEffect(() => {
+    const fetchTotalCounts = async () => {
+      if (categorySections.length === 0) return;
+
+      try {
+        let totalCount = 0;
+
+        // 遍历所有分类，获取每个分类的数据总数
+        for (const category of categorySections) {
+          const tableName = `a_mcp_${category.category_name.replace(
+            /-/g,
+            "_"
+          )}`;
+
+          // 使用count查询获取表中的条目数
+          const { count, error } = await supabase
+            .from(tableName)
+            .select("*", { count: "exact", head: true });
+
+          if (error) {
+            console.error(`获取表 ${tableName} 数据总数失败:`, error);
+            continue;
+          }
+
+          totalCount += count || 0;
+        }
+
+        setTotalItemsCount(totalCount);
+      } catch (error) {
+        console.error("获取所有表总数据量失败:", error);
+      }
+    };
+
+    fetchTotalCounts();
+  }, [categorySections, supabase]);
+
   // 获取精选工具
   // useEffect(() => {
   //   const fetchFeaturedTools = async () => {
@@ -170,6 +209,67 @@ export function CategoryPage({ category }: CategoryPageProps) {
   //   fetchFeaturedTools();
   // }, [supabase]);
 
+  // 处理"all"分类情况的逻辑
+  const fetchAllCategoryData = useCallback(
+    async (page: number, itemsPerPage: number) => {
+      let allTools: Tool[] = [];
+      const categoriesToFetch = categorySections.slice(0, 6);
+
+      // 为每个分类获取数据
+      for (const category of categoriesToFetch) {
+        try {
+          // 获取每个分类的数据
+          const { data: categoryItems } = await supabase
+            .from(`a_mcp_${category.category_name.replace(/-/g, "_")}`)
+            .select("*")
+            .range(0, 4); // 获取前5条数据
+
+          if (categoryItems && categoryItems.length > 0) {
+            // 处理数据并添加分类信息
+            const processedTools = categoryItems.map(
+              (item: CategoryItemData) => ({
+                id:
+                  item.id ||
+                  `tool-${category.id}-${
+                    item.mcpName?.toLowerCase().replace(/\s+/g, "-") || ""
+                  }`,
+                name: item.mcpName || item.name || `Tool ${item.id}`,
+                description: item.description || "No description available",
+                by: item.mcpBy || item.by,
+                tags: [
+                  ...(item.tags || []),
+                  category.category_name.replace(/-/g, " "),
+                ],
+                url: item.url || item.github || `/tools/${item.id}`,
+                icon: item.imageSrc || "/placeholder-icon.png",
+                isFavorite: false,
+                mcpName: item.mcpName,
+                mcpBy: item.mcpBy,
+                github: item.github,
+                imageSrc: item.imageSrc,
+              })
+            );
+
+            allTools = [...allTools, ...processedTools];
+          }
+        } catch (error) {
+          console.error(`获取分类 ${category.name} 数据失败:`, error);
+        }
+      }
+
+      // 设置分页信息
+      setCurrentPagination({
+        currentPage: page,
+        totalPages: Math.ceil(totalItemsCount / itemsPerPage),
+        itemsPerPage,
+        totalItems: totalItemsCount,
+      });
+
+      return allTools;
+    },
+    [categorySections, supabase, totalItemsCount]
+  );
+
   // 获取当前分类的工具数据
   useEffect(() => {
     const fetchCategoryTools = async () => {
@@ -180,76 +280,11 @@ export function CategoryPage({ category }: CategoryPageProps) {
         const itemsPerPage = 30; // 每页显示30条数据
 
         if (currentCategoryName === "all") {
-          // 处理"全部"分类情况
-          let allTools: Tool[] = [];
-          let totalCount = 0;
-
-          // 从前6个分类各获取5条数据
-          const categoriesToFetch = categorySections.slice(0, 6);
-
-          for (const category of categoriesToFetch) {
-            try {
-              // 获取每个分类的数据总数（用于分页计算）
-              const { count } = await supabase
-                .from(`a_mcp_${category.category_name.replace(/-/g, "_")}`)
-                .select("*", { count: "exact", head: true });
-
-              totalCount += count || 0;
-
-              // 获取每个分类的前5条数据
-              const { data: categoryItems } = await supabase
-                .from(`a_mcp_${category.category_name.replace(/-/g, "_")}`)
-                .select("*")
-                .range(0, 4); // 获取5条（从0到4）
-
-              if (categoryItems && categoryItems.length > 0) {
-                // 处理工具数据添加分类信息
-                const processedTools = categoryItems.map(
-                  (item: CategoryItemData) => {
-                    const tool: Tool = {
-                      id:
-                        item.id ||
-                        `tool-${category.id}-${
-                          item.mcpName?.toLowerCase().replace(/\s+/g, "-") || ""
-                        }`,
-                      name: item.mcpName || item.name || `Tool ${item.id}`,
-                      description:
-                        item.description || "No description available",
-                      by: item.mcpBy || item.by,
-                      tags: [
-                        ...(item.tags || []),
-                        category.category_name.replace(/-/g, " "),
-                      ],
-                      url: item.url || item.github || `/tools/${item.id}`,
-                      icon: item.imageSrc || "/placeholder-icon.png",
-                      isFavorite: false,
-                      mcpName: item.mcpName,
-                      mcpBy: item.mcpBy,
-                      github: item.github,
-                      imageSrc: item.imageSrc,
-                    };
-                    return tool;
-                  }
-                );
-
-                allTools = [...allTools, ...processedTools];
-              }
-            } catch (error) {
-              console.error(`获取分类 ${category.name} 数据失败:`, error);
-            }
-          }
-
-          // 设置分页信息
-          const totalItems = totalCount;
-          const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-          setCurrentPagination({
+          // 使用封装的函数获取所有分类数据
+          const allTools = await fetchAllCategoryData(
             currentPage,
-            totalPages,
-            itemsPerPage,
-            totalItems,
-          });
-
+            itemsPerPage
+          );
           setCurrentCategoryTools(allTools);
           setIsContentLoading(false);
           setIsLoading(false);
@@ -357,6 +392,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
     supabase,
     getCurrentCategory,
     getCurrentPage,
+    fetchAllCategoryData,
   ]);
 
   // 初始化滚动到指定分类
@@ -427,7 +463,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
     activeSection === "all"
       ? {
           id: "all",
-          name: "All Servers",
+          name: `All Servers`,
           category_name: "all",
         }
       : null;

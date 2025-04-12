@@ -36,6 +36,7 @@ export function CategoryContent({
   pagination,
   onPageChange,
 }: CategoryContentProps) {
+  console.log(`🚀 ~ pagination:`, pagination);
   if (!categoryInfo) {
     return (
       <div className="text-center py-10 text-gray-500">
