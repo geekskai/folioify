@@ -13,7 +13,10 @@ export function Footer() {
               <p className="text-muted-foreground mb-4">
                 Top articles and tools every week
               </p>
-              <div className="flex w-full max-w-md items-center gap-2">
+              <div
+                className="flex w-full max-w-md items-center gap-2"
+                suppressHydrationWarning
+              >
                 <Input
                   type="email"
                   placeholder="Enter your email"
@@ -69,6 +72,15 @@ export function Footer() {
                   Privacy Policy
                 </Link>
               </li> */}
+
+              <li>
+                <Link
+                  href="/blog"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  Blog
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

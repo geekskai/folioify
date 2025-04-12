@@ -17,6 +17,13 @@ interface ServerSearchResult {
   categoryId?: string;
 }
 
+interface ServerItem {
+  id: string | number;
+  mcpName?: string;
+  name?: string;
+  description?: string;
+}
+
 export function ServerSearchBar() {
   const searchParams = useSearchParams();
   const initialSearchTerm = searchParams.get("search") || "";
@@ -142,7 +149,7 @@ export function ServerSearchBar() {
 
           if (results && results.length > 0) {
             // Transform results to include category info
-            const formattedResults = results.map((item) => ({
+            const formattedResults = results.map((item: ServerItem) => ({
               id: item.id,
               name: item.mcpName || item.name || `Server ${item.id}`,
               description: item.description || "No description available",

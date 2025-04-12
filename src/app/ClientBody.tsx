@@ -8,10 +8,32 @@ export default function ClientBody({
 }: {
   children: React.ReactNode;
 }) {
-  // Remove any extension-added classes during hydration
+  // Remove any extension-added elements during hydration
   useEffect(() => {
     // This runs only on the client after hydration
     document.body.className = "antialiased";
+
+    // Remove LastPass elements that might cause hydration issues
+    const removeLastPassElements = () => {
+      const lastPassElements = document.querySelectorAll(
+        "[data-lastpass-icon-root]"
+      );
+      lastPassElements.forEach((element) => {
+        element.remove();
+      });
+    };
+
+    // Run immediately
+    removeLastPassElements();
+
+    // Also run when DOM changes to catch delayed injections
+    const observer = new MutationObserver(() => {
+      removeLastPassElements();
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
   }, []);
 
   return (

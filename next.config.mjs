@@ -1,8 +1,8 @@
+import { withContentlayer } from "next-contentlayer";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
-  // output: 'export',
-  // distDir: 'out',
+  reactStrictMode: true,
   images: {
     unoptimized: true,
     domains: [
@@ -12,6 +12,8 @@ const nextConfig = {
       "ugc.same-assets.com",
       "prototyprio.gumlet.io",
       "prototyprwp.gumlet.io",
+      "res.cloudinary.com",
+      "lh3.googleusercontent.com",
     ],
     remotePatterns: [
       {
@@ -46,6 +48,15 @@ const nextConfig = {
       },
     ],
   },
+  // Update experimental configuration for Next.js 15
+  experimental: {
+    // Remove serverExternalPackages - it's no longer needed in Next.js 15
+    // Use the contentLayerConfig option provided by the contentlayer package
+    mdxRs: true, // Enable the new MDX-RS compiler
+  },
+  // Make sure to transpile contentlayer packages
+  transpilePackages: ["contentlayer", "next-contentlayer"],
 };
 
-export default nextConfig;
+// Apply contentlayer transformation
+export default withContentlayer(nextConfig);
