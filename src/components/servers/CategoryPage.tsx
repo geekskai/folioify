@@ -172,6 +172,9 @@ export function CategoryPage({ category }: CategoryPageProps) {
         // 计算每个分类要获取的起始位置
         const pageOffset = (page - 1) * itemsPerCategory;
 
+        // 用于统计搜索结果的总数
+        let totalSearchResults = 0;
+
         // 为每个分类获取数据
         for (const category of categoriesToFetch) {
           try {
@@ -179,6 +182,16 @@ export function CategoryPage({ category }: CategoryPageProps) {
               /-/g,
               "_"
             )}`;
+
+            // 先获取该分类下搜索结果的总数
+            if (searchQuery) {
+              const { count } = await supabase
+                .from(tableName)
+                .select("*", { count: "exact", head: true })
+                .ilike("mcpName", `%${searchQuery}%`);
+
+              totalSearchResults += count || 0;
+            }
 
             // 构建查询
             let query = supabase.from(tableName).select("*");
@@ -228,14 +241,22 @@ export function CategoryPage({ category }: CategoryPageProps) {
           }
         }
 
-        // 设置分页信息
+        // 设置分页信息 - 如果在搜索，使用搜索结果的总数
         setCurrentPagination({
           currentPage: page,
-          totalPages: Math.ceil(
-            totalItemsCount / (itemsPerCategory * categoriesToFetch.length)
-          ),
+          totalPages: searchQuery
+            ? Math.max(
+                1,
+                Math.ceil(
+                  totalSearchResults /
+                    (itemsPerCategory * categoriesToFetch.length)
+                )
+              )
+            : Math.ceil(
+                totalItemsCount / (itemsPerCategory * categoriesToFetch.length)
+              ),
           itemsPerPage: itemsPerCategory * categoriesToFetch.length,
-          totalItems: totalItemsCount,
+          totalItems: searchQuery ? totalSearchResults : totalItemsCount,
         });
 
         return allTools;
@@ -299,7 +320,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
 
         // 如果有搜索词，添加搜索条件
         if (searchQuery) {
-          countQuery = countQuery.ilike("name", `%${searchQuery}%`);
+          countQuery = countQuery.ilike("mcpName", `%${searchQuery}%`);
         }
 
         const { count } = await countQuery;
@@ -324,7 +345,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
 
         // 如果有搜索词，添加搜索条件
         if (searchQuery) {
-          dataQuery = dataQuery.ilike("name", `%${searchQuery}%`);
+          dataQuery = dataQuery.ilike("mcpName", `%${searchQuery}%`);
         }
 
         // 应用分页

@@ -47,10 +47,11 @@ export function CategoryContent({
       </div>
     );
   }
-
   const title = searchQuery
-    ? `${categoryInfo.name} - "${searchQuery}" 搜索结果 (${pagination.totalItems})`
-    : `${categoryInfo.name} (${pagination.totalItems})`;
+    ? `Search results for "${searchQuery}" (${pagination.totalItems} items)`
+    : categoryInfo.category_name === "all"
+    ? `All Servers (${pagination.totalItems} total)`
+    : `${categoryInfo.name} (${pagination.totalItems} items)`;
 
   return (
     <div className="mb-8 pt-4">

@@ -137,7 +137,7 @@ export function ServerSearchBar() {
           const { data: results } = await supabase
             .from(tableName)
             .select("*")
-            .ilike("name", `%${debouncedSearchTerm}%`)
+            .ilike("mcpName", `%${debouncedSearchTerm}%`)
             .limit(5);
 
           if (results && results.length > 0) {
@@ -179,9 +179,9 @@ export function ServerSearchBar() {
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             onFocus={() => setShowSuggestions(true)}
-            placeholder="搜索服务器..."
+            placeholder="Search for servers..."
             className="border-none shadow-none focus-visible:ring-0 bg-transparent flex-1 text-gray-700 py-3"
-            aria-label="搜索"
+            aria-label="search for servers"
             autoComplete="off"
           />
           {searchQuery && (
@@ -189,7 +189,7 @@ export function ServerSearchBar() {
               type="button"
               onClick={clearSearch}
               className="text-gray-400 hover:text-gray-600 p-2"
-              aria-label="清除搜索"
+              aria-label="Clear search"
             >
               <X size={18} />
             </button>
@@ -197,9 +197,9 @@ export function ServerSearchBar() {
           <Button
             type="submit"
             className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 h-10 ml-2"
-            aria-label="搜索按钮"
+            aria-label="Search button"
           >
-            搜索
+            Search
           </Button>
         </div>
       </form>
@@ -211,7 +211,7 @@ export function ServerSearchBar() {
           className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg z-50 overflow-hidden border border-gray-100"
         >
           <div className="text-xs text-gray-500 px-5 py-2">
-            搜索结果 ({suggestions.length})
+            Found {suggestions.length} results
           </div>
           <div>
             {suggestions.map((suggestion, index) => (
@@ -229,7 +229,7 @@ export function ServerSearchBar() {
                     {suggestion.name}
                   </span>
                   <span className="text-xs text-gray-500">
-                    分类: {suggestion.category}
+                    Category: {suggestion.category}
                   </span>
                 </div>
               </div>
