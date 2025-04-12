@@ -213,59 +213,76 @@ export function CategoryPage({ category }: CategoryPageProps) {
   const fetchAllCategoryData = useCallback(
     async (page: number, itemsPerPage: number) => {
       let allTools: Tool[] = [];
-      const categoriesToFetch = categorySections.slice(0, 6);
+      const categoriesToFetch = categorySections;
+      const itemsPerCategory = 10; // 每个分类获取10条数据
 
-      // 为每个分类获取数据
-      for (const category of categoriesToFetch) {
-        try {
-          // 获取每个分类的数据
-          const { data: categoryItems } = await supabase
-            .from(`a_mcp_${category.category_name.replace(/-/g, "_")}`)
-            .select("*")
-            .range(0, 10); // 获取前10条数据
+      try {
+        // 计算每个分类要获取的起始位置
+        const pageOffset = (page - 1) * itemsPerCategory;
 
-          if (categoryItems && categoryItems.length > 0) {
-            // 处理数据并添加分类信息
-            const processedTools = categoryItems.map(
-              (item: CategoryItemData) => ({
-                id:
-                  item.id ||
-                  `tool-${category.id}-${
-                    item.mcpName?.toLowerCase().replace(/\s+/g, "-") || ""
-                  }`,
-                name: item.mcpName || item.name || `Tool ${item.id}`,
-                description: item.description || "No description available",
-                by: item.mcpBy || item.by,
-                tags: [
-                  ...(item.tags || []),
-                  category.category_name.replace(/-/g, " "),
-                ],
-                url: item.url || item.github || `/tools/${item.id}`,
-                icon: item.imageSrc || "/placeholder-icon.png",
-                isFavorite: false,
-                mcpName: item.mcpName,
-                mcpBy: item.mcpBy,
-                github: item.github,
-                imageSrc: item.imageSrc,
-              })
-            );
+        // 为每个分类获取数据
+        for (const category of categoriesToFetch) {
+          try {
+            const tableName = `a_mcp_${category.category_name.replace(
+              /-/g,
+              "_"
+            )}`;
 
-            allTools = [...allTools, ...processedTools];
+            // 获取每个分类的数据，基于分页偏移
+            const { data: categoryItems } = await supabase
+              .from(tableName)
+              .select("*")
+              .range(pageOffset, pageOffset + itemsPerCategory - 1); // 每页获取指定数量条数据
+
+            if (categoryItems && categoryItems.length > 0) {
+              // 处理数据并添加分类信息
+              const processedTools = categoryItems.map(
+                (item: CategoryItemData) => ({
+                  id:
+                    item.id ||
+                    `tool-${category.id}-${
+                      item.mcpName?.toLowerCase().replace(/\s+/g, "-") || ""
+                    }`,
+                  name: item.mcpName || item.name || `Tool ${item.id}`,
+                  description: item.description || "No description available",
+                  by: item.mcpBy || item.by,
+                  tags: [
+                    ...(item.tags || []),
+                    category.category_name.replace(/-/g, " "),
+                  ],
+                  url: item.url || item.github || `/tools/${item.id}`,
+                  icon: item.imageSrc || "/placeholder-icon.png",
+                  isFavorite: false,
+                  mcpName: item.mcpName,
+                  mcpBy: item.mcpBy,
+                  github: item.github,
+                  imageSrc: item.imageSrc,
+                  categoryName: category.name, // 添加分类名称，方便前端展示
+                })
+              );
+
+              allTools = [...allTools, ...processedTools];
+            }
+          } catch (error) {
+            console.error(`获取分类 ${category.name} 数据失败:`, error);
           }
-        } catch (error) {
-          console.error(`获取分类 ${category.name} 数据失败:`, error);
         }
+
+        // 设置分页信息
+        setCurrentPagination({
+          currentPage: page,
+          totalPages: Math.ceil(
+            totalItemsCount / (itemsPerCategory * categoriesToFetch.length)
+          ),
+          itemsPerPage: itemsPerCategory * categoriesToFetch.length,
+          totalItems: totalItemsCount,
+        });
+
+        return allTools;
+      } catch (error) {
+        console.error("获取所有分类数据失败:", error);
+        return [];
       }
-
-      // 设置分页信息
-      setCurrentPagination({
-        currentPage: page,
-        totalPages: Math.ceil(totalItemsCount / itemsPerPage),
-        itemsPerPage,
-        totalItems: totalItemsCount,
-      });
-
-      return allTools;
     },
     [categorySections, supabase, totalItemsCount]
   );
