@@ -222,7 +222,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
           const { data: categoryItems } = await supabase
             .from(`a_mcp_${category.category_name.replace(/-/g, "_")}`)
             .select("*")
-            .range(0, 4); // 获取前5条数据
+            .range(0, 10); // 获取前10条数据
 
           if (categoryItems && categoryItems.length > 0) {
             // 处理数据并添加分类信息
