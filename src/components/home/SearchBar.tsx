@@ -2,14 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, X, Flame } from "lucide-react";
+import { Search, X } from "lucide-react";
 // 移除了 Mic 和 Camera 图标的导入
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 
 // 导入搜索数据和类型
-import { searchTools, searchCategories, SearchItem } from "@/data/search-data";
+import { searchCategories, SearchItem } from "@/data/search-data";
 import { ChevronRight } from "lucide-react";
 import { categories } from "@/data/categories";
 

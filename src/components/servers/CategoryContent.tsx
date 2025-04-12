@@ -1,5 +1,6 @@
 import { CategoryCard } from "./CategoryCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 interface CategoryContentProps {
   categoryInfo: {
@@ -36,7 +37,9 @@ export function CategoryContent({
   pagination,
   onPageChange,
 }: CategoryContentProps) {
-  console.log(`🚀 ~ pagination:`, pagination);
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search");
+
   if (!categoryInfo) {
     return (
       <div className="text-center py-10 text-gray-500">
@@ -45,11 +48,13 @@ export function CategoryContent({
     );
   }
 
+  const title = searchQuery
+    ? `${categoryInfo.name} - "${searchQuery}" 搜索结果 (${pagination.totalItems})`
+    : `${categoryInfo.name} (${pagination.totalItems})`;
+
   return (
     <div className="mb-8 pt-4">
-      <h2 className="text-2xl font-bold mb-4">
-        {categoryInfo.name} ({pagination.totalItems})
-      </h2>
+      <h2 className="text-2xl font-bold mb-4">{title}</h2>
 
       {tools.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -72,7 +77,9 @@ export function CategoryContent({
         </div>
       ) : (
         <div className="text-center py-10 text-gray-500">
-          No tools found for this category
+          {searchQuery
+            ? `没有找到与 "${searchQuery}" 匹配的服务器`
+            : "此分类中没有服务器"}
         </div>
       )}
 
