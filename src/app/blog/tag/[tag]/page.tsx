@@ -1,12 +1,8 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { allBlogs } from "contentlayer/generated";
 import { BlogList } from "@/components/blog/BlogList";
-import {
-  getAllTagsFromPosts,
-  filterPostsByTag,
-  sortBlogPostsByDate,
-} from "@/lib/utils";
+import { sortBlogPostsByDate } from "@/lib/utils";
+import { getAllTags, getBlogPostsByTag } from "@/lib/content/api";
 
 interface TagPageProps {
   params: {
@@ -15,9 +11,7 @@ interface TagPageProps {
 }
 
 export async function generateStaticParams() {
-  const tags = getAllTagsFromPosts(
-    allBlogs.filter((post) => post.published !== false)
-  );
+  const tags = getAllTags();
 
   return tags.map((tag) => ({
     tag: encodeURIComponent(tag.toLowerCase()),
@@ -27,7 +21,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: TagPageProps): Promise<Metadata> {
-  const tagParam = decodeURIComponent(params.tag);
+  // Await params to avoid Next.js 15 dynamic API sync issue
+  const resolvedParams = await Promise.resolve(params);
+  const tagParam = decodeURIComponent(resolvedParams.tag);
 
   return {
     title: `#${tagParam} - Blog Posts`,
@@ -40,8 +36,10 @@ export async function generateMetadata({
 }
 
 export default async function TagPage({ params }: TagPageProps) {
-  const tagParam = decodeURIComponent(params.tag);
-  const allTags = getAllTagsFromPosts(allBlogs);
+  // Await params to avoid Next.js 15 dynamic API sync issue
+  const resolvedParams = await Promise.resolve(params);
+  const tagParam = decodeURIComponent(resolvedParams.tag);
+  const allTags = getAllTags();
 
   // Find the correct case for the tag
   const matchedTag = allTags.find(
@@ -52,12 +50,7 @@ export default async function TagPage({ params }: TagPageProps) {
     notFound();
   }
 
-  const posts = sortBlogPostsByDate(
-    filterPostsByTag(
-      allBlogs.filter((post) => post.published !== false),
-      matchedTag
-    )
-  );
+  const posts = sortBlogPostsByDate(getBlogPostsByTag(matchedTag));
 
   if (posts.length === 0) {
     notFound();

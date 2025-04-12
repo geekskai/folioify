@@ -1,33 +1,32 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { allBlogs } from "contentlayer/generated";
 import { MDXContent } from "@/components/blog/MDXContent";
 import { formatDate } from "@/lib/utils";
 import { Tag } from "@/components/blog/Tag";
 import Image from "next/image";
+import {
+  getBlogPostBySlug,
+  getBlogSlugs,
+  getMDXContent,
+} from "@/lib/content/api";
 
-// Use correct type for Next.js page props
-type Props = {
-  params: {
-    slug: string;
-  };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
+// Define params type without using the PageProps interface
+type PageParams = { slug: string };
 
 export async function generateStaticParams() {
-  return allBlogs
-    .filter((post) => post.published !== false)
-    .map((post) => ({
-      slug: post.slug,
-    }));
+  return getBlogSlugs();
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // Ensure params is awaited in Next.js 15
+export async function generateMetadata({
+  params,
+}: {
+  params: PageParams;
+}): Promise<Metadata> {
+  // Await params to avoid dynamic API sync issue
   const resolvedParams = await Promise.resolve(params);
   const slug = resolvedParams.slug;
 
-  const post = allBlogs.find((post) => post.slug === slug);
+  const post = getBlogPostBySlug(slug);
 
   if (!post) {
     return {
@@ -49,22 +48,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// Must be async for Next.js 15
-export default async function BlogPost({ params }: Props) {
-  // Ensure params is awaited in Next.js 15
+// Make the component async to properly handle params
+export default async function BlogPost({ params }: { params: PageParams }) {
+  // Await params to avoid dynamic API sync issue
   const resolvedParams = await Promise.resolve(params);
   const slug = resolvedParams.slug;
 
-  const post = allBlogs.find(
-    (post) => post.slug === slug && post.published !== false
-  );
+  const post = getBlogPostBySlug(slug);
 
   if (!post) {
     notFound();
   }
 
-  // Extract raw MDX content - always available as fallback
-  const mdxContent = post.body?.raw || "";
+  // Get MDX content safely
+  const mdxContent = getMDXContent(post);
 
   return (
     <div className="container mx-auto px-4 py-12">

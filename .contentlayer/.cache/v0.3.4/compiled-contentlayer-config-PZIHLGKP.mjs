@@ -1,61 +1,63 @@
+// contentlayer.config.ts
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
 import readingTime from "reading-time";
-
-export const Blog = defineDocumentType(() => ({
+var Blog = defineDocumentType(() => ({
   name: "Blog",
   filePathPattern: "blog/**/*.{md,mdx}",
   contentType: "mdx",
   fields: {
     title: {
       type: "string",
-      required: true,
+      required: true
     },
     date: {
       type: "date",
-      required: true,
+      required: true
     },
     description: {
       type: "string",
-      required: true,
+      required: true
     },
     cover: {
-      type: "string",
+      type: "string"
     },
     tags: {
       type: "list",
       of: { type: "string" },
-      default: [],
+      default: []
     },
     published: {
       type: "boolean",
-      default: true,
-    },
+      default: true
+    }
   },
   computedFields: {
     url: {
       type: "string",
-      resolve: (post) =>
-        `/blog/${post._raw.flattenedPath.replace(/^blog\//, "")}`,
+      resolve: (post) => `/blog/${post._raw.flattenedPath.replace(/^blog\//, "")}`
     },
     readingTime: {
       type: "json",
-      resolve: (doc) => readingTime(doc.body.raw),
+      resolve: (doc) => readingTime(doc.body.raw)
     },
     slug: {
       type: "string",
-      resolve: (doc) => doc._raw.flattenedPath.replace(/^blog\//, ""),
-    },
-  },
+      resolve: (doc) => doc._raw.flattenedPath.replace(/^blog\//, "")
+    }
+  }
 }));
-
-// Export contentlayer config
-export default makeSource({
+var contentlayer_config_default = makeSource({
   contentDirPath: "content",
   documentTypes: [Blog],
   disableImportAliasWarning: true,
   // Explicitly set options to avoid type errors
   mdx: {
     rehypePlugins: [],
-    remarkPlugins: [],
-  },
+    remarkPlugins: []
+  }
 });
+export {
+  Blog,
+  contentlayer_config_default as default
+};
+//# sourceMappingURL=compiled-contentlayer-config-PZIHLGKP.mjs.map

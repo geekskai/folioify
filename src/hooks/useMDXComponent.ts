@@ -9,41 +9,28 @@ export function useMDXComponent(code: string) {
     }
 
     try {
-      // Simple wrapper to handle errors gracefully
-      const getMDXComponent = (code: string) => {
+      // Create a simple MDX component for development
+      const MDXComponent = ({ components = {} }) => {
         // This is a safe fallback if the code is not valid
         if (!code) {
-          const EmptyComponent = () =>
-            React.createElement("div", null, "No content available");
-          EmptyComponent.displayName = "EmptyMDXContent";
-          return EmptyComponent;
+          return React.createElement("div", null, "No content available");
         }
 
-        // The getMDXComponent function from next-contentlayer looks for ReactCurrentDispatcher
-        // which may not be available in client components. This is a simpler implementation.
-        try {
-          // Evaluate the MDX component safely
-          // This is a simplified version that just returns a component that renders raw content
-          // for development purposes
-          const MDXComponent = ({ components = {} }) =>
-            React.createElement("div", {
-              dangerouslySetInnerHTML: {
-                __html: "MDX content would render here",
-              },
-            });
-
-          MDXComponent.displayName = "MDXContent";
-          return MDXComponent;
-        } catch (error) {
-          console.error("Error evaluating MDX component:", error);
-          const ErrorComponent = () =>
-            React.createElement("div", null, "Error rendering content");
-          ErrorComponent.displayName = "ErrorMDXContent";
-          return ErrorComponent;
-        }
+        // For development/preview, simply return a placeholder
+        return React.createElement("div", {
+          className: "mdx-placeholder",
+          style: { whiteSpace: "pre-wrap" },
+          dangerouslySetInnerHTML: {
+            __html: `<div class="mdx-preview-notice">MDX Preview (Development Mode)</div>
+                    <pre>${code.substring(0, 500)}${
+              code.length > 500 ? "..." : ""
+            }</pre>`,
+          },
+        });
       };
 
-      return getMDXComponent(code);
+      MDXComponent.displayName = "MDXContent";
+      return MDXComponent;
     } catch (error) {
       console.error("Error in useMDXComponent:", error);
       return null;
