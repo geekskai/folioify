@@ -7,18 +7,26 @@ export default function NewsletterPage() {
     <div className="min-h-screen py-12">
       <div className="container max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Prototypr Newsletter</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            Folioify Newsletter
+          </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Join 25,000+ designers, developers, and creative professionals who receive our weekly curated digest of design tools, resources, and inspiration.
+            Join 25,000+ designers, developers, and creative professionals who
+            receive our weekly curated digest of design tools, resources, and
+            inspiration.
           </p>
         </div>
 
         <div className="bg-secondary rounded-lg p-8 md:p-12 mb-12">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="w-full md:w-2/3 space-y-6">
-              <h2 className="text-2xl md:text-3xl font-bold">Subscribe to our weekly newsletter</h2>
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Subscribe to our weekly newsletter
+              </h2>
               <p className="text-muted-foreground">
-                Every Thursday, we'll send you a handpicked selection of articles, tools, and resources to help you stay on top of design trends and boost your creativity.
+                Every Thursday, we'll send you a handpicked selection of
+                articles, tools, and resources to help you stay on top of design
+                trends and boost your creativity.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 max-w-lg">
                 <Input
@@ -36,7 +44,7 @@ export default function NewsletterPage() {
               <div className="relative w-48 h-48">
                 <Image
                   src="https://ext.same-assets.com/2743906655/1805010337.png"
-                  alt="Prototypr Robot"
+                  alt="Folioify Robot"
                   width={200}
                   height={200}
                   className="object-contain"
@@ -53,7 +61,8 @@ export default function NewsletterPage() {
               <div className="mb-4 text-3xl">🔍</div>
               <h3 className="text-lg font-medium mb-2">Curated Content</h3>
               <p className="text-muted-foreground">
-                Hand-picked articles, tutorials, and resources from around the web
+                Hand-picked articles, tutorials, and resources from around the
+                web
               </p>
             </div>
             <div className="bg-background rounded-lg p-6 border">
@@ -67,7 +76,8 @@ export default function NewsletterPage() {
               <div className="mb-4 text-3xl">💡</div>
               <h3 className="text-lg font-medium mb-2">Inspiration</h3>
               <p className="text-muted-foreground">
-                Inspiring websites, projects, and design ideas to spark creativity
+                Inspiring websites, projects, and design ideas to spark
+                creativity
               </p>
             </div>
           </div>
@@ -77,18 +87,27 @@ export default function NewsletterPage() {
           <h2 className="text-2xl font-bold mb-6">Previous Issues</h2>
           <div className="grid gap-6 md:grid-cols-2">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+              <div
+                key={i}
+                className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+              >
                 <div className="bg-muted p-6">
-                  <span className="text-sm text-muted-foreground">Issue #{50 - i} • March {i + 10}, 2025</span>
+                  <span className="text-sm text-muted-foreground">
+                    Issue #{50 - i} • March {i + 10}, 2025
+                  </span>
                   <h3 className="text-xl font-medium mt-2">
-                    {i === 1 ? "New AI design tools and accessibility trends" : ""}
+                    {i === 1
+                      ? "New AI design tools and accessibility trends"
+                      : ""}
                     {i === 2 ? "Design systems and component libraries" : ""}
                     {i === 3 ? "Mobile UX patterns and typography tips" : ""}
                     {i === 4 ? "Color theory and design psychology" : ""}
                   </h3>
                 </div>
                 <div className="p-6 bg-background">
-                  <Button variant="outline" className="w-full">Read Issue</Button>
+                  <Button variant="outline" className="w-full">
+                    Read Issue
+                  </Button>
                 </div>
               </div>
             ))}

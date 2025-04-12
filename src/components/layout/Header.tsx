@@ -31,13 +31,11 @@ export function Header() {
           <Link href="/" className="flex items-center space-x-2">
             <Image
               src="https://ext.same-assets.com/2743906655/1862506627.svg"
-              alt="Prototypr Logo"
+              alt="Folioify Logo"
               width={32}
               height={32}
             />
-            <span className="inline-block font-semibold text-xl">
-              Prototypr
-            </span>
+            <span className="inline-block font-semibold text-xl">Folioify</span>
           </Link>
 
           <nav className="hidden md:flex gap-6 ml-6">

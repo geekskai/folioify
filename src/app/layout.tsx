@@ -10,8 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Prototypr Clone | Design Tools and Community",
-  description: "Prototypr is a platform for designers to find tools, share articles, and connect with the global design community.",
+  title: "Folioify Clone | Design Tools and Community",
+  description:
+    "Folioify is a platform for designers to find tools, share articles, and connect with the global design community.",
   icons: {
     icon: "/favicon.ico",
   },
@@ -24,9 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable}`}>
-      <ClientBody>
-        {children}
-      </ClientBody>
+      <ClientBody>{children}</ClientBody>
     </html>
   );
 }

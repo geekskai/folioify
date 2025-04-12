@@ -10,7 +10,7 @@ export function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
           <div className="lg:col-span-2 space-y-6">
             <div className="flex-col flex-wrap gap-4">
-              <h3 className="text-lg font-medium mb-4">Get Prototypr Weekly</h3>
+              <h3 className="text-lg font-medium mb-4">Get Folioify Weekly</h3>
               <p className="text-muted-foreground mb-4">
                 Top articles and tools every week
               </p>
@@ -24,7 +24,7 @@ export function Footer() {
               </div>
             </div>
             <div className="text-sm text-muted-foreground pt-4">
-              © 2025 Prototypr, All rights reserved.
+              © 2025 Folioify, All rights reserved.
             </div>
           </div>
 
@@ -33,31 +33,7 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="https://help.prototypr.io"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Help
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="https://github.com/Prototypr"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Open Source
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="https://open.prototypr.io"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Prototypr Open
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="https://twitter.com/prototypr"
+                  href="https://twitter.com/folioify"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Twitter
@@ -65,7 +41,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="https://instagram.com/prototyprio"
+                  href="https://instagram.com/folioify"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Instagram
@@ -109,14 +85,14 @@ export function Footer() {
                   Mail by Letter
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/privacy-policy"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Privacy Policy
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>

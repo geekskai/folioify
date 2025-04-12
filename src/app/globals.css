@@ -25,14 +25,14 @@
     --ring: 222 25% 20%;
     --radius: 0.5rem;
 
-    /* Prototypr specific colors */
-    --prototypr-red: 359 60% 52%;
-    --prototypr-blue: 213 69% 65%;
-    --prototypr-yellow: 43 74% 57%;
-    --prototypr-green: 152 58% 44%;
-    --prototypr-pink: 329 57% 75%;
-    --prototypr-light-blue: 197 44% 83%;
-    --prototypr-beige: 41 54% 85%;
+    /* Folioify specific colors */
+    --folioify-red: 359 60% 52%;
+    --folioify-blue: 213 69% 65%;
+    --folioify-yellow: 43 74% 57%;
+    --folioify-green: 152 58% 44%;
+    --folioify-pink: 329 57% 75%;
+    --folioify-light-blue: 197 44% 83%;
+    --folioify-beige: 41 54% 85%;
   }
 
   .dark {
@@ -56,14 +56,14 @@
     --input: 217 32% 17%;
     --ring: 212.7 26.8% 83.9%;
 
-    /* Prototypr specific dark colors */
-    --prototypr-red: 359 60% 52%;
-    --prototypr-blue: 213 69% 65%;
-    --prototypr-yellow: 43 74% 57%;
-    --prototypr-green: 152 58% 44%;
-    --prototypr-pink: 329 57% 75%;
-    --prototypr-light-blue: 197 44% 83%;
-    --prototypr-beige: 41 54% 85%;
+    /* Folioify specific dark colors */
+    --folioify-red: 359 60% 52%;
+    --folioify-blue: 213 69% 65%;
+    --folioify-yellow: 43 74% 57%;
+    --folioify-green: 152 58% 44%;
+    --folioify-pink: 329 57% 75%;
+    --folioify-light-blue: 197 44% 83%;
+    --folioify-beige: 41 54% 85%;
   }
 }
 
@@ -78,9 +78,13 @@
 }
 
 @layer utilities {
-  .prototypr-grid {
+  .folioify-grid {
     background-size: 30px 30px;
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    background-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.05) 1px,
+        transparent 1px
+      ),
       linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
   }
 }

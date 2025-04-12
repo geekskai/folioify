@@ -12,7 +12,11 @@ const categories = [
   { id: 3, name: "UX", link: "/toolbox/ux-tools/page/1" },
   { id: 4, name: "Plugins", link: "/toolbox/plugins/page/1" },
   { id: 5, name: "Prototyping", link: "/toolbox/prototyping/page/1" },
-  { id: 6, name: "Mixed Reality", link: "/toolbox/augmented-reality-tools/page/1" },
+  {
+    id: 6,
+    name: "Mixed Reality",
+    link: "/toolbox/augmented-reality-tools/page/1",
+  },
   { id: 7, name: "Chat", link: "/toolbox/conversational-design-tools/page/1" },
 ];
 
@@ -22,56 +26,64 @@ const tools = [
     id: 1,
     name: "Letter",
     description: "Ad",
-    image: "https://prototyprio.gumlet.io/strapi/5d2a89ca7b5d3ab6867e38d4bb87a35e.webp?w=828&q=70&format=avif&compress=true&dpr=1",
-    link: "https://letter.so?ref=prototypr",
+    image:
+      "https://prototyprio.gumlet.io/strapi/5d2a89ca7b5d3ab6867e38d4bb87a35e.webp?w=828&q=70&format=avif&compress=true&dpr=1",
+    link: "https://letter.so?ref=folioify",
   },
   {
     id: 2,
     name: "Aider",
     description: "AI",
-    image: "https://prototyprio.gumlet.io/strapi/fa73d00a35a40cf84f14e91fc0e025b1.png?w=828&q=70&format=avif&compress=true&dpr=1",
+    image:
+      "https://prototyprio.gumlet.io/strapi/fa73d00a35a40cf84f14e91fc0e025b1.png?w=828&q=70&format=avif&compress=true&dpr=1",
     link: "/toolbox/aider",
   },
   {
     id: 3,
     name: "Trae",
     description: "AI",
-    image: "https://prototyprio.gumlet.io/strapi/e5dcc0ebc9abf98405dbc5e2457aaf07.png?w=3840&q=70&format=avif&compress=true&dpr=1",
+    image:
+      "https://prototyprio.gumlet.io/strapi/e5dcc0ebc9abf98405dbc5e2457aaf07.png?w=3840&q=70&format=avif&compress=true&dpr=1",
     link: "/toolbox/trae",
   },
   {
     id: 4,
     name: "Doing Design Right",
     description: "Course",
-    image: "https://prototyprio.gumlet.io/strapi/3791d1490e43dae6513671d722335467.png?w=3840&q=70&format=avif&compress=true&dpr=1",
+    image:
+      "https://prototyprio.gumlet.io/strapi/3791d1490e43dae6513671d722335467.png?w=3840&q=70&format=avif&compress=true&dpr=1",
     link: "/toolbox/doing-design-right",
   },
   {
     id: 5,
     name: "Typr Editor",
     description: "Editing",
-    image: "https://prototyprio.gumlet.io/strapi/b1f1098f2ac161fab1ef44ba445902d4.png?w=3840&q=70&format=avif&compress=true&dpr=1",
+    image:
+      "https://prototyprio.gumlet.io/strapi/b1f1098f2ac161fab1ef44ba445902d4.png?w=3840&q=70&format=avif&compress=true&dpr=1",
     link: "/toolbox/typr-editor",
   },
   {
     id: 6,
     name: "Feedback Wizard",
     description: "Figma",
-    image: "https://prototyprio.gumlet.io/strapi/51785de0eced93791e5a680c8893041c.png?w=3840&q=70&format=avif&compress=true&dpr=1",
+    image:
+      "https://prototyprio.gumlet.io/strapi/51785de0eced93791e5a680c8893041c.png?w=3840&q=70&format=avif&compress=true&dpr=1",
     link: "/toolbox/feedback-wizard",
   },
   {
     id: 7,
     name: "Claude Artifacts",
     description: "AI",
-    image: "https://prototyprio.gumlet.io/strapi/42a8e5aac04eb9c65ff7ff038067866e.webp?w=3840&q=70&format=avif&compress=true&dpr=1",
+    image:
+      "https://prototyprio.gumlet.io/strapi/42a8e5aac04eb9c65ff7ff038067866e.webp?w=3840&q=70&format=avif&compress=true&dpr=1",
     link: "/toolbox/claude-artifacts",
   },
   {
     id: 8,
     name: "daily.dev",
     description: "Developer",
-    image: "https://prototyprio.gumlet.io/strapi/cfd16fc82c839aea570dd978ad5f152a.png?w=3840&q=70&format=avif&compress=true&dpr=1",
+    image:
+      "https://prototyprio.gumlet.io/strapi/cfd16fc82c839aea570dd978ad5f152a.png?w=3840&q=70&format=avif&compress=true&dpr=1",
     link: "/toolbox/dailydev",
   },
 ];
@@ -86,7 +98,7 @@ export default function ToolboxPage() {
               Find the tool,{" "}
               <span className="relative">
                 make your thing.
-                <span className="absolute bottom-0 left-0 w-full h-1 bg-prototypr-blue"></span>
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-folioify-blue"></span>
               </span>
             </h1>
             <div className="relative max-w-md mx-auto">
@@ -107,7 +119,9 @@ export default function ToolboxPage() {
                     <span className="text-3xl">📝</span>
                   </div>
                   <h3 className="text-sm font-medium">Obsidian Canvas</h3>
-                  <p className="text-xs text-muted-foreground mt-1">Visualize ideas</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Visualize ideas
+                  </p>
                 </div>
               </Card>
             </Link>
@@ -118,18 +132,25 @@ export default function ToolboxPage() {
                     <span className="text-3xl">🎨</span>
                   </div>
                   <h3 className="text-sm font-medium">Bloom Objects</h3>
-                  <p className="text-xs text-muted-foreground mt-1">3D illustrations</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    3D illustrations
+                  </p>
                 </div>
               </Card>
             </Link>
-            <Link href="/toolbox/microsoft-bing-image-creator" className="group">
+            <Link
+              href="/toolbox/microsoft-bing-image-creator"
+              className="group"
+            >
               <Card className="h-full p-4 transition-colors hover:bg-muted/50">
                 <div className="flex flex-col items-center text-center">
                   <div className="w-16 h-16 mb-2 bg-muted rounded-md flex items-center justify-center">
                     <span className="text-3xl">🖼️</span>
                   </div>
                   <h3 className="text-sm font-medium">Bing Image Creator</h3>
-                  <p className="text-xs text-muted-foreground mt-1">AI images</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    AI images
+                  </p>
                 </div>
               </Card>
             </Link>
@@ -140,18 +161,25 @@ export default function ToolboxPage() {
                     <span className="text-3xl">♿</span>
                   </div>
                   <h3 className="text-sm font-medium">Stark</h3>
-                  <p className="text-xs text-muted-foreground mt-1">Accessibility</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Accessibility
+                  </p>
                 </div>
               </Card>
             </Link>
-            <Link href="/toolbox/the-design-system-encyclopedia" className="group">
+            <Link
+              href="/toolbox/the-design-system-encyclopedia"
+              className="group"
+            >
               <Card className="h-full p-4 transition-colors hover:bg-muted/50">
                 <div className="flex flex-col items-center text-center">
                   <div className="w-16 h-16 mb-2 bg-muted rounded-md flex items-center justify-center">
                     <span className="text-3xl">📚</span>
                   </div>
                   <h3 className="text-sm font-medium">Design Encyclopedia</h3>
-                  <p className="text-xs text-muted-foreground mt-1">Design system</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Design system
+                  </p>
                 </div>
               </Card>
             </Link>
@@ -165,7 +193,10 @@ export default function ToolboxPage() {
               <div key={category.id} className="border-b pb-4">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold">{category.name}</h3>
-                  <Link href={category.link} className="text-sm text-accent hover:underline">
+                  <Link
+                    href={category.link}
+                    className="text-sm text-accent hover:underline"
+                  >
                     See all
                   </Link>
                 </div>
@@ -183,8 +214,12 @@ export default function ToolboxPage() {
                             />
                           </div>
                           <div className="mt-auto">
-                            <h3 className="font-medium text-sm group-hover:text-accent transition-colors">{tool.name}</h3>
-                            <p className="text-xs text-muted-foreground">{tool.description}</p>
+                            <h3 className="font-medium text-sm group-hover:text-accent transition-colors">
+                              {tool.name}
+                            </h3>
+                            <p className="text-xs text-muted-foreground">
+                              {tool.description}
+                            </p>
                           </div>
                         </div>
                       </Card>
@@ -200,9 +235,12 @@ export default function ToolboxPage() {
           <div className="container relative z-10">
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="w-full md:w-2/3 space-y-6">
-                <h2 className="text-2xl md:text-3xl font-bold">Get a weekly list of the best tools</h2>
+                <h2 className="text-2xl md:text-3xl font-bold">
+                  Get a weekly list of the best tools
+                </h2>
                 <p className="text-muted-foreground">
-                  Join 25,000+ creatives who enjoy a regular dose of inspiration and motivation, delivered to your inbox every week.
+                  Join 25,000+ creatives who enjoy a regular dose of inspiration
+                  and motivation, delivered to your inbox every week.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 max-w-lg">
                   <Input
@@ -210,7 +248,10 @@ export default function ToolboxPage() {
                     placeholder="Enter your email"
                     className="w-full"
                   />
-                  <Badge variant="secondary" className="px-4 py-2 h-10 cursor-pointer hover:bg-secondary/80">
+                  <Badge
+                    variant="secondary"
+                    className="px-4 py-2 h-10 cursor-pointer hover:bg-secondary/80"
+                  >
                     Subscribe
                   </Badge>
                 </div>
@@ -219,7 +260,7 @@ export default function ToolboxPage() {
                 <div className="relative w-40 h-40">
                   <Image
                     src="https://ext.same-assets.com/2743906655/1805010337.png"
-                    alt="Prototypr Robot"
+                    alt="Folioify Robot"
                     width={160}
                     height={160}
                     className="object-contain"

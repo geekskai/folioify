@@ -9,9 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Prototypr Clone | Design Tools and Community",
+  title: "Folioify Clone | Design Tools and Community",
   description:
-    "Prototypr is a platform for designers to find tools, share articles, and connect with the global design community.",
+    "Folioify is a platform for designers to find tools, share articles, and connect with the global design community.",
   icons: {
     icon: "/favicon.ico",
   },
