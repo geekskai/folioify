@@ -1,19 +1,12 @@
 "use client";
-
 import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { CategorySidebar } from "./CategorySidebar";
-import { CategoryToolList } from "./CategoryToolList";
-// import { CategoryHeader } from "./CategoryHeader";
 import { CategorySkeleton } from "./CategorySkeleton";
 import { CategoryContent } from "./CategoryContent";
 import { CategoryContentSkeleton } from "./CategoryContentSkeleton";
 import { HeroSection } from "./HeroSection";
-import { FeaturedSection, FeaturedTool } from "./FeaturedSection";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/db/supabase/client";
-import { CategoryCard } from "./CategoryCard";
-import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CategoryPageProps {
   category: string;
@@ -23,7 +16,6 @@ interface CategorySection {
   id: string;
   name: string;
   category_name: string;
-  // tools?: any[];
 }
 
 interface Tool {
@@ -53,7 +45,6 @@ interface CategoryItemData {
   url?: string;
   name?: string;
   by?: string;
-  // [key: string]: any; // 允许其他未知字段
 }
 
 // 定义页码接口
@@ -81,8 +72,6 @@ export function CategoryPage({ category }: CategoryPageProps) {
   });
   const [isContentLoading, setIsContentLoading] = useState(false);
   const [totalItemsCount, setTotalItemsCount] = useState(0);
-  console.log(`🚀 ~ totalItemsCount:`, totalItemsCount);
-  // const [featuredTools, setFeaturedTools] = useState<FeaturedTool[]>([]);
 
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const initialScrollDone = useRef(false);
@@ -164,50 +153,6 @@ export function CategoryPage({ category }: CategoryPageProps) {
 
     fetchTotalCounts();
   }, [categorySections, supabase]);
-
-  // 获取精选工具
-  // useEffect(() => {
-  //   const fetchFeaturedTools = async () => {
-  //     try {
-  //       const { data: featuredData } = await supabase
-  //         .from("a_mcp_featured")
-  //         .select("*")
-  //         .limit(6);
-
-  //       if (featuredData && featuredData.length > 0) {
-  //         const processedTools = featuredData.map((item: CategoryItemData) => {
-  //           const tool: FeaturedTool = {
-  //             id:
-  //               item.id ||
-  //               `featured-${
-  //                 item.mcpName?.toLowerCase().replace(/\s+/g, "-") || ""
-  //               }`,
-  //             name: item.mcpName || item.name || `Tool ${item.id}`,
-  //             description: item.description || "No description available",
-  //             by: item.mcpBy || item.by,
-  //             tags: item.tags || ["featured"],
-  //             url: item.url || item.github || `/tools/${item.id}`,
-  //             icon: item.imageSrc || "/placeholder-icon.png",
-  //             isFavorite: false,
-  //             mcpName: item.mcpName,
-  //             mcpBy: item.mcpBy,
-  //             github: item.github,
-  //             imageSrc: item.imageSrc,
-  //             views: Math.floor(Math.random() * 1000) + 100, // 添加模拟的浏览量
-  //             category: "Featured",
-  //           };
-  //           return tool;
-  //         });
-
-  //         setFeaturedTools(processedTools);
-  //       }
-  //     } catch (error) {
-  //       console.error("获取精选工具失败:", error);
-  //     }
-  //   };
-
-  //   fetchFeaturedTools();
-  // }, [supabase]);
 
   // 处理"all"分类情况的逻辑
   const fetchAllCategoryData = useCallback(
