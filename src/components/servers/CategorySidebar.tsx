@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 interface Category {
   id: string;
   name: string;
+  category_name: string;
 }
 
 interface CategorySidebarProps {
@@ -28,7 +29,8 @@ export function CategorySidebar({
   // 使用useMemo预先计算每个分类的高亮状态
   const categoryActiveStates = useMemo(() => {
     return categories.reduce((acc, category) => {
-      acc[category.id] = category.id === localActiveCategory;
+      acc[category.category_name] =
+        category.category_name === localActiveCategory;
       return acc;
     }, {} as Record<string, boolean>);
   }, [categories, localActiveCategory]);
@@ -70,12 +72,12 @@ export function CategorySidebar({
     <ul className="space-y-2">
       {categories.map((category) => {
         // 使用预计算的高亮状态
-        const isActive = categoryActiveStates[category.id];
+        const isActive = categoryActiveStates[category.category_name];
 
         return (
           <li key={category.id}>
             <button
-              onClick={() => handleClick(category.id)}
+              onClick={() => handleClick(category.category_name)}
               className={`block w-full text-left px-4 py-2 rounded-md transition-colors duration-300 ${
                 isActive
                   ? "bg-indigo-100 text-indigo-700 font-medium"

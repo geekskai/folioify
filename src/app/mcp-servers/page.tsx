@@ -14,14 +14,14 @@ export default async function ServerPage({
   // 等待解析 Promise
   const resolvedParams = await searchParams;
 
-  // 获取 group 参数，确保它是字符串类型
-  const group =
-    typeof resolvedParams.group === "string"
-      ? resolvedParams.group
+  // 获取 category 参数，确保它是字符串类型
+  const category =
+    typeof resolvedParams.category === "string"
+      ? resolvedParams.category
       : "text-writing";
   return (
     <Suspense fallback={<CategorySkeleton />}>
-      <CategoryPage group={group} />
+      <CategoryPage category={category} />
     </Suspense>
   );
 }
