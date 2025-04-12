@@ -2,17 +2,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 
-interface FeaturedTool {
-  id: number;
+export interface FeaturedTool {
+  id: string | number;
   name: string;
   description: string;
-  imageUrl: string;
-  category: string;
+  imageUrl?: string;
+  category?: string;
   subcategory?: string;
-  views: number;
+  views?: number;
   popularity?: string;
   growthRate?: string;
   url: string;
+  by?: string;
+  icon?: string;
+  tags?: string[];
+  isFavorite?: boolean;
+  mcpName?: string;
+  mcpBy?: string;
+  github?: string;
+  imageSrc?: string;
 }
 
 interface FeaturedSectionProps {
@@ -25,7 +33,7 @@ export function FeaturedSection({ tools }: FeaturedSectionProps) {
       <h2 className="text-2xl font-bold mb-6">
         Featured<sup>*</sup>
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tools.map((tool) => (
           <div
             key={tool.id}
@@ -33,19 +41,17 @@ export function FeaturedSection({ tools }: FeaturedSectionProps) {
           >
             <Link href={tool.url} className="block">
               <div className="relative h-40 bg-gray-100">
-                {tool.imageUrl && (
+                {(tool.imageUrl || tool.imageSrc) && (
                   <Image
-                    src={tool.imageUrl}
+                    src={tool.imageUrl || tool.imageSrc || ""}
                     alt={tool.name}
                     fill
                     className="object-cover"
                   />
                 )}
-                {tool.id === 1 && (
-                  <div className="absolute top-2 right-2 bg-indigo-600 text-white text-xs px-2 py-1 rounded">
-                    Featured
-                  </div>
-                )}
+                <div className="absolute top-2 right-2 bg-indigo-600 text-white text-xs px-2 py-1 rounded">
+                  Featured
+                </div>
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
@@ -54,8 +60,14 @@ export function FeaturedSection({ tools }: FeaturedSectionProps) {
                 </div>
                 <div className="flex items-center text-xs text-gray-500 mb-2">
                   <span className="bg-purple-100 text-purple-800 rounded-full w-2 h-2 mr-1"></span>
-                  <span className="mr-4">{tool.category}</span>
-                  <span>👁 {tool.views}</span>
+                  <span className="mr-4">
+                    {tool.category || tool.tags?.[0] || "Featured"}
+                  </span>
+                  {tool.views && <span>👁 {tool.views}</span>}
+                  {tool.by ||
+                    (tool.mcpBy && (
+                      <span className="ml-2">By: {tool.by || tool.mcpBy}</span>
+                    ))}
                 </div>
                 {tool.popularity && (
                   <div className="flex items-center text-xs text-gray-500 mb-2">

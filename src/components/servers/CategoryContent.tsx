@@ -52,9 +52,9 @@ export function CategoryContent({
 
       {tools.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {tools.map((tool) => (
+          {tools.map((tool, key) => (
             <CategoryCard
-              key={tool.id}
+              key={key}
               name={tool.name}
               description={tool.description}
               by={tool.by}

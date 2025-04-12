@@ -8,7 +8,7 @@ import { CategorySkeleton } from "./CategorySkeleton";
 import { CategoryContent } from "./CategoryContent";
 import { CategoryContentSkeleton } from "./CategoryContentSkeleton";
 import { HeroSection } from "./HeroSection";
-import { FeaturedSection } from "./FeaturedSection";
+import { FeaturedSection, FeaturedTool } from "./FeaturedSection";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/db/supabase/client";
 import { CategoryCard } from "./CategoryCard";
@@ -80,6 +80,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
     totalItems: 0,
   });
   const [isContentLoading, setIsContentLoading] = useState(false);
+  // const [featuredTools, setFeaturedTools] = useState<FeaturedTool[]>([]);
 
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const initialScrollDone = useRef(false);
@@ -95,8 +96,8 @@ export function CategoryPage({ category }: CategoryPageProps) {
   // 获取当前分类
   const getCurrentCategory = useCallback(() => {
     const categoryParam = searchParams.get("category");
-    return categoryParam || category;
-  }, [searchParams, category]);
+    return categoryParam || "all"; // 默认为"all"而不是category
+  }, [searchParams]);
 
   // 确保activeSection始终与URL参数同步
   useEffect(() => {
@@ -123,7 +124,51 @@ export function CategoryPage({ category }: CategoryPageProps) {
     };
 
     fetchCategories();
-  }, []);
+  }, [supabase]);
+
+  // 获取精选工具
+  // useEffect(() => {
+  //   const fetchFeaturedTools = async () => {
+  //     try {
+  //       const { data: featuredData } = await supabase
+  //         .from("a_mcp_featured")
+  //         .select("*")
+  //         .limit(6);
+
+  //       if (featuredData && featuredData.length > 0) {
+  //         const processedTools = featuredData.map((item: CategoryItemData) => {
+  //           const tool: FeaturedTool = {
+  //             id:
+  //               item.id ||
+  //               `featured-${
+  //                 item.mcpName?.toLowerCase().replace(/\s+/g, "-") || ""
+  //               }`,
+  //             name: item.mcpName || item.name || `Tool ${item.id}`,
+  //             description: item.description || "No description available",
+  //             by: item.mcpBy || item.by,
+  //             tags: item.tags || ["featured"],
+  //             url: item.url || item.github || `/tools/${item.id}`,
+  //             icon: item.imageSrc || "/placeholder-icon.png",
+  //             isFavorite: false,
+  //             mcpName: item.mcpName,
+  //             mcpBy: item.mcpBy,
+  //             github: item.github,
+  //             imageSrc: item.imageSrc,
+  //             views: Math.floor(Math.random() * 1000) + 100, // 添加模拟的浏览量
+  //             category: "Featured",
+  //           };
+  //           return tool;
+  //         });
+
+  //         setFeaturedTools(processedTools);
+  //       }
+  //     } catch (error) {
+  //       console.error("获取精选工具失败:", error);
+  //     }
+  //   };
+
+  //   fetchFeaturedTools();
+  // }, [supabase]);
 
   // 获取当前分类的工具数据
   useEffect(() => {
@@ -133,6 +178,83 @@ export function CategoryPage({ category }: CategoryPageProps) {
         const currentCategoryName = getCurrentCategory();
         const currentPage = getCurrentPage();
         const itemsPerPage = 30; // 每页显示30条数据
+
+        if (currentCategoryName === "all") {
+          // 处理"全部"分类情况
+          let allTools: Tool[] = [];
+          let totalCount = 0;
+
+          // 从前6个分类各获取5条数据
+          const categoriesToFetch = categorySections.slice(0, 6);
+
+          for (const category of categoriesToFetch) {
+            try {
+              // 获取每个分类的数据总数（用于分页计算）
+              const { count } = await supabase
+                .from(`a_mcp_${category.category_name.replace(/-/g, "_")}`)
+                .select("*", { count: "exact", head: true });
+
+              totalCount += count || 0;
+
+              // 获取每个分类的前5条数据
+              const { data: categoryItems } = await supabase
+                .from(`a_mcp_${category.category_name.replace(/-/g, "_")}`)
+                .select("*")
+                .range(0, 4); // 获取5条（从0到4）
+
+              if (categoryItems && categoryItems.length > 0) {
+                // 处理工具数据添加分类信息
+                const processedTools = categoryItems.map(
+                  (item: CategoryItemData) => {
+                    const tool: Tool = {
+                      id:
+                        item.id ||
+                        `tool-${category.id}-${
+                          item.mcpName?.toLowerCase().replace(/\s+/g, "-") || ""
+                        }`,
+                      name: item.mcpName || item.name || `Tool ${item.id}`,
+                      description:
+                        item.description || "No description available",
+                      by: item.mcpBy || item.by,
+                      tags: [
+                        ...(item.tags || []),
+                        category.category_name.replace(/-/g, " "),
+                      ],
+                      url: item.url || item.github || `/tools/${item.id}`,
+                      icon: item.imageSrc || "/placeholder-icon.png",
+                      isFavorite: false,
+                      mcpName: item.mcpName,
+                      mcpBy: item.mcpBy,
+                      github: item.github,
+                      imageSrc: item.imageSrc,
+                    };
+                    return tool;
+                  }
+                );
+
+                allTools = [...allTools, ...processedTools];
+              }
+            } catch (error) {
+              console.error(`获取分类 ${category.name} 数据失败:`, error);
+            }
+          }
+
+          // 设置分页信息
+          const totalItems = totalCount;
+          const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+          setCurrentPagination({
+            currentPage,
+            totalPages,
+            itemsPerPage,
+            totalItems,
+          });
+
+          setCurrentCategoryTools(allTools);
+          setIsContentLoading(false);
+          setIsLoading(false);
+          return;
+        }
 
         // 找到当前分类的信息
         const currentCategoryInfo = categorySections.find(
@@ -229,7 +351,13 @@ export function CategoryPage({ category }: CategoryPageProps) {
     if (categorySections.length > 0) {
       fetchCategoryTools();
     }
-  }, [searchParams, categorySections, getCurrentCategory, getCurrentPage]);
+  }, [
+    searchParams,
+    categorySections,
+    supabase,
+    getCurrentCategory,
+    getCurrentPage,
+  ]);
 
   // 初始化滚动到指定分类
   useEffect(() => {
@@ -294,6 +422,16 @@ export function CategoryPage({ category }: CategoryPageProps) {
       section.category_name === activeSection || section.id === activeSection
   );
 
+  // 创建一个虚拟的"全部"分类
+  const allCategoryInfo =
+    activeSection === "all"
+      ? {
+          id: "all",
+          name: "All Servers",
+          category_name: "all",
+        }
+      : null;
+
   if (isLoading) {
     return <CategorySkeleton />;
   }
@@ -309,7 +447,10 @@ export function CategoryPage({ category }: CategoryPageProps) {
             <CategorySidebar
               activeCategory={activeSection}
               onCategoryClick={handleCategoryClick}
-              categories={categorySections}
+              categories={[
+                { id: "all", name: "All Servers", category_name: "all" },
+                ...categorySections,
+              ]}
             />
           </div>
         </div>
@@ -318,12 +459,21 @@ export function CategoryPage({ category }: CategoryPageProps) {
             {isContentLoading ? (
               <CategoryContentSkeleton />
             ) : (
-              <CategoryContent
-                categoryInfo={currentCategoryInfo || null}
-                tools={currentCategoryTools}
-                pagination={currentPagination}
-                onPageChange={handlePageChange}
-              />
+              <>
+                {/* {activeSection === "all" && featuredTools.length > 0 && (
+                    <FeaturedSection tools={featuredTools} />
+                  )} */}
+                <CategoryContent
+                  categoryInfo={
+                    activeSection === "all"
+                      ? allCategoryInfo
+                      : currentCategoryInfo || null
+                  }
+                  tools={currentCategoryTools}
+                  pagination={currentPagination}
+                  onPageChange={handlePageChange}
+                />
+              </>
             )}
           </Suspense>
         </div>
