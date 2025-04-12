@@ -16,8 +16,8 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "MCP Servers", href: "/mcp-servers" },
-  { label: "Toolbox", href: "/toolbox" },
-  { label: "Topics", href: "/topics" },
+  { label: "Blog", href: "/blog" },
+  // { label: "Topics", href: "/topics" },
   { label: "Newsletter", href: "/newsletter" },
 ];
 
@@ -52,15 +52,6 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="hidden md:flex">
-            <Search className="h-5 w-5" />
-            <span className="sr-only">Search</span>
-          </Button>
-
-          <Button variant="outline" className="hidden md:inline-flex">
-            Sign in
-          </Button>
-
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">

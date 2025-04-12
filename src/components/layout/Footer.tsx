@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -55,36 +54,13 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="https://adobe.com/products/xd/adobe-fund.html"
+                  href="https://www.geekskai.com"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Adobe Fund for Design
+                  Geekskai
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="https://grantfortheweb.org"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Grant for the Web
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="https://interledger.org/"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Web Monetization
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="https://letter.so"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Mail by Letter
-                </Link>
-              </li>
+
               {/* <li>
                 <Link
                   href="/privacy-policy"
