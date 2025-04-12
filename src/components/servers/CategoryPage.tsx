@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { CategorySidebar } from "./CategorySidebar";
 import { CategoryToolList } from "./CategoryToolList";
 // import { CategoryHeader } from "./CategoryHeader";
 import { CategorySkeleton } from "./CategorySkeleton";
+import { CategoryContent } from "./CategoryContent";
+import { CategoryContentSkeleton } from "./CategoryContentSkeleton";
 import { HeroSection } from "./HeroSection";
 import { FeaturedSection } from "./FeaturedSection";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -77,6 +79,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
     itemsPerPage: 30,
     totalItems: 0,
   });
+  const [isContentLoading, setIsContentLoading] = useState(false);
 
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const initialScrollDone = useRef(false);
@@ -125,7 +128,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
   // 获取当前分类的工具数据
   useEffect(() => {
     const fetchCategoryTools = async () => {
-      setIsLoading(true);
+      setIsContentLoading(true);
       try {
         const currentCategoryName = getCurrentCategory();
         const currentPage = getCurrentPage();
@@ -146,6 +149,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
             itemsPerPage: 30,
             totalItems: 0,
           });
+          setIsContentLoading(false);
           setIsLoading(false);
           return;
         }
@@ -217,6 +221,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
         console.error("获取分类工具数据失败:", error);
         setCurrentCategoryTools([]);
       } finally {
+        setIsContentLoading(false);
         setIsLoading(false);
       }
     };
@@ -261,6 +266,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
 
       if (categoryName === activeSection) return; // 避免重复点击
 
+      setIsContentLoading(true);
       setActiveSection(categoryName);
 
       // 更新URL参数，重置页码到1
@@ -274,6 +280,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
     (page: number) => {
       // 获取当前分类
       const currentCategoryName = getCurrentCategory();
+      setIsContentLoading(true);
 
       // 更新URL，保持当前分类但更改页码
       router.push(`/mcp-servers?category=${currentCategoryName}&page=${page}`);
@@ -307,134 +314,18 @@ export function CategoryPage({ category }: CategoryPageProps) {
           </div>
         </div>
         <div className="flex-1" ref={contentRef}>
-          {/* 添加Featured部分 */}
-          {/* <FeaturedSection tools={featuredTools} /> */}
-
-          {currentCategoryInfo && (
-            <div className="mb-8 pt-4">
-              <h2 className="text-2xl font-bold mb-4">
-                {currentCategoryInfo.name} ({currentPagination.totalItems})
-              </h2>
-
-              {currentCategoryTools.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                  {currentCategoryTools.map((tool) => (
-                    <CategoryCard
-                      key={tool.id}
-                      name={tool.name}
-                      description={tool.description}
-                      by={tool.by}
-                      tags={tool.tags}
-                      icon={tool.icon}
-                      url={tool.url}
-                      isFavorite={tool.isFavorite}
-                      mcpBy={tool.mcpBy}
-                      mcpName={tool.mcpName}
-                      github={tool.github}
-                      imageSrc={tool.imageSrc}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-10 text-gray-500">
-                  No tools found for this category
-                </div>
-              )}
-
-              {/* 分页控件 */}
-              {currentPagination.totalPages > 1 && (
-                <div className="flex justify-center items-center mt-4 mb-8">
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() =>
-                        handlePageChange(
-                          Math.max(1, currentPagination.currentPage - 1)
-                        )
-                      }
-                      disabled={currentPagination.currentPage <= 1}
-                      className={`p-2 rounded ${
-                        currentPagination.currentPage <= 1
-                          ? "text-gray-400 cursor-not-allowed"
-                          : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                      aria-label="Previous page"
-                    >
-                      <ChevronLeft size={16} />
-                    </button>
-
-                    {/* 页码按钮 */}
-                    {Array.from(
-                      { length: Math.min(5, currentPagination.totalPages) },
-                      (_, i) => {
-                        // 显示当前页附近的页码
-                        const currentPage = currentPagination.currentPage;
-                        const totalPages = currentPagination.totalPages;
-
-                        let pageNum;
-                        if (totalPages <= 5) {
-                          // 如果总页数少于等于5，直接显示所有页码
-                          pageNum = i + 1;
-                        } else if (currentPage <= 3) {
-                          // 靠近起始页
-                          pageNum = i + 1;
-                        } else if (currentPage >= totalPages - 2) {
-                          // 靠近结束页
-                          pageNum = totalPages - 4 + i;
-                        } else {
-                          // 中间页
-                          pageNum = currentPage - 2 + i;
-                        }
-
-                        return (
-                          <button
-                            key={pageNum}
-                            onClick={() => handlePageChange(pageNum)}
-                            className={`w-8 h-8 flex items-center justify-center rounded ${
-                              pageNum === currentPagination.currentPage
-                                ? "bg-blue-500 text-white"
-                                : "hover:bg-gray-100"
-                            }`}
-                            aria-label={`Page ${pageNum}`}
-                            aria-current={
-                              pageNum === currentPagination.currentPage
-                                ? "page"
-                                : undefined
-                            }
-                          >
-                            {pageNum}
-                          </button>
-                        );
-                      }
-                    )}
-
-                    <button
-                      onClick={() =>
-                        handlePageChange(
-                          Math.min(
-                            currentPagination.totalPages,
-                            currentPagination.currentPage + 1
-                          )
-                        )
-                      }
-                      disabled={
-                        currentPagination.currentPage >=
-                        currentPagination.totalPages
-                      }
-                      className={`p-2 rounded ${
-                        currentPagination.currentPage >=
-                        currentPagination.totalPages
-                          ? "text-gray-400 cursor-not-allowed"
-                          : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                      aria-label="Next page"
-                    >
-                      <ChevronRight size={16} />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          <Suspense fallback={<CategoryContentSkeleton />}>
+            {isContentLoading ? (
+              <CategoryContentSkeleton />
+            ) : (
+              <CategoryContent
+                categoryInfo={currentCategoryInfo || null}
+                tools={currentCategoryTools}
+                pagination={currentPagination}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </Suspense>
         </div>
       </div>
     </div>
