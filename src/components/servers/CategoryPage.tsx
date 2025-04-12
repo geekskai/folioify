@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { CategorySidebar } from "./CategorySidebar";
 import { CategoryToolList } from "./CategoryToolList";
 // import { CategoryHeader } from "./CategoryHeader";
@@ -51,6 +51,7 @@ interface CategoryItemData {
   url?: string;
   name?: string;
   by?: string;
+  // [key: string]: any; // 允许其他未知字段
 }
 
 // 定义页码接口
@@ -69,10 +70,13 @@ export function CategoryPage({ category }: CategoryPageProps) {
   const [categorySections, setCategorySections] = useState<CategorySection[]>(
     []
   );
-  const [categoryTools, setCategoryTools] = useState<Record<string, Tool[]>>(
-    {}
-  );
-  const [pagination, setPagination] = useState<Record<string, Pagination>>({});
+  const [currentCategoryTools, setCurrentCategoryTools] = useState<Tool[]>([]);
+  const [currentPagination, setCurrentPagination] = useState<Pagination>({
+    currentPage: 1,
+    totalPages: 1,
+    itemsPerPage: 30,
+    totalItems: 0,
+  });
 
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const initialScrollDone = useRef(false);
@@ -80,121 +84,147 @@ export function CategoryPage({ category }: CategoryPageProps) {
   const supabase = createClient();
 
   // 获取当前页码
-  const getCurrentPage = () => {
+  const getCurrentPage = useCallback(() => {
     const pageParam = searchParams.get("page");
     return pageParam ? parseInt(pageParam, 10) : 1;
-  };
+  }, [searchParams]);
+
+  // 获取当前分类
+  const getCurrentCategory = useCallback(() => {
+    const categoryParam = searchParams.get("category");
+    return categoryParam || category;
+  }, [searchParams, category]);
 
   // 确保activeSection始终与URL参数同步
   useEffect(() => {
-    if (category !== activeSection) {
-      setActiveSection(category);
+    const currentCategory = getCurrentCategory();
+    if (currentCategory !== activeSection) {
+      setActiveSection(currentCategory);
       initialScrollDone.current = false; // 重置滚动状态，允许重新滚动
     }
-  }, [category, activeSection]);
+  }, [getCurrentCategory, activeSection]);
 
-  // 获取分类数据
+  // 获取所有分类数据
   useEffect(() => {
     const fetchCategories = async () => {
-      setIsLoading(true);
       try {
         const { data: a_mcp_category } = await supabase
           .from("a_mcp_category")
           .select("*");
 
         const categories = a_mcp_category || [];
-
-        console.log(`🚀 ~ a_mcp_category:`, a_mcp_category);
         setCategorySections(categories);
-
-        // 获取分类下的工具
-        if (categories && categories.length > 0) {
-          const toolsData: Record<string, Tool[]> = {};
-          const paginationData: Record<string, Pagination> = {};
-
-          // 从URL获取当前页码
-          const currentPage = getCurrentPage();
-          const itemsPerPage = 30; // 每页显示30条数据
-
-          // 这里可以根据实际需求修改为批量获取或者按需获取
-          for (const category of categories) {
-            // 获取数据总数
-            const { count } = await supabase
-              .from(`a_mcp_${category.category_name.replace(/-/g, "_")}`)
-              .select("*", { count: "exact", head: true });
-
-            const totalItems = count || 0;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-            // 设置分页信息
-            paginationData[category.id] = {
-              currentPage,
-              totalPages,
-              itemsPerPage,
-              totalItems,
-            };
-
-            // 计算分页偏移量
-            const from = (currentPage - 1) * itemsPerPage;
-            const to = from + itemsPerPage - 1;
-
-            // 这里假设有一个关联表存储每个分类下的工具
-            // 替换为实际的数据获取逻辑
-            const { data: categoryItems } = await supabase
-              .from(`a_mcp_${category.category_name.replace(/-/g, "_")}`)
-              .select("*")
-              .range(from, to);
-
-            console.log(`🚀 ~ categoryItems:`, categoryItems);
-
-            // 处理获取的数据
-            if (categoryItems && categoryItems.length > 0) {
-              // 将API返回的数据转换为Tool类型
-              const processedTools = categoryItems.map(
-                (item: CategoryItemData) => {
-                  const tool: Tool = {
-                    id:
-                      item.id ||
-                      `tool-${category.id}-${
-                        item.mcpName?.toLowerCase().replace(/\s+/g, "-") || ""
-                      }`,
-                    name: item.mcpName || item.name || `Tool ${item.id}`,
-                    description: item.description || "No description available",
-                    by: item.mcpBy || item.by,
-                    tags: item.tags || [
-                      category.category_name.replace("-", " "),
-                    ],
-                    url: item.url || item.github || `/tools/${item.id}`,
-                    icon: item.imageSrc || "/placeholder-icon.png",
-                    isFavorite: false,
-                    mcpName: item.mcpName,
-                    mcpBy: item.mcpBy,
-                    github: item.github,
-                    imageSrc: item.imageSrc,
-                  };
-                  return tool;
-                }
-              );
-
-              toolsData[category.id] = processedTools;
-            } else {
-              // 如果没有数据，设置为空数组
-              toolsData[category.id] = [];
-            }
-          }
-
-          setCategoryTools(toolsData);
-          setPagination(paginationData);
-        }
       } catch (error) {
         console.error("获取分类数据失败:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // 获取当前分类的工具数据
+  useEffect(() => {
+    const fetchCategoryTools = async () => {
+      setIsLoading(true);
+      try {
+        const currentCategoryName = getCurrentCategory();
+        const currentPage = getCurrentPage();
+        const itemsPerPage = 30; // 每页显示30条数据
+
+        // 找到当前分类的信息
+        const currentCategoryInfo = categorySections.find(
+          (section) =>
+            section.category_name === currentCategoryName ||
+            section.id === currentCategoryName
+        );
+
+        if (!currentCategoryInfo) {
+          setCurrentCategoryTools([]);
+          setCurrentPagination({
+            currentPage: 1,
+            totalPages: 1,
+            itemsPerPage: 30,
+            totalItems: 0,
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // 获取数据总数
+        const { count } = await supabase
+          .from(`a_mcp_${currentCategoryInfo.category_name.replace(/-/g, "_")}`)
+          .select("*", { count: "exact", head: true });
+
+        const totalItems = count || 0;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        // 设置分页信息
+        setCurrentPagination({
+          currentPage,
+          totalPages,
+          itemsPerPage,
+          totalItems,
+        });
+
+        // 计算分页偏移量
+        const from = (currentPage - 1) * itemsPerPage;
+        const to = from + itemsPerPage - 1;
+
+        // 获取当前分类下的工具
+        const { data: categoryItems } = await supabase
+          .from(`a_mcp_${currentCategoryInfo.category_name.replace(/-/g, "_")}`)
+          .select("*")
+          .range(from, to);
+
+        console.log(
+          `🚀 ~ categoryItems for ${currentCategoryInfo.name}:`,
+          categoryItems
+        );
+
+        // 处理获取的数据
+        if (categoryItems && categoryItems.length > 0) {
+          // 将API返回的数据转换为Tool类型
+          const processedTools = categoryItems.map((item: CategoryItemData) => {
+            const tool: Tool = {
+              id:
+                item.id ||
+                `tool-${currentCategoryInfo.id}-${
+                  item.mcpName?.toLowerCase().replace(/\s+/g, "-") || ""
+                }`,
+              name: item.mcpName || item.name || `Tool ${item.id}`,
+              description: item.description || "No description available",
+              by: item.mcpBy || item.by,
+              tags: item.tags || [
+                currentCategoryInfo.category_name.replace("-", " "),
+              ],
+              url: item.url || item.github || `/tools/${item.id}`,
+              icon: item.imageSrc || "/placeholder-icon.png",
+              isFavorite: false,
+              mcpName: item.mcpName,
+              mcpBy: item.mcpBy,
+              github: item.github,
+              imageSrc: item.imageSrc,
+            };
+            return tool;
+          });
+
+          setCurrentCategoryTools(processedTools);
+        } else {
+          // 如果没有数据，设置为空数组
+          setCurrentCategoryTools([]);
+        }
+      } catch (error) {
+        console.error("获取分类工具数据失败:", error);
+        setCurrentCategoryTools([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCategories();
-  }, [searchParams]); // 添加searchParams依赖，当URL参数变化时重新获取数据
+    if (categorySections.length > 0) {
+      fetchCategoryTools();
+    }
+  }, [searchParams, categorySections, getCurrentCategory, getCurrentPage]);
 
   // 初始化滚动到指定分类
   useEffect(() => {
@@ -224,80 +254,38 @@ export function CategoryPage({ category }: CategoryPageProps) {
     }
   }, [isLoading, category, categorySections]);
 
-  // 监听滚动事件，更新当前活动的分类
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!contentRef.current || categorySections.length === 0) return;
+  // 处理分类点击
+  const handleCategoryClick = useCallback(
+    (categoryName: string) => {
+      console.log("Navigating to category:", categoryName);
 
-      const scrollPosition = window.scrollY + 100; // 添加一些偏移量
-      const contentTop = contentRef.current.offsetTop;
+      if (categoryName === activeSection) return; // 避免重复点击
 
-      // 找到当前在视图中的分类
-      let foundActive = false;
+      setActiveSection(categoryName);
 
-      // 按照DOM顺序检查元素，确保选择最上面的可见元素
-      for (const section of categorySections) {
-        const element = sectionRefs.current[section.id];
-        if (!element) continue;
-
-        const { offsetTop, offsetHeight } = element;
-
-        if (
-          scrollPosition >= offsetTop - 50 &&
-          scrollPosition < offsetTop + offsetHeight - 50
-        ) {
-          if (activeSection !== section.id) {
-            setActiveSection(section.id);
-            // 不更新URL，避免循环
-          }
-          foundActive = true;
-          break;
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [categorySections, activeSection]);
-
-  // 处理导航点击
-  const handleNavClick = (sectionId: string) => {
-    console.log("Navigating to section:", sectionId);
-
-    if (sectionId === activeSection) return; // 避免重复点击
-
-    setActiveSection(sectionId);
-
-    // 更新URL参数
-    router.push(`/mcp-servers?category=${sectionId}`, { scroll: false });
-
-    const element = sectionRefs.current[sectionId];
-    if (element) {
-      const headerOffset = 80; // 调整这个值来控制滚动的偏移量
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition =
-        elementPosition + window.pageYOffset - headerOffset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
-  };
+      // 更新URL参数，重置页码到1
+      router.push(`/mcp-servers?category=${categoryName}&page=1`);
+    },
+    [activeSection, router]
+  );
 
   // 处理分页变化
-  const handlePageChange = (categoryId: string, page: number) => {
-    // 构建URL查询参数
-    const currentCategory = categorySections.find(
-      (section) => section.id === categoryId
-    );
-    if (!currentCategory) return;
+  const handlePageChange = useCallback(
+    (page: number) => {
+      // 获取当前分类
+      const currentCategoryName = getCurrentCategory();
 
-    // 更新URL
-    router.push(
-      `/mcp-servers?category=${currentCategory.category_name}&page=${page}`
-    );
-  };
+      // 更新URL，保持当前分类但更改页码
+      router.push(`/mcp-servers?category=${currentCategoryName}&page=${page}`);
+    },
+    [getCurrentCategory, router]
+  );
+
+  // 获取当前分类信息
+  const currentCategoryInfo = categorySections.find(
+    (section) =>
+      section.category_name === activeSection || section.id === activeSection
+  );
 
   if (isLoading) {
     return <CategorySkeleton />;
@@ -313,7 +301,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
           <div className="sticky top-4">
             <CategorySidebar
               activeCategory={activeSection}
-              onCategoryClick={handleNavClick}
+              onCategoryClick={handleCategoryClick}
               categories={categorySections}
             />
           </div>
@@ -322,135 +310,131 @@ export function CategoryPage({ category }: CategoryPageProps) {
           {/* 添加Featured部分 */}
           {/* <FeaturedSection tools={featuredTools} /> */}
 
-          {categorySections.map((section) => (
-            <div
-              key={section.category_name}
-              ref={(el: HTMLDivElement | null) => {
-                sectionRefs.current[section.id] = el;
-                return undefined;
-              }}
-              id={`section-${section.id}`}
-              className="mb-8 pt-4" // 减小底部间距，添加顶部内边距用于滚动定位
-            >
+          {currentCategoryInfo && (
+            <div className="mb-8 pt-4">
               <h2 className="text-2xl font-bold mb-4">
-                {section.name} ({pagination[section.id]?.totalItems || 0})
+                {currentCategoryInfo.name} ({currentPagination.totalItems})
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                {categoryTools[section.id]?.map((tool) => (
-                  <CategoryCard
-                    key={tool.id}
-                    name={tool.name}
-                    description={tool.description}
-                    by={tool.by}
-                    tags={tool.tags}
-                    icon={tool.icon}
-                    url={tool.url}
-                    isFavorite={tool.isFavorite}
-                    mcpBy={tool.mcpBy}
-                    mcpName={tool.mcpName}
-                    github={tool.github}
-                    imageSrc={tool.imageSrc}
-                  />
-                ))}
-              </div>
+
+              {currentCategoryTools.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                  {currentCategoryTools.map((tool) => (
+                    <CategoryCard
+                      key={tool.id}
+                      name={tool.name}
+                      description={tool.description}
+                      by={tool.by}
+                      tags={tool.tags}
+                      icon={tool.icon}
+                      url={tool.url}
+                      isFavorite={tool.isFavorite}
+                      mcpBy={tool.mcpBy}
+                      mcpName={tool.mcpName}
+                      github={tool.github}
+                      imageSrc={tool.imageSrc}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 text-gray-500">
+                  No tools found for this category
+                </div>
+              )}
 
               {/* 分页控件 */}
-              {pagination[section.id] &&
-                pagination[section.id].totalPages > 1 && (
-                  <div className="flex justify-center items-center mt-4 mb-8">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() =>
-                          handlePageChange(
-                            section.id,
-                            Math.max(1, pagination[section.id].currentPage - 1)
+              {currentPagination.totalPages > 1 && (
+                <div className="flex justify-center items-center mt-4 mb-8">
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() =>
+                        handlePageChange(
+                          Math.max(1, currentPagination.currentPage - 1)
+                        )
+                      }
+                      disabled={currentPagination.currentPage <= 1}
+                      className={`p-2 rounded ${
+                        currentPagination.currentPage <= 1
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                      aria-label="Previous page"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+
+                    {/* 页码按钮 */}
+                    {Array.from(
+                      { length: Math.min(5, currentPagination.totalPages) },
+                      (_, i) => {
+                        // 显示当前页附近的页码
+                        const currentPage = currentPagination.currentPage;
+                        const totalPages = currentPagination.totalPages;
+
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          // 如果总页数少于等于5，直接显示所有页码
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          // 靠近起始页
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          // 靠近结束页
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          // 中间页
+                          pageNum = currentPage - 2 + i;
+                        }
+
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => handlePageChange(pageNum)}
+                            className={`w-8 h-8 flex items-center justify-center rounded ${
+                              pageNum === currentPagination.currentPage
+                                ? "bg-blue-500 text-white"
+                                : "hover:bg-gray-100"
+                            }`}
+                            aria-label={`Page ${pageNum}`}
+                            aria-current={
+                              pageNum === currentPagination.currentPage
+                                ? "page"
+                                : undefined
+                            }
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      }
+                    )}
+
+                    <button
+                      onClick={() =>
+                        handlePageChange(
+                          Math.min(
+                            currentPagination.totalPages,
+                            currentPagination.currentPage + 1
                           )
-                        }
-                        disabled={pagination[section.id].currentPage <= 1}
-                        className={`p-2 rounded ${
-                          pagination[section.id].currentPage <= 1
-                            ? "text-gray-400 cursor-not-allowed"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
-                      >
-                        <ChevronLeft size={16} />
-                      </button>
-
-                      {/* 页码按钮 */}
-                      {Array.from(
-                        {
-                          length: Math.min(
-                            5,
-                            pagination[section.id].totalPages
-                          ),
-                        },
-                        (_, i) => {
-                          // 显示当前页附近的页码
-                          const currentPage =
-                            pagination[section.id].currentPage;
-                          const totalPages = pagination[section.id].totalPages;
-
-                          let pageNum;
-                          if (totalPages <= 5) {
-                            // 如果总页数少于等于5，直接显示所有页码
-                            pageNum = i + 1;
-                          } else if (currentPage <= 3) {
-                            // 靠近起始页
-                            pageNum = i + 1;
-                          } else if (currentPage >= totalPages - 2) {
-                            // 靠近结束页
-                            pageNum = totalPages - 4 + i;
-                          } else {
-                            // 中间页
-                            pageNum = currentPage - 2 + i;
-                          }
-
-                          return (
-                            <button
-                              key={pageNum}
-                              onClick={() =>
-                                handlePageChange(section.id, pageNum)
-                              }
-                              className={`w-8 h-8 flex items-center justify-center rounded ${
-                                pageNum === pagination[section.id].currentPage
-                                  ? "bg-blue-500 text-white"
-                                  : "hover:bg-gray-100"
-                              }`}
-                            >
-                              {pageNum}
-                            </button>
-                          );
-                        }
-                      )}
-
-                      <button
-                        onClick={() =>
-                          handlePageChange(
-                            section.id,
-                            Math.min(
-                              pagination[section.id].totalPages,
-                              pagination[section.id].currentPage + 1
-                            )
-                          )
-                        }
-                        disabled={
-                          pagination[section.id].currentPage >=
-                          pagination[section.id].totalPages
-                        }
-                        className={`p-2 rounded ${
-                          pagination[section.id].currentPage >=
-                          pagination[section.id].totalPages
-                            ? "text-gray-400 cursor-not-allowed"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
-                      >
-                        <ChevronRight size={16} />
-                      </button>
-                    </div>
+                        )
+                      }
+                      disabled={
+                        currentPagination.currentPage >=
+                        currentPagination.totalPages
+                      }
+                      className={`p-2 rounded ${
+                        currentPagination.currentPage >=
+                        currentPagination.totalPages
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                      aria-label="Next page"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
                   </div>
-                )}
+                </div>
+              )}
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>
