@@ -437,7 +437,10 @@ export function CategoryPage({ category }: CategoryPageProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 添加Hero部分 */}
-      <HeroSection categoryCount={categorySections.length} />
+      <HeroSection
+        categoryCount={categorySections.length}
+        totalItemsCount={totalItemsCount}
+      />
 
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-64 shrink-0">

@@ -1,14 +1,26 @@
+import { SearchBar } from "../home/SearchBar";
+
 interface HeroSectionProps {
   categoryCount: number;
+  totalItemsCount: number;
 }
 
-export function HeroSection({ categoryCount }: HeroSectionProps) {
+export function HeroSection({
+  categoryCount,
+  totalItemsCount,
+}: HeroSectionProps) {
   return (
-    <div className="bg-indigo-50 rounded-lg p-8 mb-8 flex justify-center flex-col items-center">
-      <h1 className="text-3xl font-bold mb-2">Find AI By Categories</h1>
+    <div className="bg-indigo-50 gap-4 rounded-lg p-8 mb-8 flex justify-center flex-col items-center">
+      <h1 className="text-3xl font-bold mb-2">Find MCP Servers and Clients</h1>
+
       <p className="text-gray-600">
-        Over {categoryCount} categories to find AI websites and tools.
+        Explore over{" "}
+        <span className="font-bold text-indigo-600">{categoryCount}</span>{" "}
+        categories featuring more than{" "}
+        <span className="font-bold text-indigo-600">{totalItemsCount}</span>{" "}
+        items to find the perfect MCP Servers and Clients solution.
       </p>
+      <SearchBar />
     </div>
   );
 }
