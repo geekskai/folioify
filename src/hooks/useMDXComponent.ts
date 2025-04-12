@@ -16,15 +16,13 @@ export function useMDXComponent(code: string) {
           return React.createElement("div", null, "No content available");
         }
 
-        // For development/preview, simply return a placeholder
+        // For development/preview, render the full MDX content instead of just 500 chars
         return React.createElement("div", {
           className: "mdx-placeholder",
           style: { whiteSpace: "pre-wrap" },
           dangerouslySetInnerHTML: {
             __html: `<div class="mdx-preview-notice">MDX Preview (Development Mode)</div>
-                    <pre>${code.substring(0, 500)}${
-              code.length > 500 ? "..." : ""
-            }</pre>`,
+                    <pre>${code}</pre>`,
           },
         });
       };
