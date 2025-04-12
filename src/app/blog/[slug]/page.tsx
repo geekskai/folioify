@@ -14,7 +14,8 @@ import {
 type PageParams = { slug: string };
 
 export async function generateStaticParams() {
-  return getBlogSlugs();
+  const slugs = getBlogSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -22,16 +23,13 @@ export async function generateMetadata({
 }: {
   params: PageParams;
 }): Promise<Metadata> {
-  // Await params to avoid dynamic API sync issue
-  const resolvedParams = await Promise.resolve(params);
-  const slug = resolvedParams.slug;
-
+  const slug = params.slug;
   const post = getBlogPostBySlug(slug);
 
   if (!post) {
     return {
-      title: "Post Not Found",
-      description: "The requested blog post could not be found.",
+      title: "文章未找到",
+      description: "请求的博客文章不存在。",
     };
   }
 
@@ -49,11 +47,8 @@ export async function generateMetadata({
 }
 
 // Make the component async to properly handle params
-export default async function BlogPost({ params }: { params: PageParams }) {
-  // Await params to avoid dynamic API sync issue
-  const resolvedParams = await Promise.resolve(params);
-  const slug = resolvedParams.slug;
-
+export default function BlogPost({ params }: { params: PageParams }) {
+  const slug = params.slug;
   const post = getBlogPostBySlug(slug);
 
   if (!post) {

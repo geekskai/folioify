@@ -1,95 +1,147 @@
 "use client";
 
-// Use our custom implementation instead of the contentlayer one
-import { useMDXComponent } from "@/hooks/useMDXComponent";
+import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { ReactNode, useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-// Custom components for MDX
-const CustomImage = (props: {
-  src?: string;
-  alt?: string;
-  [key: string]: unknown;
-}) => (
-  <Image
-    src={props.src || ""}
-    alt={props.alt || ""}
-    width={700}
-    height={350}
-    className="rounded-lg my-6"
-    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 700px, 700px"
-  />
-);
-
-const CustomLink = (props: {
-  href?: string;
-  children?: ReactNode;
-  [key: string]: unknown;
-}) => {
-  const { href, children, ...rest } = props;
-
-  if (href && href.startsWith("/")) {
-    return (
-      <Link href={href} {...rest}>
-        {children}
-      </Link>
-    );
-  }
-
-  if (href && (href.startsWith("http") || href.startsWith("mailto:"))) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" {...rest}>
-        {children}
-      </a>
-    );
-  }
-
-  return (
-    <a href={href} {...rest}>
-      {children}
-    </a>
-  );
-};
-
-// Define components object
-const mdxComponents = {
-  img: CustomImage,
-  a: CustomLink,
-};
-
+// 定义MDX组件接口
 interface MDXContentProps {
   code: string;
 }
 
-// Fallback content component
-const FallbackContent = () => (
-  <div className="p-4 border rounded bg-gray-50 dark:bg-gray-800">
-    <p className="text-gray-500">
-      Unable to render content. Please try again later.
-    </p>
-  </div>
-);
+// 自定义MDX组件
+const components = {
+  // 图片组件
+  img: ({
+    src,
+    alt,
+    ...props
+  }: {
+    src?: string;
+    alt?: string;
+    [key: string]: unknown;
+  }) => (
+    <Image
+      src={src || ""}
+      alt={alt || ""}
+      width={700}
+      height={350}
+      className="rounded-lg my-6"
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 700px, 700px"
+      {...props}
+    />
+  ),
 
-// Separate renderer component to avoid hooks issues
-const MDXRenderer = ({ code }: { code: string }) => {
-  // This component only runs on client
-  const MDXComponent = useMDXComponent(code);
+  // 链接组件
+  a: ({
+    href,
+    children,
+    ...props
+  }: {
+    href?: string;
+    children?: React.ReactNode;
+    [key: string]: unknown;
+  }) => {
+    if (href?.startsWith("/")) {
+      return (
+        <Link href={href} {...props}>
+          {children}
+        </Link>
+      );
+    }
 
-  if (!MDXComponent) {
-    return <div className="text-gray-500">Content not available</div>;
-  }
+    if (href?.startsWith("http")) {
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+          {children}
+        </a>
+      );
+    }
 
-  return <MDXComponent components={mdxComponents} />;
+    return (
+      <a href={href} {...props}>
+        {children}
+      </a>
+    );
+  },
+
+  // 代码块组件
+  code: ({
+    className,
+    children,
+    ...props
+  }: {
+    className?: string;
+    children?: string;
+    [key: string]: unknown;
+  }) => {
+    const match = /language-(\w+)/.exec(className || "");
+    const language = match ? match[1] : "";
+
+    if (language) {
+      return (
+        <SyntaxHighlighter
+          language={language}
+          style={atomDark}
+          PreTag="div"
+          className="rounded-md my-4"
+          {...props}
+        >
+          {String(children).replace(/\n$/, "")}
+        </SyntaxHighlighter>
+      );
+    }
+
+    return (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
+  },
 };
 
-// Use dynamic import with SSR disabled to ensure client-only rendering
-const ClientOnlyMDX = dynamic(() => Promise.resolve(MDXRenderer), {
-  ssr: false,
-});
+// 简单的MDX内容渲染器
+const SimpleMDXRenderer = ({ code }: MDXContentProps) => {
+  // 提取Markdown内容（去除frontmatter）
+  const markdownContent = code.replace(/^---[\s\S]*?---/, "").trim();
 
-// Main wrapper component
+  // 基本解析，处理标题、段落、列表等
+  const formattedContent = markdownContent
+    // 处理代码块
+    .replace(
+      /```(\w+)?\n([\s\S]*?)```/g,
+      '<pre class="language-$1"><code>$2</code></pre>'
+    )
+    // 处理标题
+    .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+    .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+    .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+    // 处理列表
+    .replace(/^\* (.+)$/gm, "<li>$1</li>")
+    .replace(/^- (.+)$/gm, "<li>$1</li>")
+    .replace(/^(\d+)\. (.+)$/gm, "<li>$2</li>")
+    // 处理粗体和斜体
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    // 处理链接
+    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
+    // 处理图片
+    .replace(/!\[(.+?)\]\((.+?)\)/g, '<img src="$2" alt="$1" />')
+    // 处理段落
+    .replace(/^(?!<[holi]).+$/gm, "<p>$&</p>");
+
+  return (
+    <div
+      className="mdx-content prose prose-lg dark:prose-invert"
+      dangerouslySetInnerHTML={{ __html: formattedContent }}
+    />
+  );
+};
+
+// 带有加载状态的主MDX组件
 export function MDXContent({ code }: MDXContentProps) {
   const [isClient, setIsClient] = useState(false);
 
@@ -97,27 +149,19 @@ export function MDXContent({ code }: MDXContentProps) {
     setIsClient(true);
   }, []);
 
-  // Simple error handling for missing code
   if (!code) {
-    return <FallbackContent />;
+    return (
+      <div className="p-4 border rounded bg-gray-50 dark:bg-gray-800">
+        <p className="text-gray-500">无法加载内容。请稍后再试。</p>
+      </div>
+    );
   }
 
-  // Show loading state during hydration
   if (!isClient) {
     return (
       <div className="animate-pulse h-96 bg-gray-100 dark:bg-gray-800 rounded-lg"></div>
     );
   }
 
-  // Use our custom renderer with error handling
-  try {
-    return (
-      <div className="mdx-content">
-        <ClientOnlyMDX code={code} />
-      </div>
-    );
-  } catch (error) {
-    console.error("Error rendering MDX:", error);
-    return <FallbackContent />;
-  }
+  return <SimpleMDXRenderer code={code} />;
 }

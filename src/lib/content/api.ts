@@ -1,42 +1,51 @@
-import { allBlogs } from "contentlayer/generated";
-import { Blog } from "contentlayer/generated";
+import { Blog, allBlogs } from "contentlayer/generated";
 
-// Safe wrapper for accessing blog data
-export function getAllBlogPosts() {
-  try {
-    return allBlogs.filter((post) => post.published !== false);
-  } catch (error) {
-    console.error("Error fetching all blog posts:", error);
-    return [];
-  }
+/**
+ * 获取所有已发布的博客文章
+ */
+export function getAllPublishedBlogs() {
+  return allBlogs.filter((post) => post.published !== false);
 }
 
+/**
+ * 根据slug获取博客文章
+ */
 export function getBlogPostBySlug(slug: string) {
-  try {
-    return allBlogs.find(
-      (post) => post.slug === slug && post.published !== false
-    );
-  } catch (error) {
-    console.error(`Error fetching blog post with slug ${slug}:`, error);
-    return null;
-  }
+  return allBlogs.find(
+    (post) => post.slug === slug && post.published !== false
+  );
 }
 
+/**
+ * 获取所有博客文章的slug
+ */
 export function getBlogSlugs() {
+  return allBlogs
+    .filter((post) => post.published !== false)
+    .map((post) => post.slug);
+}
+
+/**
+ * 获取MDX内容
+ */
+export function getMDXContent(post: Blog | null) {
+  if (!post || !post.body) {
+    return "";
+  }
+
   try {
-    return getAllBlogPosts().map((post) => ({
-      slug: post.slug,
-    }));
+    // 返回原始MDX内容
+    return post.body.raw || "";
   } catch (error) {
-    console.error("Error getting blog slugs:", error);
-    return [];
+    console.error("Error getting MDX content:", error);
+    return "";
   }
 }
 
 // Get all available tags
 export function getAllTags() {
   try {
-    const posts = getAllBlogPosts();
+    const posts = getAllPublishedBlogs();
     const tagsSet = new Set<string>();
 
     posts.forEach((post) => {
@@ -55,7 +64,7 @@ export function getAllTags() {
 // Get blog posts by tag
 export function getBlogPostsByTag(tag: string) {
   try {
-    const posts = getAllBlogPosts();
+    const posts = getAllPublishedBlogs();
     return posts.filter(
       (post) =>
         post.tags &&
@@ -65,19 +74,5 @@ export function getBlogPostsByTag(tag: string) {
   } catch (error) {
     console.error(`Error getting posts with tag ${tag}:`, error);
     return [];
-  }
-}
-
-// Safe function to get MDX content
-export function getMDXContent(post: Blog | null) {
-  if (!post || !post.body) {
-    return "";
-  }
-
-  try {
-    return post.body.raw || "";
-  } catch (error) {
-    console.error("Error getting MDX content:", error);
-    return "";
   }
 }
