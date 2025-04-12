@@ -23,7 +23,9 @@ export async function generateMetadata({
 }: {
   params: PageParams;
 }): Promise<Metadata> {
-  const slug = params.slug;
+  // Await params to avoid Next.js 15 dynamic API sync issue
+  const resolvedParams = await Promise.resolve(params);
+  const slug = resolvedParams.slug;
   const post = getBlogPostBySlug(slug);
 
   if (!post) {
@@ -47,8 +49,10 @@ export async function generateMetadata({
 }
 
 // Make the component async to properly handle params
-export default function BlogPost({ params }: { params: PageParams }) {
-  const slug = params.slug;
+export default async function BlogPost({ params }: { params: PageParams }) {
+  // Await params to avoid Next.js 15 dynamic API sync issue
+  const resolvedParams = await Promise.resolve(params);
+  const slug = resolvedParams.slug;
   const post = getBlogPostBySlug(slug);
 
   if (!post) {
