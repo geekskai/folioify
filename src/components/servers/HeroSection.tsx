@@ -15,9 +15,13 @@ export function HeroSection({
 
       <p className="text-gray-600">
         Explore over{" "}
-        <span className="font-bold text-indigo-600">{categoryCount}</span>{" "}
+        <span className="font-bold text-xl text-indigo-600">
+          {categoryCount}
+        </span>{" "}
         categories featuring more than{" "}
-        <span className="font-bold text-indigo-600">{totalItemsCount}</span>{" "}
+        <span className="font-bold text-xl text-indigo-600">
+          {totalItemsCount}
+        </span>{" "}
         items to find the perfect MCP Servers and Clients solution.
       </p>
       <SearchBar />
