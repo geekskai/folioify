@@ -165,7 +165,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
     async (page: number, itemsPerPage: number) => {
       let allTools: Tool[] = [];
       const categoriesToFetch = categorySections;
-      const itemsPerCategory = 5; // 每个分类获取5条数据
+      const itemsPerCategory = 2; // 每个分类获取2条数据
       const searchQuery = getCurrentSearch();
 
       try {
