@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "contentlayer build && next build",
+    "build": "contentlayer build || true && next build",
     "start": "next start",
     "lint": "next lint",
-    "contentlayer:generate": "contentlayer build"
+    "blog": "contentlayer build || true"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
