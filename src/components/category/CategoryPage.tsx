@@ -194,42 +194,6 @@ export function CategoryPage({ group }: CategoryPageProps) {
     }
   }, [isInitialLoading, isContentLoading, categorySections, activeSection]);
 
-  // 监听滚动事件，更新当前活动的分类
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!contentRef.current || categorySections.length === 0) return;
-
-      const scrollPosition = window.scrollY + 100; // 添加一些偏移量
-      const contentTop = contentRef.current.offsetTop;
-
-      // 找到当前在视图中的分类
-      let foundActive = false;
-
-      // 按照DOM顺序检查元素，确保选择最上面的可见元素
-      for (const section of categorySections) {
-        const element = sectionRefs.current[section.id];
-        if (!element) continue;
-
-        const { offsetTop, offsetHeight } = element;
-
-        if (
-          scrollPosition >= offsetTop - 50 &&
-          scrollPosition < offsetTop + offsetHeight - 50
-        ) {
-          if (activeSection !== section.id) {
-            setActiveSection(section.id);
-            // 不更新URL，避免循环
-          }
-          foundActive = true;
-          break;
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [categorySections, activeSection]);
-
   // 处理导航点击
   const handleNavClick = (sectionId: string) => {
     console.log("Navigating to section:", sectionId);
