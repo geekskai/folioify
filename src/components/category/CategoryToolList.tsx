@@ -17,7 +17,7 @@ export function CategoryToolList({ tools }: CategoryToolListProps) {
       {tools?.map((tool) => (
         <Link
           key={tool.id}
-          href={`/toolbox/${
+          href={`/category/${
             tool.handle || tool.name.toLowerCase().replace(/\s+/g, "-")
           }`}
           className="block p-4 border border-gray-200 rounded-lg hover:border-violet-300 hover:shadow transition-all duration-200"
