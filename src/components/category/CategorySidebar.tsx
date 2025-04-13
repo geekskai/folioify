@@ -67,26 +67,28 @@ export function CategorySidebar({
   };
 
   return (
-    <ul className="space-y-2">
-      {categories.map((category) => {
-        // 使用预计算的高亮状态
-        const isActive = categoryActiveStates[category.id];
+    <div className="bg-white rounded-lg border border-gray-200 p-2">
+      <ul className="space-y-1">
+        {categories.map((category) => {
+          // 使用预计算的高亮状态
+          const isActive = categoryActiveStates[category.id];
 
-        return (
-          <li key={category.id}>
-            <button
-              onClick={() => handleClick(category.id)}
-              className={`block w-full text-left px-4 py-2 rounded-md transition-colors duration-300 ${
-                isActive
-                  ? "bg-indigo-100 text-indigo-700 font-medium"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              {category.name}
-            </button>
-          </li>
-        );
-      })}
-    </ul>
+          return (
+            <li key={category.id}>
+              <button
+                onClick={() => handleClick(category.id)}
+                className={`block w-full text-left px-4 py-2 rounded-md transition-colors duration-300 ${
+                  isActive
+                    ? "bg-violet-100 text-violet-700 font-medium"
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                {category.name}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }

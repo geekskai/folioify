@@ -4,6 +4,7 @@ interface Tool {
   id: number;
   name: string;
   count: number;
+  handle?: string;
 }
 
 interface CategoryToolListProps {
@@ -16,12 +17,14 @@ export function CategoryToolList({ tools }: CategoryToolListProps) {
       {tools?.map((tool) => (
         <Link
           key={tool.id}
-          href={`/tool/${tool.id}`}
-          className="block p-4 border border-gray-200 rounded-md hover:shadow-md transition-shadow"
+          href={`/toolbox/${
+            tool.handle || tool.name.toLowerCase().replace(/\s+/g, "-")
+          }`}
+          className="block p-4 border border-gray-200 rounded-lg hover:border-violet-300 hover:shadow transition-all duration-200"
         >
           <div className="flex justify-between items-center">
-            <h3 className="font-medium">{tool.name}</h3>
-            <span className="text-sm text-gray-500">{tool.count}</span>
+            <h3 className="font-medium text-gray-800">{tool.name}</h3>
+            <span className="text-violet-600 font-medium">{tool.count}</span>
           </div>
         </Link>
       ))}
