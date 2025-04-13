@@ -5,6 +5,7 @@ import { CategorySidebar } from "./CategorySidebar";
 import { CategoryToolList } from "./CategoryToolList";
 // import { CategoryHeader } from "./CategoryHeader";
 import { CategorySkeleton } from "./CategorySkeleton";
+import { ContentSkeleton } from "./ContentSkeleton";
 import { HeroSection } from "./HeroSection";
 import { FeaturedSection } from "./FeaturedSection";
 import { useRouter } from "next/navigation";
@@ -20,12 +21,14 @@ interface CategorySection {
     id: number;
     name: string;
     count: number;
+    handle?: string;
   }>;
 }
 
 export function CategoryPage({ group }: CategoryPageProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isContentLoading, setIsContentLoading] = useState(false);
   const [activeSection, setActiveSection] = useState(group);
   const [categorySections, setCategorySections] = useState<CategorySection[]>(
     []
@@ -40,12 +43,24 @@ export function CategoryPage({ group }: CategoryPageProps) {
     if (group !== activeSection) {
       setActiveSection(group);
       initialScrollDone.current = false; // 重置滚动状态，允许重新滚动
+
+      // 仅在导航更改时设置内容加载状态，不是初始加载
+      if (!isInitialLoading) {
+        setIsContentLoading(true);
+      }
     }
-  }, [group, activeSection]);
+  }, [group, activeSection, isInitialLoading]);
 
   useEffect(() => {
     const fetchCategoryData = async () => {
-      setIsLoading(true);
+      if (isInitialLoading) {
+        // 初次加载时，整页加载
+        setIsInitialLoading(true);
+      } else {
+        // 导航切换时，只加载内容区域
+        setIsContentLoading(true);
+      }
+
       try {
         // Import the client dynamically to avoid SSR issues
         const { createClient } = await import("@/db/supabase/client");
@@ -129,7 +144,8 @@ export function CategoryPage({ group }: CategoryPageProps) {
         // Fallback to static data
         setCategorySections(generateCategorySections());
       } finally {
-        setIsLoading(false);
+        setIsInitialLoading(false);
+        setIsContentLoading(false);
       }
     };
 
@@ -139,7 +155,8 @@ export function CategoryPage({ group }: CategoryPageProps) {
   // 初始化滚动到指定分类
   useEffect(() => {
     if (
-      !isLoading &&
+      !isInitialLoading &&
+      !isContentLoading &&
       !initialScrollDone.current &&
       categorySections.length > 0
     ) {
@@ -162,7 +179,7 @@ export function CategoryPage({ group }: CategoryPageProps) {
         }
       }, 300); // 增加延迟，确保DOM已完全渲染
     }
-  }, [isLoading, group, categorySections]);
+  }, [isInitialLoading, isContentLoading, group, categorySections]);
 
   // 监听滚动事件，更新当前活动的分类
   useEffect(() => {
@@ -208,6 +225,9 @@ export function CategoryPage({ group }: CategoryPageProps) {
 
     setActiveSection(sectionId);
 
+    // 当用户点击导航时，显示内容区域的加载状态
+    setIsContentLoading(true);
+
     // 更新URL参数
     router.push(`/category?group=${sectionId}`, { scroll: false });
 
@@ -225,7 +245,8 @@ export function CategoryPage({ group }: CategoryPageProps) {
     }
   };
 
-  if (isLoading) {
+  // 整页初始加载状态
+  if (isInitialLoading) {
     return <CategorySkeleton />;
   }
 
@@ -235,7 +256,7 @@ export function CategoryPage({ group }: CategoryPageProps) {
       <HeroSection categoryCount={categoryCount || 233} />
 
       <div className="flex flex-col md:flex-row gap-8 mt-8">
-        {/* Sidebar */}
+        {/* Sidebar - 总是可见的 */}
         <div className="w-full md:w-64 shrink-0">
           <div className="sticky top-20">
             <CategorySidebar
@@ -246,23 +267,27 @@ export function CategoryPage({ group }: CategoryPageProps) {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1" ref={contentRef}>
-          {categorySections.map((section) => (
-            <div
-              key={section.id}
-              ref={(el: HTMLDivElement | null) => {
-                sectionRefs.current[section.id] = el;
-                return undefined;
-              }}
-              id={`section-${section.id}`}
-              className="mb-12 pt-2"
-            >
-              <h2 className="text-2xl font-bold mb-6">{section.name}</h2>
-              <CategoryToolList tools={section.tools} />
-            </div>
-          ))}
-        </div>
+        {/* Main Content - 加载时显示骨架屏 */}
+        {isContentLoading ? (
+          <ContentSkeleton />
+        ) : (
+          <div className="flex-1" ref={contentRef}>
+            {categorySections.map((section) => (
+              <div
+                key={section.id}
+                ref={(el: HTMLDivElement | null) => {
+                  sectionRefs.current[section.id] = el;
+                  return undefined;
+                }}
+                id={`section-${section.id}`}
+                className="mb-12 pt-2"
+              >
+                <h2 className="text-2xl font-bold mb-6">{section.name}</h2>
+                <CategoryToolList tools={section.tools} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
