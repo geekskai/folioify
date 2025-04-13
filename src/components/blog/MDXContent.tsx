@@ -111,7 +111,17 @@ const SimpleMDXRenderer = ({ code }: MDXContentProps) => {
   // 处理表格的辅助函数
   const processTable = (tableContent: string) => {
     const lines = tableContent.trim().split("\n");
-    let html = '<table class="mdx-table">';
+
+    // 计算列数
+    let columnCount = 0;
+    if (lines.length > 0) {
+      const headerCells = lines[0]
+        .split("|")
+        .filter((cell) => cell.trim() !== "");
+      columnCount = headerCells.length;
+    }
+
+    let html = `<div class="table-container"><table class="mdx-table" style="--column-count: ${columnCount}">`;
 
     // 处理表头
     if (lines.length > 0) {
@@ -141,7 +151,7 @@ const SimpleMDXRenderer = ({ code }: MDXContentProps) => {
         if (cells.length > 0) {
           html += "<tr>";
           cells.forEach((cell) => {
-            html += `<td>${cell.trim()}</td>`;
+            html += `<td>${cell.trim() || "&nbsp;"}</td>`;
           });
           html += "</tr>";
         }
@@ -149,7 +159,7 @@ const SimpleMDXRenderer = ({ code }: MDXContentProps) => {
       html += "</tbody>";
     }
 
-    html += "</table>";
+    html += "</table></div>";
     return html;
   };
 

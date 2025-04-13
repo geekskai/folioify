@@ -156,10 +156,17 @@
   width: 100%;
   border-collapse: collapse;
   margin: 1.5rem 0;
-  overflow-x: auto;
-  display: block;
+  display: table;
+  table-layout: fixed;
   border-radius: 0.375rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+.mdx-content .table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
 }
 
 .mdx-content table thead,
@@ -174,6 +181,7 @@
   border: 1px solid hsl(var(--border));
   padding: 0.75rem 1rem;
   text-align: left;
+  word-break: break-word;
 }
 
 .mdx-content table th,
@@ -182,11 +190,18 @@
   font-weight: 600;
   position: sticky;
   top: 0;
+  width: calc(100% / var(--column-count, 3));
 }
 
 .mdx-content table tr:nth-child(even),
 .mdx-content .mdx-table tr:nth-child(even) {
   background-color: hsl(var(--muted) / 50%);
+}
+
+/* 修复空列的问题 */
+.mdx-content table td:empty,
+.mdx-content .mdx-table td:empty {
+  min-width: 100px;
 }
 
 /* 图片容器样式 */
