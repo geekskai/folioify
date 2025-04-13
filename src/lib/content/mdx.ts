@@ -1,6 +1,7 @@
 import { bundleMDX } from "mdx-bundler";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
 import type { Blog } from "contentlayer/generated";
 import type { BuildOptions } from "esbuild";
 
@@ -23,6 +24,7 @@ export async function processMDX(post: Blog | null) {
     const { code, frontmatter } = await bundleMDX({
       source: post.body.raw,
       mdxOptions: (options: MDXOptions) => {
+        options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm];
         options.rehypePlugins = [
           ...(options.rehypePlugins ?? []),
           rehypeSlug,

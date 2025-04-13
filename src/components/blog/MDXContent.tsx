@@ -108,47 +108,8 @@ const SimpleMDXRenderer = ({ code }: MDXContentProps) => {
   // 提取Markdown内容（去除frontmatter）
   const markdownContent = code.replace(/^---[\s\S]*?---/, "").trim();
 
-  // 处理表格 - 先提取完整表格并转换为HTML表格
-  let processedContent = markdownContent;
-  const tableRegex = /^\|(.*\|)+\n\|([-:\|]+\|)+\n(\|(.*\|)+\n?)+/gm;
-
-  processedContent = processedContent.replace(tableRegex, (table) => {
-    const rows = table.trim().split("\n");
-
-    // 提取表头行
-    const headerRow = rows[0];
-    const headerCells = headerRow.split("|").slice(1, -1);
-    const headerHtml = headerCells
-      .map((cell) => `<th class="border px-4 py-2">${cell.trim()}</th>`)
-      .join("");
-
-    // 跳过分隔行（第二行）
-
-    // 处理表格内容行
-    const bodyRows = rows.slice(2);
-    const bodyHtml = bodyRows
-      .map((row) => {
-        if (!row.trim()) return ""; // 跳过空行
-        const cells = row.split("|").slice(1, -1);
-        const cellsHtml = cells
-          .map((cell) => `<td class="border px-4 py-2">${cell.trim()}</td>`)
-          .join("");
-        return `<tr>${cellsHtml}</tr>`;
-      })
-      .join("");
-
-    return `<table class="table-auto border-collapse w-full my-6">
-      <thead class="bg-gray-100 dark:bg-gray-800">
-        <tr>${headerHtml}</tr>
-      </thead>
-      <tbody>
-        ${bodyHtml}
-      </tbody>
-    </table>`;
-  });
-
   // 基本解析，处理标题、段落、列表等
-  const formattedContent = processedContent
+  const formattedContent = markdownContent
     // 处理代码块
     .replace(
       /```(\w+)?\n([\s\S]*?)```/g,
@@ -169,8 +130,8 @@ const SimpleMDXRenderer = ({ code }: MDXContentProps) => {
     .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
     // 处理图片
     .replace(/!\[(.+?)\]\((.+?)\)/g, '<img src="$2" alt="$1" />')
-    // 处理段落 (排除已处理的HTML标签)
-    .replace(/^(?!<[hotli]).+$/gm, "<p>$&</p>");
+    // 处理段落
+    .replace(/^(?!<[holi]).+$/gm, "<p>$&</p>");
 
   return (
     <div
