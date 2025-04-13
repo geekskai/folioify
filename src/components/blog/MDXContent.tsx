@@ -153,14 +153,37 @@ const SimpleMDXRenderer = ({ code }: MDXContentProps) => {
     return html;
   };
 
+  // 为了避免处理嵌套的反引号，先用一个占位替换所有代码块
+  const codeBlocks: Record<string, string> = {};
+  let codeBlockId = 0;
+
+  // 替换代码块并存储它们
+  let contentWithCodeBlockPlaceholders = markdownContent.replace(
+    /```(\w+)?\s*\n([\s\S]*?)```/g,
+    (match, language, content) => {
+      const id = `CODE_BLOCK_PLACEHOLDER_${codeBlockId++}`;
+      language = language || "";
+      codeBlocks[
+        id
+      ] = `<div class="code-block"><pre class="language-${language}"><code>${content}</code></pre></div>`;
+      return id;
+    }
+  );
+
+  // 然后处理内联代码
+  contentWithCodeBlockPlaceholders = contentWithCodeBlockPlaceholders.replace(
+    /`([^`]+)`/g,
+    '<code class="inline-code">$1</code>'
+  );
+
   // 构建正则表达式匹配表格
   const tableRegex =
     /\|(.+)\|[\r\n]+\|(?:\s*[-:]+[-:|\s]*)+\|[\r\n]+((?:\|(?:.+)\|[\r\n])+)/g;
 
-  // 首先提取所有表格并为它们分配唯一ID
+  // 提取所有表格并为它们分配唯一ID
   const tables: Record<string, string> = {};
   let tableId = 0;
-  const contentWithTablePlaceholders = markdownContent.replace(
+  const contentWithPlaceholders = contentWithCodeBlockPlaceholders.replace(
     tableRegex,
     (match) => {
       const id = `TABLE_PLACEHOLDER_${tableId++}`;
@@ -173,17 +196,11 @@ const SimpleMDXRenderer = ({ code }: MDXContentProps) => {
   const imageRegex = /!\[(.*?)\]\((.*?)(?:\s+"(.*?)")?\)/g;
 
   // 基本解析，处理标题、段落、列表等
-  let formattedContent = contentWithTablePlaceholders
+  let formattedContent = contentWithPlaceholders
     // 处理图片 - 改进匹配
     .replace(
       imageRegex,
       '<div class="image-container"><img src="$2" alt="$1" title="$3" /></div>'
-    )
-
-    // 处理代码块 - 保持现有改进
-    .replace(
-      /```(\w+)?\s*\n([\s\S]*?)```/g,
-      '<div class="code-block"><pre class="language-$1"><code>$2</code></pre></div>'
     )
 
     // 处理标题
@@ -206,9 +223,14 @@ const SimpleMDXRenderer = ({ code }: MDXContentProps) => {
     // 处理段落 - 不要影响HTML标签
     .replace(/^(?!<[holi\|]).+$/gm, "<p>$&</p>");
 
-  // 最后，把表格的占位符替换回已处理的HTML表格
+  // 把表格的占位符替换回已处理的HTML表格
   Object.keys(tables).forEach((id) => {
     formattedContent = formattedContent.replace(id, tables[id]);
+  });
+
+  // 把代码块的占位符替换回HTML代码块
+  Object.keys(codeBlocks).forEach((id) => {
+    formattedContent = formattedContent.replace(id, codeBlocks[id]);
   });
 
   return (

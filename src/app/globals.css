@@ -120,6 +120,36 @@
     "Liberation Mono", "Courier New", monospace;
 }
 
+/* 行内代码样式 */
+.mdx-content .inline-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875em;
+  color: var(--tw-prose-code);
+  font-weight: 500;
+  padding: 0.2em 0.4em;
+  background-color: hsl(var(--muted));
+  border-radius: 0.25em;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* 优化代码在深色模式下的显示 */
+.dark .mdx-content .inline-code {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--accent-foreground));
+}
+
+/* 优化代码行高 */
+.mdx-content p code,
+.mdx-content li code,
+.mdx-content h1 code,
+.mdx-content h2 code,
+.mdx-content h3 code {
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
 /* 改进表格样式 */
 .mdx-content table,
 .mdx-content .mdx-table {

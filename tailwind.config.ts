@@ -13,6 +13,16 @@ export default {
     extend: {
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        mono: [
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "Liberation Mono",
+          "Courier New",
+          "monospace",
+        ],
       },
       colors: {
         background: "hsl(var(--background))",
@@ -87,9 +97,14 @@ export default {
             maxWidth: "100%",
             code: {
               color: "var(--tw-prose-code)",
-              fontWeight: "400",
+              fontWeight: "500",
+              fontFamily:
+                'var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace)',
               "&::before": { content: "none" },
               "&::after": { content: "none" },
+              backgroundColor: "hsl(var(--muted))",
+              borderRadius: "0.25em",
+              padding: "0.2em 0.4em",
             },
             "code::before": { content: "none" },
             "code::after": { content: "none" },
@@ -97,8 +112,21 @@ export default {
               color: "var(--tw-prose-pre-code)",
               backgroundColor: "hsl(var(--code-bg))",
               borderRadius: "0.375rem",
-              padding: "1rem",
+              padding: "1.25rem",
               overflowX: "auto",
+              fontFamily:
+                'var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace)',
+              fontSize: "0.875em",
+            },
+            "pre code": {
+              backgroundColor: "transparent",
+              borderWidth: "0",
+              borderRadius: "0",
+              padding: "0",
+              fontWeight: "inherit",
+              color: "inherit",
+              fontSize: "inherit",
+              fontFamily: "inherit",
             },
             table: {
               width: "100%",
