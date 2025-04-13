@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "bun --bun next dev",
-    "build": "contentlayer build || true && bun --bun next build",
+    "build": "bun run scripts/toolify-sync.ts && contentlayer build || true && bun --bun next build",
     "start": "bun --bun next start",
     "lint": "bun --bun next lint",
     "blog": "contentlayer build || true",
-    "update-categories": "bun run scripts/update-categories.ts"
+    "sync": "bun run scripts/sync-data.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",

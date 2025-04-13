@@ -106,7 +106,6 @@ export function CategoryPage({ group }: CategoryPageProps) {
         }
 
         // 获取所有分类组的工具数据
-        const allSections: CategorySection[] = [];
         const allPromises = groups.map(async (group) => {
           // Fetch category values for this group
           const { data: values, error: valuesError } = await supabase
