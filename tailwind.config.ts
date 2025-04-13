@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
+import typographyPlugin from "@tailwindcss/typography";
 
 export default {
   darkMode: ["class"],
@@ -80,7 +81,45 @@ export default {
           "2xl": "1536px",
         },
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: "100%",
+            code: {
+              color: "var(--tw-prose-code)",
+              fontWeight: "400",
+              "&::before": { content: "none" },
+              "&::after": { content: "none" },
+            },
+            "code::before": { content: "none" },
+            "code::after": { content: "none" },
+            pre: {
+              color: "var(--tw-prose-pre-code)",
+              backgroundColor: "hsl(var(--code-bg))",
+              borderRadius: "0.375rem",
+              padding: "1rem",
+              overflowX: "auto",
+            },
+            table: {
+              width: "100%",
+              tableLayout: "auto",
+              textAlign: "left",
+              marginTop: "2em",
+              marginBottom: "2em",
+            },
+            "table th, table td": {
+              padding: "0.75rem",
+              borderWidth: "1px",
+              borderColor: "hsl(var(--border))",
+            },
+            "table th": {
+              backgroundColor: "hsl(var(--muted))",
+              fontWeight: "600",
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [tailwindcssAnimate],
+  plugins: [tailwindcssAnimate, typographyPlugin],
 } satisfies Config;

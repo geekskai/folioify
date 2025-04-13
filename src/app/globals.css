@@ -33,6 +33,10 @@
     --folioify-pink: 329 57% 75%;
     --folioify-light-blue: 197 44% 83%;
     --folioify-beige: 41 54% 85%;
+
+    /* Code block colors */
+    --code-bg: 222 47% 11%;
+    --code-color: 210 40% 98%;
   }
 
   .dark {
@@ -64,6 +68,10 @@
     --folioify-pink: 329 57% 75%;
     --folioify-light-blue: 197 44% 83%;
     --folioify-beige: 41 54% 85%;
+
+    /* Code block colors */
+    --code-bg: 217 32% 17%;
+    --code-color: 210 40% 98%;
   }
 }
 
@@ -87,4 +95,80 @@
       ),
       linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
   }
+}
+
+/* MDX Content Styling */
+.mdx-content .code-block {
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.mdx-content pre {
+  background-color: hsl(var(--code-bg));
+  color: hsl(var(--code-color));
+  padding: 1.5rem;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.mdx-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+/* 改进表格样式 */
+.mdx-content table,
+.mdx-content .mdx-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  display: block;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mdx-content table thead,
+.mdx-content .mdx-table thead {
+  border-bottom: 2px solid hsl(var(--border));
+}
+
+.mdx-content table th,
+.mdx-content table td,
+.mdx-content .mdx-table th,
+.mdx-content .mdx-table td {
+  border: 1px solid hsl(var(--border));
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.mdx-content table th,
+.mdx-content .mdx-table th {
+  background-color: hsl(var(--muted));
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.mdx-content table tr:nth-child(even),
+.mdx-content .mdx-table tr:nth-child(even) {
+  background-color: hsl(var(--muted) / 50%);
+}
+
+/* 图片容器样式 */
+.mdx-content .image-container {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.mdx-content .image-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
