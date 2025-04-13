@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { CategorySidebar } from "./CategorySidebar";
 import { CategoryToolList } from "./CategoryToolList";
 // import { CategoryHeader } from "./CategoryHeader";
@@ -30,13 +30,21 @@ export function CategoryPage({ group }: CategoryPageProps) {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isContentLoading, setIsContentLoading] = useState(false);
   const [activeSection, setActiveSection] = useState(group);
-  const [categorySections, setCategorySections] = useState<CategorySection[]>(
-    []
-  );
+  const [allCategorySections, setAllCategorySections] = useState<
+    CategorySection[]
+  >([]);
   const [categoryCount, setCategoryCount] = useState(0);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const initialScrollDone = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const dataFetched = useRef(false);
+
+  // 使用useMemo来计算当前应该显示的分类数据，基于activeSection
+  // 这样就不需要重新从API获取数据，只需要从已有数据中筛选显示
+  const categorySections = useMemo(() => {
+    if (allCategorySections.length === 0) return [];
+    return sortSectionsByGroup([...allCategorySections], activeSection);
+  }, [allCategorySections, activeSection]);
 
   // 确保activeSection始终与URL参数同步
   useEffect(() => {
@@ -44,22 +52,24 @@ export function CategoryPage({ group }: CategoryPageProps) {
       setActiveSection(group);
       initialScrollDone.current = false; // 重置滚动状态，允许重新滚动
 
-      // 仅在导航更改时设置内容加载状态，不是初始加载
-      if (!isInitialLoading) {
+      // 仅当有数据时才进行切换动画，首次加载不需要
+      if (allCategorySections.length > 0) {
         setIsContentLoading(true);
+        // 使用setTimeout模拟切换的短暂延迟，提供更好的视觉反馈
+        setTimeout(() => {
+          setIsContentLoading(false);
+        }, 300); // 较短的延迟，让用户感觉到切换但不会太长
       }
     }
-  }, [group, activeSection, isInitialLoading]);
+  }, [group, activeSection, allCategorySections.length]);
 
+  // 只在组件首次挂载时获取所有分类数据
   useEffect(() => {
-    const fetchCategoryData = async () => {
-      if (isInitialLoading) {
-        // 初次加载时，整页加载
-        setIsInitialLoading(true);
-      } else {
-        // 导航切换时，只加载内容区域
-        setIsContentLoading(true);
-      }
+    // 如果已经获取过数据，不再重复获取
+    if (dataFetched.current) return;
+
+    const fetchAllCategoryData = async () => {
+      setIsInitialLoading(true);
 
       try {
         // Import the client dynamically to avoid SSR issues
@@ -75,14 +85,14 @@ export function CategoryPage({ group }: CategoryPageProps) {
         if (groupsError) {
           console.error("Error fetching category groups:", groupsError);
           // Fallback to static data
-          setCategorySections(generateCategorySections());
+          setAllCategorySections(generateCategorySections());
           return;
         }
 
         if (!groups || groups.length === 0) {
           console.warn("No category groups found in database");
           // Fallback to static data
-          setCategorySections(generateCategorySections());
+          setAllCategorySections(generateCategorySections());
           return;
         }
 
@@ -95,11 +105,9 @@ export function CategoryPage({ group }: CategoryPageProps) {
           setCategoryCount(countData.length);
         }
 
-        // Build result array
-        const result: CategorySection[] = [];
-
-        // For each group, fetch its values/tools
-        for (const group of groups) {
+        // 获取所有分类组的工具数据
+        const allSections: CategorySection[] = [];
+        const allPromises = groups.map(async (group) => {
           // Fetch category values for this group
           const { data: values, error: valuesError } = await supabase
             .from("category_values")
@@ -112,12 +120,12 @@ export function CategoryPage({ group }: CategoryPageProps) {
               `Error fetching values for group ${group.handle}:`,
               valuesError
             );
-            continue;
+            return null;
           }
 
           if (!values || values.length === 0) {
             console.warn(`No values found for group ${group.handle}`);
-            continue;
+            return null;
           }
 
           // Map values to tools format
@@ -128,29 +136,34 @@ export function CategoryPage({ group }: CategoryPageProps) {
             handle: value.handle,
           }));
 
-          // Add to result
-          result.push({
+          // Return section data
+          return {
             id: group.handle,
             name: group.title || group.name,
             tools,
-          });
-        }
+          };
+        });
 
-        // Sort sections to put current group first
-        const sortedResult = sortSectionsByGroup(result, group);
-        setCategorySections(sortedResult);
+        // 等待所有数据并过滤掉失败的请求
+        const results = await Promise.all(allPromises);
+        const validSections = results
+          .filter((section) => section !== null)
+          .map((section) => section as CategorySection);
+
+        // 存储所有分类数据
+        setAllCategorySections(validSections);
+        dataFetched.current = true;
       } catch (error) {
         console.error("Error fetching category data:", error);
         // Fallback to static data
-        setCategorySections(generateCategorySections());
+        setAllCategorySections(generateCategorySections());
       } finally {
         setIsInitialLoading(false);
-        setIsContentLoading(false);
       }
     };
 
-    fetchCategoryData();
-  }, [group]);
+    fetchAllCategoryData();
+  }, []); // 空依赖数组确保只执行一次
 
   // 初始化滚动到指定分类
   useEffect(() => {
@@ -162,7 +175,7 @@ export function CategoryPage({ group }: CategoryPageProps) {
     ) {
       // 等待DOM更新完成后再滚动
       setTimeout(() => {
-        const element = sectionRefs.current[group];
+        const element = sectionRefs.current[activeSection];
         if (element) {
           // 使用更平滑的滚动
           const headerOffset = 80; // 调整这个值来控制滚动的偏移量
@@ -179,7 +192,7 @@ export function CategoryPage({ group }: CategoryPageProps) {
         }
       }, 300); // 增加延迟，确保DOM已完全渲染
     }
-  }, [isInitialLoading, isContentLoading, group, categorySections]);
+  }, [isInitialLoading, isContentLoading, categorySections, activeSection]);
 
   // 监听滚动事件，更新当前活动的分类
   useEffect(() => {
@@ -225,24 +238,30 @@ export function CategoryPage({ group }: CategoryPageProps) {
 
     setActiveSection(sectionId);
 
-    // 当用户点击导航时，显示内容区域的加载状态
+    // 当用户点击导航时，显示短暂的加载状态
     setIsContentLoading(true);
 
     // 更新URL参数
     router.push(`/category?group=${sectionId}`, { scroll: false });
 
-    const element = sectionRefs.current[sectionId];
-    if (element) {
-      const headerOffset = 80; // 调整这个值来控制滚动的偏移量
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition =
-        elementPosition + window.pageYOffset - headerOffset;
+    // 短暂延迟后关闭加载状态，给用户一个视觉反馈
+    setTimeout(() => {
+      setIsContentLoading(false);
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
+      // 滚动到对应位置
+      const element = sectionRefs.current[sectionId];
+      if (element) {
+        const headerOffset = 80; // 调整这个值来控制滚动的偏移量
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition =
+          elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      }
+    }, 300);
   };
 
   // 整页初始加载状态
@@ -262,7 +281,7 @@ export function CategoryPage({ group }: CategoryPageProps) {
             <CategorySidebar
               activeCategory={activeSection}
               onCategoryClick={handleNavClick}
-              categories={categorySections}
+              categories={allCategorySections}
             />
           </div>
         </div>
