@@ -29,7 +29,7 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
   useEffect(() => {
     const fetchToolData = async () => {
       setIsLoading(true);
-      // https://www.toolify.ai/self-api/v1/categories/detail-v1?handle=${handle}&order_by=category_correlation&page=1&per_page=100
+
       try {
         const supabase = createClient();
 
