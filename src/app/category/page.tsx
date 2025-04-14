@@ -2,9 +2,22 @@
 import { Suspense } from "react";
 import { CategoryPage } from "@/components/category/CategoryPage";
 import { CategorySkeleton } from "@/components/category/CategorySkeleton";
+import { Metadata } from "next";
 
 // 添加动态渲染配置，确保服务器端能获取最新数据
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Folioify Clone | Design Tools and Community",
+  description:
+    "Folioify is a platform for designers to find tools, share articles, and connect with the global design community.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  alternates: {
+    canonical: "./",
+  },
+};
 
 // 定义 searchParams 类型为 Promise
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;

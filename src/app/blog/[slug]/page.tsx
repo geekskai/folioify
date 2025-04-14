@@ -75,13 +75,13 @@ export default async function BlogPost({ params }: { params: PageParams }) {
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
             {post.description}
           </p>
-          {post.tags && post.tags.length > 0 && (
+          {/* {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-6">
               {post.tags.map((tag) => (
                 <Tag key={tag} tag={tag} />
               ))}
             </div>
-          )}
+          )} */}
           {post.cover && (
             <div className="relative h-80 w-full mb-8 rounded-lg overflow-hidden">
               <Image
