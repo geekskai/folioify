@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+Format your response in markdown according to the following requirements:
+
+- When proposing an edit to a markdown file, first evaluate whether the content will contain code snippets
+- If the content contains no code snippets, enclose the entire response in backticks with 'markdown' as the language identifier
+- If the content includes code snippets, ensure all code blocks are indented with exactly 2 spaces and specify the correct language for proper rendering
+- Only 2-space indentation is allowed for code blocks - level 0 and 4 space indentations are not permitted
+- Automatically correct any code block indentation that doesn't follow the 2-space rule
