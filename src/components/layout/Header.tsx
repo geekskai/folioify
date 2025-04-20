@@ -17,8 +17,8 @@ const navItems: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "MCP Servers", href: "/mcp-servers" },
   { label: "Blog", href: "/blog" },
-  // { label: "Topics", href: "/topics" },
-  { label: "Newsletter", href: "/newsletter" },
+  // { label: "Submit", href: "/submit" },
+  // { label: "Newsletter", href: "/newsletter" },
 ];
 
 export function Header() {
