@@ -5,7 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
 
 type NavItem = {
   label: string;
@@ -22,7 +27,7 @@ const navItems: NavItem[] = [
 ];
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -47,7 +52,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
@@ -61,16 +66,16 @@ export function Header() {
                     key={item.href}
                     href={item.href}
                     className="text-lg font-medium transition-colors hover:text-primary"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => setOpen(false)}
                   >
                     {item.label}
                   </Link>
                 ))}
                 <div className="h-px bg-border my-4" />
                 <Link
-                  href="/onboard"
+                  href="/submit"
                   className="text-lg font-medium transition-colors hover:text-primary"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => setOpen(false)}
                 >
                   Submit a tool
                 </Link>
