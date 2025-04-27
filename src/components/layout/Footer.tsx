@@ -49,6 +49,14 @@ export function Footer() {
                   Instagram
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="mailto:geeks.kai@gmail.com"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Email
+                </Link>
+              </li>
             </ul>
           </div>
 
