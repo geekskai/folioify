@@ -10,7 +10,8 @@ export async function generateMetadata(
   { params }: { params: { slug: string } },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const slug = params.slug;
+  const resolvedParams = await Promise.resolve(params);
+  const slug = resolvedParams.slug;
 
   // Format the slug for display
   const formattedTitle = slug
@@ -22,20 +23,23 @@ export async function generateMetadata(
     title: `Best ${formattedTitle} Tools in 2025 | Folioify`,
     description: `Discover the top ${formattedTitle.toLowerCase()} tools to enhance your productivity and creativity. Compare features and find the perfect solution for your needs.`,
     alternates: {
-      canonical:  `https://www.folioify.com/category/${slug}`,
+      canonical: `https://www.folioify.com/category/${slug}`,
     },
   };
 }
 
 // Define the Page component
-export default function CategoryDetailPage({
+export default async function CategoryDetailPage({
   params,
 }: {
   params: { slug: string };
 }) {
+  const resolvedParams = await Promise.resolve(params);
+  const slug = resolvedParams.slug;
+
   return (
     <Suspense fallback={<CategoryDetailSkeleton />}>
-      <CategoryDetailComponent slug={params.slug} />
+      <CategoryDetailComponent slug={slug} />
     </Suspense>
   );
 }

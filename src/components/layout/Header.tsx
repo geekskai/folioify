@@ -34,7 +34,13 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center">
-            <Image src="/logo.png" alt="Folioify Logo" width={48} height={48} />
+            <Image
+              src="/logo.png"
+              priority
+              alt="Folioify Logo"
+              width={48}
+              height={48}
+            />
             <span className="inline-block font-semibold text-xl">Folioify</span>
           </Link>
 
