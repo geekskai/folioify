@@ -22,7 +22,7 @@ export async function generateMetadata(
     title: `Best ${formattedTitle} Tools in 2025 | Folioify`,
     description: `Discover the top ${formattedTitle.toLowerCase()} tools to enhance your productivity and creativity. Compare features and find the perfect solution for your needs.`,
     alternates: {
-      canonical: "./",
+      canonical:  `https://www.folioify.com/category/${slug}`,
     },
   };
 }

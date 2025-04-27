@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
   },
   alternates: {
-    canonical: "./",
+    canonical: `https://www.folioify.com/mcp-servers`,
   },
 };
 
