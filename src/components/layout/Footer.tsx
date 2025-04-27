@@ -36,6 +36,7 @@ export function Footer() {
               <li>
                 <Link
                   href="https://twitter.com/folioify"
+                  target="_blank"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Twitter
@@ -44,6 +45,7 @@ export function Footer() {
               <li>
                 <Link
                   href="https://instagram.com/folioify"
+                  target="_blank"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Instagram
@@ -52,6 +54,7 @@ export function Footer() {
               <li>
                 <Link
                   href="mailto:geeks.kai@gmail.com"
+                  target="_blank"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Email
