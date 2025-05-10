@@ -17,6 +17,7 @@ export function CategoryToolList({ tools }: CategoryToolListProps) {
       {tools?.map((tool) => (
         <Link
           key={tool.id}
+          target="_blank"
           href={`/category/${
             tool.handle || tool.name.toLowerCase().replace(/\s+/g, "-")
           }`}
