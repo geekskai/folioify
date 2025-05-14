@@ -1,0 +1,29 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Supabase Integration
+
+This project uses Supabase for database functionality.
+
+## Key Files and Directories
+
+- [src/lib/supabase](mdc:src/lib/supabase) - Contains Supabase client and queries
+- [src/lib/supabase/queries.ts](mdc:src/lib/supabase/queries.ts) - Database query functions
+- [src/db](mdc:src/db) - Database-related types and schemas
+
+## Data Fetching Patterns
+
+1. Use the Supabase client for data fetching
+2. Database queries should be organized in [src/lib/supabase/queries.ts](mdc:src/lib/supabase/queries.ts)
+3. For server components, use Server Actions for mutations
+4. For client components, use React Query or SWR for data fetching
+5. Ensure proper error handling and loading states
+
+## Development Workflow
+
+1. Create database schemas and tables in Supabase dashboard
+2. Define corresponding TypeScript types in [src/db](mdc:src/db) 
+3. Implement query functions in [src/lib/supabase/queries.ts](mdc:src/lib/supabase/queries.ts)
+4. Use the query functions in components or server actions

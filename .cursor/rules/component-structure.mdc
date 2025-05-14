@@ -1,0 +1,25 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Component Organization
+
+Components are organized in a feature-based structure inside [src/components](mdc:src/components).
+
+## Component Categories
+
+- [src/components/ui](mdc:src/components/ui) - Reusable UI components based on shadcn/ui (buttons, cards, etc.)
+- [src/components/layout](mdc:src/components/layout) - Layout components (header, footer, navigation, etc.)
+- [src/components/blog](mdc:src/components/blog) - Blog-specific components
+- [src/components/home](mdc:src/components/home) - Homepage-specific components
+- [src/components/servers](mdc:src/components/servers) - Server-related components
+- [src/components/tools](mdc:src/components/tools) - Tool-related components
+
+## Component Conventions
+
+1. Components should be created in their respective feature folders
+2. Use TypeScript for all components
+3. Prefer functional components with hooks
+4. Use the `ui` directory for shared, reusable UI components
+5. Feature-specific components should go in their respective directories

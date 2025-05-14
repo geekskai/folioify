@@ -1,0 +1,30 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Styling with Tailwind CSS
+
+This project uses Tailwind CSS for styling with some additional plugins and customizations.
+
+## Key Files
+
+- [tailwind.config.ts](mdc:tailwind.config.ts) - Tailwind configuration
+- [src/app/globals.css](mdc:src/app/globals.css) - Global CSS styles
+- [components.json](mdc:components.json) - shadcn/ui component configuration
+
+## Styling Conventions
+
+1. Use Tailwind utility classes for component styling
+2. Use shadcn/ui components as building blocks when possible
+3. Use CSS variables for theming in [globals.css](mdc:src/app/globals.css)
+4. For complex components, consider using Tailwind's `@apply` directive
+5. Use the `cn()` utility from `src/lib/utils.ts` for conditional class names
+
+## UI Components
+
+The project uses shadcn/ui, a collection of reusable components built on top of Tailwind CSS:
+
+1. UI components are stored in [src/components/ui](mdc:src/components/ui)
+2. Follow the component structure from shadcn/ui
+3. Use the provided components as building blocks for more complex UI

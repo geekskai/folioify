@@ -1,0 +1,25 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Project Structure Overview
+
+This is a Next.js project with a blog functionality and potentially other features.
+
+## Key Directories
+
+- [src/app](mdc:src/app) - Contains the Next.js App Router pages and layouts
+- [src/components](mdc:src/components) - Contains reusable UI components organized by feature
+- [src/lib](mdc:src/lib) - Contains utility functions and libraries
+- [src/types](mdc:src/types) - Contains TypeScript type definitions
+- [src/hooks](mdc:src/hooks) - Contains React hooks
+- [content](mdc:content) - Contains MDX blog posts managed by ContentLayer
+- [public](mdc:public) - Contains static assets
+
+## Main Configuration Files
+
+- [package.json](mdc:package.json) - Dependencies and scripts
+- [next.config.mjs](mdc:next.config.mjs) - Next.js configuration
+- [contentlayer.config.ts](mdc:contentlayer.config.ts) - ContentLayer configuration for blog content
+- [tailwind.config.ts](mdc:tailwind.config.ts) - Tailwind CSS configuration

@@ -1,0 +1,37 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Development Workflow
+
+This project uses Bun as the primary JavaScript runtime and package manager.
+
+## Key Scripts
+
+From [package.json](mdc:package.json):
+
+- `bun run dev` - Start the development server
+- `bun run build` - Build the production version of the app
+- `bun run start` - Start the production server
+- `bun run lint` - Run ESLint
+- `bun run blog` - Build blog content with ContentLayer
+- `bun run sync` - Run data synchronization script
+
+## Development Process
+
+1. Run `bun install` to install dependencies
+2. Run `bun run dev` to start the development server
+3. Make changes to the codebase
+4. For blog content, create or edit MDX files in the `content/blog` directory
+5. Run `bun run blog` to rebuild ContentLayer content
+6. Run `bun run build` to build the production version
+
+## Custom Scripts
+
+- [scripts/toolify-sync.ts](mdc:scripts/toolify-sync.ts) - Synchronizes tool data
+- [scripts/sync-data.ts](mdc:scripts/sync-data.ts) - Synchronizes data from external sources
+
+## Deployment
+
+The project is configured for deployment on Netlify as specified in [netlify.toml](mdc:netlify.toml).

@@ -1,0 +1,32 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Content Management with ContentLayer
+
+This project uses ContentLayer to manage blog content written in MDX.
+
+## Content Structure
+
+- [content/blog](mdc:content/blog) - Contains all blog posts in MDX format
+- [contentlayer.config.ts](mdc:contentlayer.config.ts) - Defines the schema for blog content
+
+## Blog Post Schema
+
+As defined in [contentlayer.config.ts](mdc:contentlayer.config.ts), each blog post requires:
+
+- `title` - The title of the blog post (string, required)
+- `date` - Publication date (date, required)
+- `description` - A short description (string, required)
+- `cover` - Cover image path (string, optional)
+- `tags` - List of tags (string[], default: [])
+- `published` - Whether the post is published (boolean, default: true)
+
+## ContentLayer Usage
+
+1. Blog posts must be placed in the `content/blog` directory with `.md` or `.mdx` extension
+2. Front matter must contain the required fields
+3. ContentLayer generates types and data that can be imported in components
+4. The route for blog posts is automatically generated as `/blog/[slug]`
+5. Reading time is computed automatically

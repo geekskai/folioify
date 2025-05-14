@@ -1,0 +1,27 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Next.js App Router Structure
+
+This project uses Next.js App Router for page routing and organization. The main entry point is [src/app/layout.tsx](mdc:src/app/layout.tsx).
+
+## Key Routes
+
+- [src/app/page.tsx](mdc:src/app/page.tsx) - Homepage
+- [src/app/blog](mdc:src/app/blog) - Blog section
+- [src/app/toolbox](mdc:src/app/toolbox) - Toolbox section
+- [src/app/category](mdc:src/app/category) - Category pages
+- [src/app/topics](mdc:src/app/topics) - Topics section
+- [src/app/api](mdc:src/app/api) - API routes
+
+## Routing Conventions
+
+1. Each route should have its own directory in the `src/app` folder
+2. Use `page.tsx` for the main page component of each route
+3. Use `layout.tsx` for route-specific layouts
+4. Dynamic routes should use the `[param]` naming convention 
+5. Loading states should use `loading.tsx`
+6. Error states should use `error.tsx`
+7. API routes should be in the `src/app/api` directory
