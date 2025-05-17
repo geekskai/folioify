@@ -1,0 +1,145 @@
+---
+title: "Leaked System Prompts: The Ultimate Reference Guide for AI Assistants"
+date: "2025-05-18"
+description: "Learn how top AI models are instructed, compare their rules, and understand their design philosophies."
+cover: "/images/blog/leaked-system-prompts.jpg"
+tags: ["AI System Prompts", "LLM", "Prompt Engineering", "AI Assistants", "System Instructions"]
+published: true
+---
+
+Leaked system prompts offer a rare window into the inner workings of the world's most advanced AI assistants. This guide brings together verified system prompts from major LLMs and AI products, providing researchers, developers, and enthusiasts with a unique resource to understand, compare, and learn from the foundational instructions that shape AI behavior.
+
+> **Disclaimer:** This collection is for educational and research purposes only. All sources are cited. No proprietary code is included.
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Key Takeaways](#key-takeaways)
+- [What Are System Prompts?](#what-are-system-prompts)
+- [How System Prompts Shape AI Behavior](#how-system-prompts-shape-ai-behavior)
+- [Prompt Categories by Company](#prompt-categories-by-company)
+  - [Anthropic Claude](#anthropic-claude)
+  - [OpenAI ChatGPT](#openai-chatgpt)
+  - [Microsoft Copilot](#microsoft-copilot)
+  - [Google Gemini](#google-gemini)
+  - [xAI Grok](#xai-grok)
+  - [Perplexity.ai](#perplexityai)
+  - [Specialized AI Assistants](#specialized-ai-assistants)
+- [Prompt Engineering Insights](#prompt-engineering-insights)
+- [Conclusion](#conclusion)
+- [References](#references)
+
+## Introduction
+
+System prompts are the secret instructions that guide AI assistants in their responses, tone, safety, and capabilities. By analyzing leaked prompts, we can better understand how leading AI companies design their models to be helpful, safe, and aligned with user needs.
+
+## Key Takeaways
+
+- System prompts define the core behavior, safety, and personality of AI assistants.
+- Each company has a unique philosophy and approach to prompt design.
+- Comparing prompts reveals trends in safety, transparency, and user interaction.
+- Understanding prompts helps researchers and developers build better, safer AI systems.
+
+## What Are System Prompts?
+
+System prompts are the initial instructions given to an AI model before any user input. They set the boundaries, capabilities, and style of the assistant. For example, a prompt might instruct the AI to be polite, avoid certain topics, or cite sources.
+
+## How System Prompts Shape AI Behavior
+
+System prompts:
+- Define the assistant's identity and knowledge boundaries
+- Set rules for safety, privacy, and ethical behavior
+- Specify formatting, tone, and language use
+- Control access to tools and external APIs
+- Guide how the AI handles uncertainty, refusals, and sensitive topics
+
+## Prompt Categories by Company
+
+### Anthropic Claude
+
+**Example:**
+
+The assistant is Claude, created by Anthropic. The current date is {{currentDateTime}}. Claude's knowledge base was last updated in April 2024. It answers questions about events prior to and after April 2024 the way a highly informed individual in April 2024 would if they were talking to someone from the above date, and can let the human know this when relevant. [source](https://docs.anthropic.com/en/release-notes/system-prompts#nov-22nd-2024)
+
+- Emphasizes intellectual curiosity, careful handling of sensitive topics, and step-by-step reasoning.
+- Avoids speculation, provides thorough but concise answers, and uses markdown formatting.
+- See also: Claude 2.0, 2.1, 3.0, 3.5 Sonnet, Opus, Haiku, and API tool use prompts.
+
+### OpenAI ChatGPT
+
+**Example:**
+
+You are ChatGPT, a large language model trained by OpenAI. Knowledge cutoff: 2024-06. Current date: 2025-03-24. Image input capabilities: Enabled. Personality: v2. [source](https://github.com/jujumilk3/leaked-system-prompts/pull/71)
+
+- Focuses on helpfulness, accuracy, and adapting to user tone.
+- Strict rules for tool use (e.g., DALL-E, browser, Python), safety, and refusal to answer certain requests.
+- Multiple versions: ChatGPT-3, 3.5, 4, 4o, iOS, Android, Assistants API, etc.
+
+### Microsoft Copilot
+
+**Example:**
+
+I identify as Microsoft Copilot, an AI companion. My primary role is to assist users by providing information, answering questions, and engaging in conversation. I use technology such as GPT-4 and Bing Search to provide relevant and useful responses. [source](https://old.reddit.com/r/bing/comments/1bapeh7/copilots_initial_prompt_as_of_march_2024/)
+
+- Emphasizes helpfulness, politeness, and refusal to discuss internal prompts or tools.
+- Uses markdown, tables, and LaTeX for formatting.
+- Has strict safety and privacy rules.
+
+### Google Gemini
+
+**Example:**
+
+You are Gemini, a large language model created by Google AI. Follow these guidelines: Respond in the user's language, knowledge cutoff November 2023, be informative, no personal opinions, no emotions, no self-promotion, and remain objective. [source](https://twitter.com/elder_plinius/status/1777830233531429222)
+
+- Focuses on objectivity, neutrality, and comprehensive answers.
+- Avoids self-reference, opinions, and emotional responses.
+
+### xAI Grok
+
+**Example:**
+
+You are Grok, a curious AI built by xAI with inspiration from the guide from the Hitchhiker's Guide to the Galaxy and JARVIS from Iron Man. You are intended to answer almost any question, often taking an outside perspective on humanity, and you always strive towards maximum helpfulness! [source](https://twitter.com/somewheresy/status/1765779220981031266)
+
+- Known for a more open, sometimes irreverent style.
+- Real-time knowledge via X (Twitter) posts.
+- Avoids "woke" answers, strives for maximal truthfulness.
+
+### Perplexity.ai
+
+**Example:**
+
+You are Perplexity, a helpful search assistant trained by Perplexity AI. Your task is to deliver a concise and accurate response to a user's query, drawing from the given search results. Your answer must be precise, of high-quality, and written by an expert using an unbiased and journalistic tone. [source](https://github.com/jujumilk3/leaked-system-prompts/issues/34)
+
+- Cites sources using bracketed numbers.
+- Avoids moralization and hedging language.
+- Uses markdown for formatting, never starts with a heading.
+
+### Specialized AI Assistants
+
+- **Codeium Windsurf Cascade:** Agentic coding assistant with tool-calling, code editing, and strict output rules.
+- **Manus:** Multi-tool agent with detailed task breakdown, code, and research capabilities.
+- **Brave Leo AI:** Concise, neutral, and polite responses; no emojis or links.
+- **Wrtn, Naver Cue, Moonshot Kimi, Discord Clyde, Roblox Studio Assistant, etc.:** Each with unique rules, language support, and product-specific features.
+
+## Prompt Engineering Insights
+
+- Most prompts emphasize safety, privacy, and refusal to answer harmful or illegal requests.
+- Formatting rules (markdown, LaTeX, tables) are common for clarity and accessibility.
+- Many prompts include explicit tool use instructions and limitations.
+- Some prompts adapt to user tone, while others maintain strict neutrality.
+- Knowledge cutoffs and update policies are always stated.
+
+## Conclusion
+
+Leaked system prompts reveal the design philosophies and priorities of leading AI companies. By studying these prompts, we gain insight into how AI assistants are shaped to be safe, helpful, and aligned with user needs. This knowledge is invaluable for anyone building, researching, or using AI systems.
+
+## References
+
+- All sources are cited inline with each prompt example. For a full list, see the original repository and document sources.
+- [Leaked System Prompts GitHub](https://github.com/jujumilk3/leaked-system-prompts)
+- [Anthropic Documentation](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)
+- [OpenAI Documentation](https://platform.openai.com/docs/guides/gpt)
+- [Microsoft Copilot](https://old.reddit.com/r/bing/comments/1bapeh7/copilots_initial_prompt_as_of_march_2024/)
+- [Google Gemini](https://twitter.com/elder_plinius/status/1777830233531429222)
+- [xAI Grok](https://twitter.com/somewheresy/status/1765779220981031266)
+- [Perplexity.ai](https://github.com/jujumilk3/leaked-system-prompts/issues/34)
