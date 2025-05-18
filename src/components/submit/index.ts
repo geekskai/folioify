@@ -3,7 +3,7 @@ export { SubmitModalTrigger } from "./SubmitModal";
 export {
   SubmitProvider,
   useSubmitContext,
-  type CategoryType,
+  type SubmissionType,
 } from "./SubmitContext";
 export { CategorySelector } from "./CategorySelector";
 export { AIToolsForm } from "./AIToolsForm";

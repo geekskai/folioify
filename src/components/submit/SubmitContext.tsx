@@ -1,13 +1,16 @@
 import React, { createContext, useContext, useState } from "react";
 
-// 支持的分类类型，方便未来扩展
-export type CategoryType = "ai_tools" | "mcp_servers" | string;
+// 更新为使用数字类型
+// 0 = AI工具
+// 1 = MCP服务器
+// 2 = 其他
+export type SubmissionType = 0 | 1 | 2 | null;
 
 type SubmitContextType = {
   isSubmitting: boolean;
   setIsSubmitting: (value: boolean) => void;
-  selectedCategory: CategoryType | null;
-  setSelectedCategory: (category: CategoryType | null) => void;
+  selectedType: SubmissionType;
+  setSelectedType: (type: SubmissionType) => void;
   resetForm: () => void;
 };
 
@@ -15,13 +18,11 @@ const SubmitContext = createContext<SubmitContextType | undefined>(undefined);
 
 export function SubmitProvider({ children }: { children: React.ReactNode }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
-    null
-  );
+  const [selectedType, setSelectedType] = useState<SubmissionType>(null);
 
   const resetForm = () => {
     setIsSubmitting(false);
-    setSelectedCategory(null);
+    setSelectedType(null);
   };
 
   return (
@@ -29,8 +30,8 @@ export function SubmitProvider({ children }: { children: React.ReactNode }) {
       value={{
         isSubmitting,
         setIsSubmitting,
-        selectedCategory,
-        setSelectedCategory,
+        selectedType,
+        setSelectedType,
         resetForm,
       }}
     >

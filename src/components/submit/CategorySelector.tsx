@@ -11,16 +11,14 @@ import {
 } from "@/components/ui/card";
 import { BrainCircuit, Server, Check } from "lucide-react";
 import { useState } from "react";
-import { CategoryType } from "./SubmitContext";
+import { SubmissionType } from "./SubmitContext";
 
 interface CategorySelectorProps {
-  onCategorySelect: (category: CategoryType) => void;
+  onCategorySelect: (type: SubmissionType) => void;
 }
 
 export function CategorySelector({ onCategorySelect }: CategorySelectorProps) {
-  const [hoveredCategory, setHoveredCategory] = useState<CategoryType | null>(
-    null
-  );
+  const [hoveredCategory, setHoveredCategory] = useState<SubmissionType>(null);
 
   return (
     <div className="space-y-6">
@@ -34,12 +32,12 @@ export function CategorySelector({ onCategorySelect }: CategorySelectorProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card
           className={`cursor-pointer transition-all ${
-            hoveredCategory === "ai_tools"
+            hoveredCategory === 0
               ? "border-primary shadow-md transform -translate-y-1"
               : "hover:border-primary/50"
           }`}
-          onClick={() => onCategorySelect("ai_tools")}
-          onMouseEnter={() => setHoveredCategory("ai_tools")}
+          onClick={() => onCategorySelect(0)}
+          onMouseEnter={() => setHoveredCategory(0)}
           onMouseLeave={() => setHoveredCategory(null)}
         >
           <CardHeader className="pb-2">
@@ -77,12 +75,12 @@ export function CategorySelector({ onCategorySelect }: CategorySelectorProps) {
 
         <Card
           className={`cursor-pointer transition-all ${
-            hoveredCategory === "mcp_servers"
+            hoveredCategory === 1
               ? "border-primary shadow-md transform -translate-y-1"
               : "hover:border-primary/50"
           }`}
-          onClick={() => onCategorySelect("mcp_servers")}
-          onMouseEnter={() => setHoveredCategory("mcp_servers")}
+          onClick={() => onCategorySelect(1)}
+          onMouseEnter={() => setHoveredCategory(1)}
           onMouseLeave={() => setHoveredCategory(null)}
         >
           <CardHeader className="pb-2">

@@ -3,23 +3,15 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Loader2,
-  ArrowLeft,
-  Image as ImageIcon,
-  Check,
-  AlertCircle,
-} from "lucide-react";
+import { Loader2, ArrowLeft, AlertCircle } from "lucide-react";
 import { mcpServersSchema } from "./validation";
 import { useSubmitContext } from "./SubmitContext";
 import { submitMCPServer } from "./useSubmit";
 import { z } from "zod";
-import Image from "next/image";
 
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "../ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useLogo } from "./hooks/useLogo";
 import { LogoPreview } from "./components/LogoPreview";
@@ -43,8 +34,7 @@ export function MCPServersForm({
   onCancel: () => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const { isSubmitting, setIsSubmitting, setSelectedCategory } =
-    useSubmitContext();
+  const { isSubmitting, setIsSubmitting, setSelectedType } = useSubmitContext();
   const [descriptionLength, setDescriptionLength] = useState(0);
 
   const form = useForm<MCPServerFormValues>({
@@ -55,7 +45,7 @@ export function MCPServersForm({
       description: "",
       url: "",
       email: "",
-      server_type: "other",
+      type: 1, // MCP服务器类型
     },
   });
 
@@ -75,14 +65,8 @@ export function MCPServersForm({
     setIsSubmitting(true);
     setSubmitError(null);
 
-    // 确保server_type不为空
-    const submissionData = {
-      ...data,
-      server_type: data.server_type || "other",
-    };
-
     try {
-      await submitMCPServer(submissionData);
+      await submitMCPServer(data);
       onSuccess();
     } catch (error) {
       console.error("Submission failed:", error);
@@ -106,7 +90,7 @@ export function MCPServersForm({
   }
 
   const handleBack = () => {
-    setSelectedCategory(null);
+    setSelectedType(null);
   };
 
   // Check if all required fields are filled
@@ -122,16 +106,6 @@ export function MCPServersForm({
     // If image is showing in UI but isLogoValid is false, override it
     const logoValidationOK =
       isLogoValid || (logo_url.length > 0 && !isLogoLoading);
-
-    console.log("Form validation status:", {
-      formValid,
-      logoValidationOK,
-      titleValid: title.length >= 2,
-      logoValid: isLogoValid,
-      logoLength: logo_url.length,
-      descriptionValid: description.length >= 10,
-      urlValid: url.length > 0,
-    });
 
     return formValid && logoValidationOK;
   };
@@ -239,38 +213,19 @@ export function MCPServersForm({
           )}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="server_type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Server Type (Optional)</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="e.g., Text Generation, Image Generation"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Email (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="your@email.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contact Email (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="your@email.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         {submitError && (
           <Alert variant="destructive">

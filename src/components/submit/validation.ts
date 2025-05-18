@@ -29,6 +29,8 @@ export const submissionSchema = z.object({
     .email({ message: "Please enter a valid email address." })
     .optional()
     .or(z.literal("")),
+  // 使用数字表示类型: 0=AI工具, 1=MCP服务器, 2=其他
+  type: z.number().int().min(0).max(2).default(0),
 });
 
 // 与数据库约束一致的工具类型
@@ -42,15 +44,10 @@ const VALID_TOOL_TYPES = [
 
 // AI工具简化验证
 export const aiToolsSchema = submissionSchema.extend({
-  tool_type: z
-    .enum(VALID_TOOL_TYPES, {
-      required_error: "Please select a tool type.",
-      invalid_type_error: "Invalid tool type selected.",
-    })
-    .default("saas"),
+  type: z.literal(0).default(0),
 });
 
 // MCP服务器简化验证
 export const mcpServersSchema = submissionSchema.extend({
-  server_type: z.string().default("other"),
+  type: z.literal(1).default(1),
 });

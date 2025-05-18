@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import {
   SubmitProvider,
   useSubmitContext,
-  CategoryType,
+  SubmissionType,
 } from "./SubmitContext";
 import { CategorySelector } from "./CategorySelector";
 import { AIToolsForm } from "./AIToolsForm";
@@ -90,15 +90,15 @@ export function SubmitModalTrigger() {
   );
 }
 
-// 根据分类渲染对应的表单组件
-function getCategoryForm(
-  category: CategoryType | null,
+// 根据类型渲染对应的表单组件
+function getTypeForm(
+  type: SubmissionType,
   props: { onSuccess: () => void; onCancel: () => void }
 ) {
-  switch (category) {
-    case "ai_tools":
+  switch (type) {
+    case 0: // AI工具
       return <AIToolsForm {...props} />;
-    case "mcp_servers":
+    case 1: // MCP服务器
       return <MCPServersForm {...props} />;
     default:
       return null;
@@ -112,18 +112,18 @@ function SubmitModalContent({
   onSuccess: () => void;
   onCancel: () => void;
 }) {
-  const { selectedCategory, setSelectedCategory } = useSubmitContext();
+  const { selectedType, setSelectedType } = useSubmitContext();
 
-  const handleCategorySelect = (category: CategoryType) => {
-    setSelectedCategory(category);
+  const handleCategorySelect = (type: SubmissionType) => {
+    setSelectedType(type);
   };
 
   return (
     <div className="space-y-4 py-4">
-      {!selectedCategory ? (
+      {selectedType === null ? (
         <CategorySelector onCategorySelect={handleCategorySelect} />
       ) : (
-        <>{getCategoryForm(selectedCategory, { onSuccess, onCancel })}</>
+        <>{getTypeForm(selectedType, { onSuccess, onCancel })}</>
       )}
     </div>
   );

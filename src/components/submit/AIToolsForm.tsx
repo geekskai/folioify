@@ -58,8 +58,7 @@ export function AIToolsForm({
   onCancel: () => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const { setIsSubmitting, isSubmitting, setSelectedCategory } =
-    useSubmitContext();
+  const { setIsSubmitting, isSubmitting, setSelectedType } = useSubmitContext();
   const [descriptionLength, setDescriptionLength] = useState(0);
 
   const form = useForm<AIToolFormValues>({
@@ -70,7 +69,7 @@ export function AIToolsForm({
       description: "",
       url: "",
       email: "",
-      tool_type: "saas",
+      type: 0, // AI工具类型
     },
   });
 
@@ -88,14 +87,8 @@ export function AIToolsForm({
     setIsSubmitting(true);
     setSubmitError(null);
 
-    // Ensure tool_type is never empty or null
-    const submissionData = {
-      ...data,
-      tool_type: data.tool_type || "saas",
-    };
-
     try {
-      await submitAITool(submissionData);
+      await submitAITool(data);
       onSuccess();
     } catch (error) {
       console.error("Submission failed:", error);
@@ -119,20 +112,19 @@ export function AIToolsForm({
   }
 
   const handleBack = () => {
-    setSelectedCategory(null);
+    setSelectedType(null);
   };
 
   // Check if all required fields are filled
   const isFormComplete = () => {
-    const { title, logo_url, description, url, tool_type } = form.getValues();
+    const { title, logo_url, description, url } = form.getValues();
 
-    // Make sure all required fields have values and tool_type has a valid value
+    // Make sure all required fields have values
     return (
       title.length >= 2 &&
       isLogoValid &&
       description.length >= 10 &&
-      url.length > 0 &&
-      !!tool_type // Ensure tool_type is not empty
+      url.length > 0
     );
   };
 
@@ -238,46 +230,19 @@ export function AIToolsForm({
           )}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="tool_type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tool Type (Optional)</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select tool type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {TOOL_TYPES.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Email (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="your@email.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contact Email (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="your@email.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         {submitError && (
           <Alert variant="destructive">

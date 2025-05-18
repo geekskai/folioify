@@ -161,32 +161,22 @@ timeoutId.current = setTimeout(() => {
 
 ### 数据库优化细节
 
-#### 1. `ai_tools_submissions`表优化
+#### 1. 合并表结构
 
-- 更新`tool_type`列的 CHECK 约束，添加"other"作为有效选项
-- 设置默认值为"saas"，确保该字段始终有值
-- SQL 实现：
+- 从多表设计简化为单表设计，移除了`ai_tools_submissions`和`mcp_servers_submissions`表
+- 将所有必要字段直接添加到`submissions`表中，避免了跨表查询和约束
+- 添加了适当的默认值，确保即使前端未提供值，数据库仍能正确处理
 
-```sql
-ALTER TABLE ai_tools_submissions DROP CONSTRAINT IF EXISTS ai_tools_submissions_tool_type_check;
-ALTER TABLE ai_tools_submissions ADD CONSTRAINT ai_tools_submissions_tool_type_check
-  CHECK (tool_type = ANY (ARRAY['saas', 'api', 'open_source', 'browser_extension', 'other']::text[]));
-ALTER TABLE ai_tools_submissions ALTER COLUMN tool_type SET DEFAULT 'saas';
-```
+#### 2. 添加字段约束和默认值
 
-#### 2. `mcp_servers_submissions`表优化
+- 为`tool_type`设置默认值"saas"，确保 AI 工具提交时该字段非空
+- 为`server_type`设置默认值"other"，确保 MCP 服务器提交时该字段非空
+- 为`category_type`添加 CHECK 约束，限制为允许的值："ai_tools"或"mcp_servers"
 
-- 为`server_type`字段设置默认值"other"
-- SQL 实现：
-
-```sql
-ALTER TABLE mcp_servers_submissions ALTER COLUMN server_type SET DEFAULT 'other';
-```
-
-#### 3. `submissions`表时间戳优化
+#### 3. 优化时间戳处理
 
 - 为`created_at`和`updated_at`字段添加默认值
-- 添加触发器自动更新`updated_at`
+- 添加触发器自动更新`updated_at`字段
 - SQL 实现：
 
 ```sql
@@ -210,13 +200,31 @@ FOR EACH ROW
 EXECUTE PROCEDURE update_modified_column();
 ```
 
+#### 4. 设置 Row-Level Security
+
+- 启用 RLS 以确保数据安全
+- 添加允许所有用户插入新提交的策略
+- 添加仅允许所有者更新自己提交的策略
+
 ### 前后端一致性优化
 
 为确保前端和数据库的一致性，实施了以下改进：
 
-1. 更新前端表单的默认值设置与数据库保持一致
-2. 在 API 层添加额外验证，确保存入数据库的值符合约束
+1. 更新 API 路由处理，直接向`submissions`表插入所有字段，无需额外的表操作
+2. 根据`category_type`设置适当的默认值，确保符合数据库约束
 3. 统一错误处理逻辑，提供更清晰的错误消息
+
+### 迁移路径
+
+对于已有数据的系统，迁移遵循以下步骤：
+
+1. 添加新字段到`submissions`表
+2. 从旧的分类表中复制数据到`submissions`表的相应字段
+3. 删除旧的分类表
+4. 添加约束和默认值
+5. 优化 RLS 策略
+
+此优化简化了数据库结构，减少了查询复杂性，并提高了整体系统的稳定性和可维护性。
 
 ## 性能优化
 
