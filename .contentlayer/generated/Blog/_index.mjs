@@ -3,5 +3,6 @@
 import blog__leakedSystemPromptsMdx from './blog__leaked-system-prompts.mdx.json' assert { type: 'json' }
 import blog__whatIsAnAiMcpServerMdx from './blog__what-is-an-ai-mcp-server.mdx.json' assert { type: 'json' }
 import blog__howToBuildAnAiMcpServerMdx from './blog__how-to-build-an-ai-mcp-server.mdx.json' assert { type: 'json' }
+import blog__howAiWebsitesAndToolsEmpowerSmallBusinessesMdx from './blog__how-ai-websites-and-tools-empower-small-businesses.mdx.json' assert { type: 'json' }
 
-export const allBlogs = [blog__leakedSystemPromptsMdx, blog__whatIsAnAiMcpServerMdx, blog__howToBuildAnAiMcpServerMdx]
+export const allBlogs = [blog__leakedSystemPromptsMdx, blog__whatIsAnAiMcpServerMdx, blog__howToBuildAnAiMcpServerMdx, blog__howAiWebsitesAndToolsEmpowerSmallBusinessesMdx]
