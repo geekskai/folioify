@@ -1,6 +1,80 @@
 import { CategoryType } from "./SubmitContext";
 
-// Submit AI tool with simplified fields
+interface SubmissionResult {
+  success: boolean;
+  id?: string;
+  error?: string;
+}
+
+// 定义一个可能有message属性的对象类型
+interface ErrorWithMessage {
+  message: string | unknown;
+}
+
+/**
+ * 通用提交函数，接受类别类型和对应数据
+ * @param data 提交数据
+ * @param categoryType 类别类型
+ * @returns 提交结果
+ */
+export async function submitResource(
+  data: {
+    title: string;
+    logo_url: string;
+    description: string;
+    url: string;
+    email?: string;
+    tool_type?: string;
+    server_type?: string;
+  },
+  categoryType: CategoryType
+): Promise<SubmissionResult> {
+  try {
+    console.log(`Submitting ${categoryType}...`, JSON.stringify(data, null, 2));
+
+    const response = await fetch("/api/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...data,
+        category_type: categoryType,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error(`${categoryType} submission failed:`, result);
+      throw new Error(result.error || "Submission failed");
+    }
+
+    console.log(`${categoryType} submission successful:`, result);
+    return { success: true, id: result.id };
+  } catch (error) {
+    console.error(`${categoryType} submission error:`, error);
+
+    // 确保返回有用的错误消息
+    let errorMessage = "An unknown error occurred during submission";
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === "string") {
+      errorMessage = error;
+    } else if (error && typeof error === "object" && "message" in error) {
+      errorMessage = String((error as ErrorWithMessage).message);
+    }
+
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * 提交AI工具
+ * @param data AI工具数据
+ * @returns 提交结果
+ */
 export async function submitAITool(data: {
   title: string;
   logo_url: string;
@@ -8,37 +82,19 @@ export async function submitAITool(data: {
   url: string;
   email?: string;
   tool_type?: string;
-}) {
-  try {
-    console.log("Submitting AI tool...");
-
-    const response = await fetch("/api/submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...data,
-        category_type: "ai_tools",
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("AI tool submission failed:", errorData);
-      throw new Error(errorData.error || "Submission failed");
-    }
-
-    const result = await response.json();
-    console.log("AI tool submission successful", result);
-    return result.id;
-  } catch (error) {
-    console.error("AI tool submission error:", error);
-    throw error;
+}): Promise<string> {
+  const result = await submitResource(data, "ai_tools");
+  if (!result.success) {
+    throw new Error(result.error);
   }
+  return result.id as string;
 }
 
-// Submit MCP server with simplified fields
+/**
+ * 提交MCP服务器
+ * @param data MCP服务器数据
+ * @returns 提交结果
+ */
 export async function submitMCPServer(data: {
   title: string;
   logo_url: string;
@@ -46,32 +102,10 @@ export async function submitMCPServer(data: {
   url: string;
   email?: string;
   server_type?: string;
-}) {
-  try {
-    console.log("Submitting MCP server...");
-
-    const response = await fetch("/api/submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...data,
-        category_type: "mcp_servers",
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("MCP server submission failed:", errorData);
-      throw new Error(errorData.error || "Submission failed");
-    }
-
-    const result = await response.json();
-    console.log("MCP server submission successful", result);
-    return result.id;
-  } catch (error) {
-    console.error("MCP server submission error:", error);
-    throw error;
+}): Promise<string> {
+  const result = await submitResource(data, "mcp_servers");
+  if (!result.success) {
+    throw new Error(result.error);
   }
+  return result.id as string;
 }

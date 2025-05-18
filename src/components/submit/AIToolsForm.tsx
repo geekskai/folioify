@@ -37,6 +37,8 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "../ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useLogo } from "./hooks/useLogo";
+import { LogoPreview } from "./components/LogoPreview";
 
 type AIToolFormValues = z.infer<typeof aiToolsSchema>;
 
@@ -56,9 +58,8 @@ export function AIToolsForm({
   onCancel: () => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isLogoValid, setIsLogoValid] = useState(false);
-  const [isLogoLoading, setIsLogoLoading] = useState(false);
-  const { setCurrentStep, isSubmitting, setIsSubmitting } = useSubmitContext();
+  const { setIsSubmitting, isSubmitting, setSelectedCategory } =
+    useSubmitContext();
   const [descriptionLength, setDescriptionLength] = useState(0);
 
   const form = useForm<AIToolFormValues>({
@@ -76,41 +77,8 @@ export function AIToolsForm({
   const watchDescription = form.watch("description");
   const logoUrl = form.watch("logo_url");
 
-  // Monitor logo URL changes and validate the image
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const validateLogo = async () => {
-      if (!logoUrl) {
-        setIsLogoValid(false);
-        return;
-      }
-
-      // Check if URL is a valid image URL
-      if (!logoUrl.match(/\.(jpeg|jpg|gif|png|svg|webp|ico)(\?.*)?$/i)) {
-        setIsLogoValid(false);
-        return;
-      }
-
-      setIsLogoLoading(true);
-
-      // Try to load the image to validate URL
-      const img = new window.Image();
-      img.onload = () => {
-        setIsLogoValid(true);
-        setIsLogoLoading(false);
-      };
-
-      img.onerror = () => {
-        setIsLogoValid(false);
-        setIsLogoLoading(false);
-      };
-
-      img.src = logoUrl;
-    };
-
-    validateLogo();
-  }, [logoUrl]);
+  const { isLogoValid, isLogoLoading, setIsLogoValid, setIsLogoLoading } =
+    useLogo(logoUrl);
 
   useEffect(() => {
     setDescriptionLength(watchDescription?.length || 0);
@@ -123,7 +91,7 @@ export function AIToolsForm({
     // Ensure tool_type is never empty or null
     const submissionData = {
       ...data,
-      tool_type: data.tool_type || "saas", // Default to "saas" if not selected
+      tool_type: data.tool_type || "saas",
     };
 
     try {
@@ -151,7 +119,7 @@ export function AIToolsForm({
   }
 
   const handleBack = () => {
-    setCurrentStep("category");
+    setSelectedCategory(null);
   };
 
   // Check if all required fields are filled
@@ -179,41 +147,13 @@ export function AIToolsForm({
           <h3 className="text-lg font-medium ml-2">AI Tool Submission</h3>
         </div>
 
-        {/* Logo preview */}
-        <div className="flex items-center justify-center mb-4">
-          {isLogoLoading ? (
-            <div className="w-24 h-24 flex items-center justify-center border rounded bg-muted">
-              <Skeleton className="w-16 h-16 rounded" />
-            </div>
-          ) : isLogoValid ? (
-            <div className="relative w-24 h-24 flex items-center justify-center border rounded bg-white p-2">
-              <Image
-                src={logoUrl}
-                alt="Logo Preview"
-                width={96}
-                height={96}
-                unoptimized
-                suppressHydrationWarning
-                onError={(e) => {
-                  console.error("Image failed to load:", e);
-                  setIsLogoValid(false);
-                  setIsLogoLoading(false);
-                }}
-                className="max-w-full max-h-full object-contain"
-              />
-              <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1">
-                <Check className="h-3 w-3" />
-              </div>
-            </div>
-          ) : (
-            <div className="w-24 h-24 flex flex-col items-center justify-center border rounded bg-muted">
-              <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
-              <span className="text-xs text-muted-foreground text-center">
-                {logoUrl ? "Invalid logo URL" : "Logo preview"}
-              </span>
-            </div>
-          )}
-        </div>
+        <LogoPreview
+          logoUrl={logoUrl}
+          isLogoValid={isLogoValid}
+          isLogoLoading={isLogoLoading}
+          setIsLogoValid={setIsLogoValid}
+          setIsLogoLoading={setIsLogoLoading}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField

@@ -5,7 +5,8 @@ import { z } from "zod";
 // Validation schema for API requests - updated to match client validation
 const submissionSchema = z.object({
   title: z.string().min(2).max(100),
-  logo_url: z.string().url(),
+  // 放宽logo_url验证，只要是有效URL即可
+  logo_url: z.string().url({ message: "Logo URL must be a valid URL" }),
   description: z.string().min(10).max(150),
   url: z.string().url(),
   email: z.string().email().optional().nullable().or(z.literal("")),
@@ -24,6 +25,53 @@ const VALID_TOOL_TYPES = [
   "other",
 ];
 
+// 添加类型定义
+type SubmissionData = z.infer<typeof submissionSchema>;
+
+// 类别特定处理的配置
+const CATEGORY_HANDLERS: Record<
+  string,
+  {
+    table: string;
+    defaultType: string;
+    validTypes?: string[];
+    getFields: (data: SubmissionData) => Record<string, string>;
+    errorMessage: string;
+  }
+> = {
+  ai_tools: {
+    table: "ai_tools_submissions",
+    defaultType: "saas",
+    validTypes: VALID_TOOL_TYPES,
+    getFields: (data: SubmissionData) => ({
+      tool_type: VALID_TOOL_TYPES.includes(data.tool_type || "")
+        ? data.tool_type || "saas"
+        : "saas",
+    }),
+    errorMessage: "Failed to create AI tool details",
+  },
+  mcp_servers: {
+    table: "mcp_servers_submissions",
+    defaultType: "other",
+    getFields: (data: SubmissionData) => ({
+      server_type: data.server_type || "other",
+    }),
+    errorMessage: "Failed to create MCP server details",
+  },
+};
+
+// 通用错误响应函数
+function errorResponse(message: string, details: unknown = null, status = 500) {
+  console.error(message, details);
+  return NextResponse.json(
+    {
+      error: message,
+      details: details || "No additional details available",
+    },
+    { status }
+  );
+}
+
 export async function POST(request: Request) {
   try {
     // Parse request body
@@ -35,30 +83,38 @@ export async function POST(request: Request) {
     const result = submissionSchema.safeParse(body);
     if (!result.success) {
       console.error("Validation error:", result.error.format());
-      return NextResponse.json(
-        { error: "Invalid submission data", details: result.error.format() },
-        { status: 400 }
+      return errorResponse(
+        "Invalid submission data",
+        result.error.format(),
+        400
       );
     }
 
     const data = result.data;
-    console.log("Validated data:", JSON.stringify(data));
+
+    // 确保特定字段有默认值
+    if (data.category_type === "ai_tools" && !data.tool_type) {
+      data.tool_type = "saas";
+    }
+
+    if (data.category_type === "mcp_servers" && !data.server_type) {
+      data.server_type = "other";
+    }
+
+    console.log("Validated data with defaults:", JSON.stringify(data));
 
     try {
       // Initialize Supabase server client with service role key
       const supabase = createServerClient();
 
       // Test connection
-      const { data: testData, error: testError } = await supabase
+      const { error: testError } = await supabase
         .from("submissions")
         .select("id")
         .limit(1);
+
       if (testError) {
-        console.error("Supabase connection test failed:", testError);
-        return NextResponse.json(
-          { error: "Database connection failed", details: testError.message },
-          { status: 500 }
-        );
+        return errorResponse("Database connection failed", testError.message);
       }
 
       console.log("Supabase connection successful, proceeding with insertion");
@@ -79,83 +135,45 @@ export async function POST(request: Request) {
         .single();
 
       if (submissionError) {
-        console.error("Submission creation failed:", submissionError);
-        return NextResponse.json(
-          { error: `Failed to create submission: ${submissionError.message}` },
-          { status: 500 }
+        return errorResponse(
+          `Failed to create submission: ${submissionError.message}`
         );
       }
 
       const submissionId = submissionData.id;
       console.log("Created submission with ID:", submissionId);
 
-      // Insert into category-specific table based on type
-      if (data.category_type === "ai_tools") {
-        // Ensure valid tool_type for AI tools
-        let toolType = data.tool_type || "saas"; // Default to saas
-        if (!VALID_TOOL_TYPES.includes(toolType)) {
-          toolType = "saas"; // Fallback to a safe default if value is not in allowed list
-        }
+      // 使用配置处理特定类别
+      const categoryHandler = CATEGORY_HANDLERS[data.category_type];
+      if (categoryHandler) {
+        const categoryFields = categoryHandler.getFields(data);
+        console.log(`Using fields for ${data.category_type}:`, categoryFields);
 
-        console.log(`Using tool_type: ${toolType} for AI tool submission`);
-
-        const { error: toolError } = await supabase
-          .from("ai_tools_submissions")
+        const { error: detailError } = await supabase
+          .from(categoryHandler.table)
           .insert({
             id: submissionId,
-            tool_type: toolType,
+            ...categoryFields,
           });
 
-        if (toolError) {
-          console.error("AI tool details insertion failed:", toolError);
+        if (detailError) {
           // Try to clean up the main submission
           await supabase.from("submissions").delete().eq("id", submissionId);
-          return NextResponse.json(
-            {
-              error: `Failed to create AI tool details: ${toolError.message}`,
-              details: toolError.details || "No additional details available",
-            },
-            { status: 500 }
-          );
-        }
-      } else if (data.category_type === "mcp_servers") {
-        const { error: serverError } = await supabase
-          .from("mcp_servers_submissions")
-          .insert({
-            id: submissionId,
-            server_type: data.server_type || "other",
-          });
-
-        if (serverError) {
-          console.error("MCP server details insertion failed:", serverError);
-          // Try to clean up the main submission
-          await supabase.from("submissions").delete().eq("id", submissionId);
-          return NextResponse.json(
-            {
-              error: `Failed to create MCP server details: ${serverError.message}`,
-              details: serverError.details || "No additional details available",
-            },
-            { status: 500 }
+          return errorResponse(
+            `${categoryHandler.errorMessage}: ${detailError.message}`,
+            detailError.details
           );
         }
       }
 
       return NextResponse.json({ success: true, id: submissionId });
     } catch (dbError) {
-      console.error("Database operation error:", dbError);
-      return NextResponse.json(
-        {
-          error: "Database operation failed",
-          details: (dbError as Error).message,
-        },
-        { status: 500 }
+      return errorResponse(
+        "Database operation failed",
+        (dbError as Error).message
       );
     }
   } catch (error) {
-    console.error("Submission API error:", error);
-    return NextResponse.json(
-      { error: "Internal server error", details: (error as Error).message },
-      { status: 500 }
-    );
+    return errorResponse("Internal server error", (error as Error).message);
   }
 }

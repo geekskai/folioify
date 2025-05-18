@@ -8,15 +8,15 @@ export const submissionSchema = z.object({
     .max(100, { message: "Name must be less than 100 characters." }),
   logo_url: z
     .string()
-    .url({ message: "Please enter a valid Logo URL." })
+    .min(1, { message: "Logo URL is required." })
     .refine(
       (url) => {
-        if (!url) return false;
-        return url.match(/\.(jpeg|jpg|gif|png|svg|webp|ico)(\?.*)?$/i) !== null;
+        // Simple validation - just require it starts with http
+        return url.startsWith("http");
       },
       {
         message:
-          "Please provide a valid image URL (.jpg, .png, .svg, .gif, .webp, .ico)",
+          "Please provide a valid image URL starting with http:// or https://",
       }
     ),
   description: z
@@ -31,16 +31,26 @@ export const submissionSchema = z.object({
     .or(z.literal("")),
 });
 
+// 与数据库约束一致的工具类型
+const VALID_TOOL_TYPES = [
+  "saas",
+  "api",
+  "open_source",
+  "browser_extension",
+  "other",
+] as const;
+
 // AI工具简化验证
 export const aiToolsSchema = submissionSchema.extend({
   tool_type: z
-    .enum(["saas", "api", "open_source", "browser_extension", "other"], {
+    .enum(VALID_TOOL_TYPES, {
       required_error: "Please select a tool type.",
+      invalid_type_error: "Invalid tool type selected.",
     })
-    .optional(),
+    .default("saas"),
 });
 
 // MCP服务器简化验证
 export const mcpServersSchema = submissionSchema.extend({
-  server_type: z.string().optional().or(z.literal("")),
+  server_type: z.string().default("other"),
 });

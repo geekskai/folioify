@@ -30,6 +30,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "../ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useLogo } from "./hooks/useLogo";
+import { LogoPreview } from "./components/LogoPreview";
 
 type MCPServerFormValues = z.infer<typeof mcpServersSchema>;
 
@@ -41,9 +43,8 @@ export function MCPServersForm({
   onCancel: () => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isLogoValid, setIsLogoValid] = useState(false);
-  const [isLogoLoading, setIsLogoLoading] = useState(false);
-  const { setCurrentStep, isSubmitting, setIsSubmitting } = useSubmitContext();
+  const { isSubmitting, setIsSubmitting, setSelectedCategory } =
+    useSubmitContext();
   const [descriptionLength, setDescriptionLength] = useState(0);
 
   const form = useForm<MCPServerFormValues>({
@@ -54,7 +55,7 @@ export function MCPServersForm({
       description: "",
       url: "",
       email: "",
-      server_type: "",
+      server_type: "other",
     },
   });
 
@@ -62,62 +63,9 @@ export function MCPServersForm({
   const watchDescription = form.watch("description");
   const logoUrl = form.watch("logo_url");
 
-  // Monitor Logo URL changes and validate image
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const validateLogo = async () => {
-      if (!logoUrl) {
-        setIsLogoValid(false);
-        return;
-      }
-
-      // Check if URL is a valid image URL
-      if (!logoUrl.match(/\.(jpeg|jpg|gif|png|svg|webp|ico)(\?.*)?$/i)) {
-        setIsLogoValid(false);
-        return;
-      }
-
-      setIsLogoLoading(true);
-
-      try {
-        // Try to load the image to validate URL
-        const img = new window.Image();
-        img.onload = () => {
-          console.log("Logo loaded successfully:", logoUrl);
-          setIsLogoValid(true);
-          setIsLogoLoading(false);
-        };
-
-        img.onerror = () => {
-          console.error("Logo failed to load:", logoUrl);
-          setIsLogoValid(false);
-          setIsLogoLoading(false);
-        };
-
-        img.src = logoUrl;
-
-        // Add a failsafe in case onload/onerror doesn't fire
-        // This could happen in some browsers or with certain image types
-        setTimeout(() => {
-          if (isLogoLoading) {
-            console.log(
-              "Logo validation timed out - setting to valid as fallback"
-            );
-            setIsLogoValid(true);
-            setIsLogoLoading(false);
-          }
-        }, 3000);
-      } catch (error) {
-        console.error("Error during logo validation:", error);
-        // Fallback to valid in case of errors
-        setIsLogoValid(true);
-        setIsLogoLoading(false);
-      }
-    };
-
-    validateLogo();
-  }, [logoUrl, isLogoLoading]);
+  // 使用自定义Hook处理logo验证
+  const { isLogoValid, isLogoLoading, setIsLogoValid, setIsLogoLoading } =
+    useLogo(logoUrl);
 
   useEffect(() => {
     setDescriptionLength(watchDescription?.length || 0);
@@ -127,8 +75,14 @@ export function MCPServersForm({
     setIsSubmitting(true);
     setSubmitError(null);
 
+    // 确保server_type不为空
+    const submissionData = {
+      ...data,
+      server_type: data.server_type || "other",
+    };
+
     try {
-      await submitMCPServer(data);
+      await submitMCPServer(submissionData);
       onSuccess();
     } catch (error) {
       console.error("Submission failed:", error);
@@ -152,7 +106,7 @@ export function MCPServersForm({
   }
 
   const handleBack = () => {
-    setCurrentStep("category");
+    setSelectedCategory(null);
   };
 
   // Check if all required fields are filled
@@ -193,41 +147,14 @@ export function MCPServersForm({
           <h3 className="text-lg font-medium ml-2">MCP Server Submission</h3>
         </div>
 
-        {/* Logo preview */}
-        <div className="flex items-center justify-center mb-4">
-          {isLogoLoading ? (
-            <div className="w-24 h-24 flex items-center justify-center border rounded bg-muted">
-              <Skeleton className="w-16 h-16 rounded" />
-            </div>
-          ) : isLogoValid ? (
-            <div className="relative w-24 h-24 flex items-center justify-center border rounded bg-white p-2">
-              <Image
-                src={logoUrl}
-                alt="Logo Preview"
-                width={96}
-                height={96}
-                unoptimized
-                suppressHydrationWarning
-                onError={(e) => {
-                  console.error("Image failed to load:", e);
-                  setIsLogoValid(false);
-                  setIsLogoLoading(false);
-                }}
-                className="max-w-full max-h-full object-contain"
-              />
-              <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1">
-                <Check className="h-3 w-3" />
-              </div>
-            </div>
-          ) : (
-            <div className="w-24 h-24 flex flex-col items-center justify-center border rounded bg-muted">
-              <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
-              <span className="text-xs text-muted-foreground text-center">
-                {logoUrl ? "Invalid logo URL" : "Logo preview"}
-              </span>
-            </div>
-          )}
-        </div>
+        {/* 使用共享Logo预览组件 */}
+        <LogoPreview
+          logoUrl={logoUrl}
+          isLogoValid={isLogoValid}
+          isLogoLoading={isLogoLoading}
+          setIsLogoValid={setIsLogoValid}
+          setIsLogoLoading={setIsLogoLoading}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField

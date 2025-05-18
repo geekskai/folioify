@@ -112,17 +112,15 @@ function SubmitModalContent({
   onSuccess: () => void;
   onCancel: () => void;
 }) {
-  const { currentStep, selectedCategory, setSelectedCategory, setCurrentStep } =
-    useSubmitContext();
+  const { selectedCategory, setSelectedCategory } = useSubmitContext();
 
   const handleCategorySelect = (category: CategoryType) => {
     setSelectedCategory(category);
-    setCurrentStep("form");
   };
 
   return (
     <div className="space-y-4 py-4">
-      {currentStep === "category" ? (
+      {!selectedCategory ? (
         <CategorySelector onCategorySelect={handleCategorySelect} />
       ) : (
         <>{getCategoryForm(selectedCategory, { onSuccess, onCancel })}</>
