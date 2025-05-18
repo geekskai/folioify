@@ -46,6 +46,11 @@ const nextConfig = {
         hostname: "prototyprwp.gumlet.io",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "*",
+        pathname: "/**",
+      },
     ],
   },
   // Update experimental configuration for Next.js 15

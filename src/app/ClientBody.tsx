@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function ClientBody({
   children,
@@ -39,6 +40,7 @@ export default function ClientBody({
   return (
     <body className="antialiased" suppressHydrationWarning>
       <Layout>{children}</Layout>
+      <Toaster />
     </body>
   );
 }

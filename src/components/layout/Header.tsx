@@ -5,12 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetClose,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SubmitModalTrigger } from "@/components/submit";
+// import { useToast } from "@/hooks/use-toast";
 
 type NavItem = {
   label: string;
@@ -21,6 +18,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "MCP Servers", href: "/mcp-servers" },
+  // { label: "Prompts", href: "/prompts" },
   { label: "Blog", href: "/blog" },
   // { label: "Submit", href: "/submit" },
   // { label: "Newsletter", href: "/newsletter" },
@@ -28,11 +26,12 @@ const navItems: NavItem[] = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  // const { toast } = useToast();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-1">
           <Link href="/" className="flex items-center">
             <Image
               src="/logo.png"
@@ -55,6 +54,11 @@ export function Header() {
               </Link>
             ))}
           </nav>
+
+          {/* Desktop Submit Dialog */}
+          <div className="hidden md:block ml-auto">
+            <SubmitModalTrigger />
+          </div>
         </div>
 
         <div className="flex items-center gap-4">
@@ -78,13 +82,8 @@ export function Header() {
                   </Link>
                 ))}
                 <div className="h-px bg-border my-4" />
-                <Link
-                  href="/submit"
-                  className="text-lg font-medium transition-colors hover:text-primary"
-                  onClick={() => setOpen(false)}
-                >
-                  Submit a tool
-                </Link>
+                {/* Mobile Submit */}
+                <SubmitModalTrigger />
               </nav>
             </SheetContent>
           </Sheet>
