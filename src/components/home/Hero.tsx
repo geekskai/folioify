@@ -1,6 +1,3 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Image from "next/image";
 import { SearchBar } from "./SearchBar";
 import { HeroSection } from "./HeroSection";
 

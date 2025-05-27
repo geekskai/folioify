@@ -1,5 +1,4 @@
 import { SearchBar } from "./SearchBar";
-import Image from "next/image";
 
 export function HeroSection() {
   return (
@@ -15,26 +14,7 @@ export function HeroSection() {
           categories in the best AI tools directory.
         </p>
 
-        {/* 使用客户端搜索组件 */}
-        {/* <div className="mt-2 md:mt-4"> */}
         <SearchBar />
-        {/* </div> */}
-
-        {/* 特色标签 */}
-        {/* <div className="flex flex-wrap justify-center gap-4 mt-10">
-          <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center">
-            <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-            <span className="text-sm font-medium">安全下载</span>
-          </div>
-          <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center">
-            <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-            <span className="text-sm font-medium">无需注册</span>
-          </div>
-          <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center">
-            <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
-            <span className="text-sm font-medium">免费使用</span>
-          </div>
-        </div> */}
       </div>
 
       {/* 装饰性元素 - 移动端隐藏部分元素，调整尺寸 */}
