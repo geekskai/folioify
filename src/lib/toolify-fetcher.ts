@@ -117,3 +117,13 @@ export async function fetchAndStoreCategoryData() {
     };
   }
 }
+
+fetchAndStoreCategoryData()
+  .then(() => {
+    console.log("✅ fetchAndStoreCategoryData sync completed successfully!");
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error("❌ Error during sync:", error);
+    process.exit(1);
+  });

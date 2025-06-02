@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+// import fetch from "node-fetch";
 import dotenv from "dotenv";
 import { createServerClient } from "../src/db/supabase/client";
 
@@ -58,93 +58,93 @@ const supabase = createServerClient();
 /**
  * Create necessary database tables if they don't exist
  */
-async function setupDatabase() {
-  try {
-    console.log("Setting up database tables...");
+// async function setupDatabase() {
+//   try {
+//     console.log("Setting up database tables...");
 
-    // Print current Supabase URL for debugging
-    console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+//     // Print current Supabase URL for debugging
+//     console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
-    // List available tables first
-    const { data: tablesList, error: tablesError } = await supabase.rpc(
-      "get_tables"
-    );
+//     // List available tables first
+//     const { data: tablesList, error: tablesError } = await supabase.rpc(
+//       "get_tables"
+//     );
 
-    if (tablesError) {
-      console.error("Error fetching tables list:", tablesError);
-    } else {
-      console.log("Available tables in the database:", tablesList);
-    }
+//     if (tablesError) {
+//       console.error("Error fetching tables list:", tablesError);
+//     } else {
+//       console.log("Available tables in the database:", tablesList);
+//     }
 
-    // Check if category_item_detail table exists
-    const { error: categoryItemDetailError } = await supabase
-      .from("category_item_detail")
-      .select("*", { count: "exact", head: true })
-      .limit(0);
+//     // Check if category_item_detail table exists
+//     const { error: categoryItemDetailError } = await supabase
+//       .from("category_item_detail")
+//       .select("*", { count: "exact", head: true })
+//       .limit(0);
 
-    if (categoryItemDetailError && categoryItemDetailError.code === "42P01") {
-      // Table doesn't exist, create it
-      console.log("Creating category_item_detail table...");
-      const { error: createError } = await supabase.rpc("execute_sql", {
-        sql_query: `
-          CREATE TABLE category_item_detail (
-            id BIGINT PRIMARY KEY,
-            handle TEXT NOT NULL,
-            image TEXT,
-            website TEXT,
-            website_logo TEXT,
-            website_name TEXT,
-            what_is_summary TEXT,
-            month_visited_count BIGINT,
-            category_handle TEXT NOT NULL,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-          );
-          
-          CREATE INDEX idx_category_item_detail_handle ON category_item_detail(handle);
-          CREATE INDEX idx_category_item_detail_category_handle ON category_item_detail(category_handle);
-          
-          -- Create a function to update the updated_at column
-          CREATE OR REPLACE FUNCTION update_category_item_detail_updated_at()
-          RETURNS TRIGGER AS $$
-          BEGIN
-            NEW.updated_at = NOW();
-            RETURN NEW;
-          END;
-          $$ LANGUAGE plpgsql;
-          
-          -- Create trigger to update updated_at column
-          CREATE TRIGGER set_category_item_detail_updated_at
-          BEFORE UPDATE ON category_item_detail
-          FOR EACH ROW
-          EXECUTE FUNCTION update_category_item_detail_updated_at();
-        `,
-      });
+//     if (categoryItemDetailError && categoryItemDetailError.code === "42P01") {
+//       // Table doesn't exist, create it
+//       console.log("Creating category_item_detail table...");
+//       const { error: createError } = await supabase.rpc("execute_sql", {
+//         sql_query: `
+//           CREATE TABLE category_item_detail (
+//             id BIGINT PRIMARY KEY,
+//             handle TEXT NOT NULL,
+//             image TEXT,
+//             website TEXT,
+//             website_logo TEXT,
+//             website_name TEXT,
+//             what_is_summary TEXT,
+//             month_visited_count BIGINT,
+//             category_handle TEXT NOT NULL,
+//             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+//             updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+//           );
 
-      if (createError) {
-        console.error(
-          "Error creating category_item_detail table:",
-          createError
-        );
-        return false;
-      }
-      console.log("Table category_item_detail created successfully.");
-    } else if (categoryItemDetailError) {
-      console.error(
-        "Error checking category_item_detail table:",
-        categoryItemDetailError
-      );
-      return false;
-    } else {
-      console.log("Table category_item_detail already exists.");
-    }
+//           CREATE INDEX idx_category_item_detail_handle ON category_item_detail(handle);
+//           CREATE INDEX idx_category_item_detail_category_handle ON category_item_detail(category_handle);
 
-    return true;
-  } catch (error) {
-    console.error("Error setting up database:", error);
-    return false;
-  }
-}
+//           -- Create a function to update the updated_at column
+//           CREATE OR REPLACE FUNCTION update_category_item_detail_updated_at()
+//           RETURNS TRIGGER AS $$
+//           BEGIN
+//             NEW.updated_at = NOW();
+//             RETURN NEW;
+//           END;
+//           $$ LANGUAGE plpgsql;
+
+//           -- Create trigger to update updated_at column
+//           CREATE TRIGGER set_category_item_detail_updated_at
+//           BEFORE UPDATE ON category_item_detail
+//           FOR EACH ROW
+//           EXECUTE FUNCTION update_category_item_detail_updated_at();
+//         `,
+//       });
+
+//       if (createError) {
+//         console.error(
+//           "Error creating category_item_detail table:",
+//           createError
+//         );
+//         return false;
+//       }
+//       console.log("Table category_item_detail created successfully.");
+//     } else if (categoryItemDetailError) {
+//       console.error(
+//         "Error checking category_item_detail table:",
+//         categoryItemDetailError
+//       );
+//       return false;
+//     } else {
+//       console.log("Table category_item_detail already exists.");
+//     }
+
+//     return true;
+//   } catch (error) {
+//     console.error("Error setting up database:", error);
+//     return false;
+//   }
+// }
 
 /**
  * Save tool data to Supabase
@@ -327,6 +327,8 @@ async function syncAllCategories() {
   // Extract handles from the result
   const categories = categoryValues.map((item) => item.handle);
   console.log(`Found ${categories.length} categories in database to sync.`);
+
+  // const categories = ["ai-paraphraser"];
 
   await syncCategoriesList(categories);
 }
