@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Folioify
 
-## Getting Started
+AI 工具聚合平台，自动从 Toolify API 同步数据到 Supabase 数据库。
 
-First, run the development server:
+## 🚀 快速开始
+
+### 开发环境
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 自动化数据同步
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# 设置自动化同步系统
+npm run sync:setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# 检查配置
+npm run sync:check-config
 
-## Learn More
+# 测试API
+npm run sync:api-test
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 📊 功能特性
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- ✅ **自动化数据同步**: 每周六凌晨 2 点自动同步
+- ✅ **API 端点**: `/api/sync-data` 和 `/api/sync-status`
+- ✅ **GitHub Actions**: 定时任务自动执行
+- ✅ **分批处理**: 避免 Vercel 函数超时
+- ✅ **错误重试**: 自动重试失败的请求
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 项目结构
 
-## Deploy on Vercel
+```
+src/app/api/
+├── sync-data/          # 数据同步API
+└── sync-status/        # 状态查询API
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+.github/workflows/
+└── sync-data.yml       # 定时任务
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+scripts/
+├── setup-automation.ts    # 设置向导
+├── check-config.ts       # 配置检查
+└── test-sync-api.ts      # API测试
+```
+
+## 🔧 部署指南
+
+详细部署步骤请查看：[SETUP_GUIDE.md](SETUP_GUIDE.md)
+
+## 📖 文档
+
+- [自动化同步指南](SETUP_GUIDE.md) - 完整的设置和使用文档
+
+## 🛠️ 可用脚本
+
+| 命令                        | 说明           |
+| --------------------------- | -------------- |
+| `npm run dev`               | 启动开发服务器 |
+| `npm run sync:setup`        | 设置自动化同步 |
+| `npm run sync:check-config` | 检查配置       |
+| `npm run sync:api-test`     | 测试 API 端点  |
+
+## 📊 监控
+
+- **同步状态**: `/api/sync-status`
+- **GitHub Actions**: 仓库 → Actions 页面
+- **Vercel 日志**: Dashboard → Functions

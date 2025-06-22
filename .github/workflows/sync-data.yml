@@ -1,0 +1,107 @@
+name: 每周数据同步
+
+on:
+  schedule:
+    # 每周六凌晨2点执行 (UTC时间需要调整为前一天18点)
+    - cron: "0 18 * * 5" # 每周五18:00 UTC = 周六02:00 CST
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 数据同步 - 第1批
+        id: batch1
+        run: |
+          echo "开始第1批数据同步..."
+          response=$(curl -s -w "%{http_code}" -X POST "${{ vars.VERCEL_DOMAIN }}/api/sync-data" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.SYNC_API_SECRET }}" \
+            -d '{"batchSize": 3, "offset": 0}' \
+            --max-time 300 \
+            --retry 2 \
+            --retry-delay 10)
+
+          http_code="${response: -3}"
+          response_body="${response%???}"
+
+          echo "HTTP状态码: $http_code"
+          echo "响应内容: $response_body"
+
+          if [ "$http_code" -ne 200 ]; then
+            echo "第1批同步失败"
+            exit 1
+          fi
+
+          echo "第1批同步成功"
+
+      - name: 等待间隔
+        run: |
+          echo "等待30秒后继续下一批..."
+          sleep 30
+
+      - name: 数据同步 - 第2批
+        id: batch2
+        run: |
+          echo "开始第2批数据同步..."
+          response=$(curl -s -w "%{http_code}" -X POST "${{ vars.VERCEL_DOMAIN }}/api/sync-data" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.SYNC_API_SECRET }}" \
+            -d '{"batchSize": 3, "offset": 3}' \
+            --max-time 300 \
+            --retry 2 \
+            --retry-delay 10)
+
+          http_code="${response: -3}"
+          response_body="${response%???}"
+
+          echo "HTTP状态码: $http_code"
+          echo "响应内容: $response_body"
+
+          if [ "$http_code" -ne 200 ]; then
+            echo "第2批同步失败，但继续执行"
+          else
+            echo "第2批同步成功"
+          fi
+
+      - name: 等待间隔
+        run: |
+          echo "等待30秒后继续下一批..."
+          sleep 30
+
+      - name: 数据同步 - 第3批
+        id: batch3
+        run: |
+          echo "开始第3批数据同步..."
+          response=$(curl -s -w "%{http_code}" -X POST "${{ vars.VERCEL_DOMAIN }}/api/sync-data" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.SYNC_API_SECRET }}" \
+            -d '{"batchSize": 3, "offset": 6}' \
+            --max-time 300 \
+            --retry 2 \
+            --retry-delay 10)
+
+          http_code="${response: -3}"
+          response_body="${response%???}"
+
+          echo "HTTP状态码: $http_code"
+          echo "响应内容: $response_body"
+
+          if [ "$http_code" -ne 200 ]; then
+            echo "第3批同步失败，但继续执行"
+          else
+            echo "第3批同步成功"
+          fi
+
+      - name: 同步完成通知
+        if: always()
+        run: |
+          echo "==================================="
+          echo "数据同步工作流已完成"
+          echo "完成时间: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "==================================="
