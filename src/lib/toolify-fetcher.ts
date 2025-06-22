@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@/db/supabase/client";
 
 // Define the response types based on the API structure
 interface ToolifyResponse {
@@ -31,10 +31,8 @@ interface CategoryValue {
 }
 
 export async function fetchAndStoreCategoryData() {
-  // Initialize Supabase client
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  // Initialize Supabase client with service role key for admin operations
+  const supabase = createServerClient();
 
   try {
     // Fetch data from Toolify API

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Home } from "lucide-react";
@@ -33,57 +33,60 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
   const [hasMore, setHasMore] = useState(true);
   const itemsPerPage = 30;
 
-  const fetchToolData = async (currentPage = 1, loadMore = false) => {
-    if (!loadMore) {
-      setIsLoading(true);
-    }
-
-    try {
-      const supabase = createClient();
-
-      // Get category name from slug (format it for display)
-      const formattedCategoryName = slug
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-      setCategoryName(formattedCategoryName);
-
-      // Then fetch tools for this category with pagination
-      const from = (currentPage - 1) * itemsPerPage;
-      const to = from + itemsPerPage - 1;
-
-      const { data: toolsData, error: toolsError } = await supabase
-        .from("category_item_detail")
-        .select("*")
-        .eq("category_handle", slug)
-        .order("month_visited_count", { ascending: false })
-        .range(from, to);
-
-      if (toolsError) {
-        console.error("Error fetching tools:", toolsError);
-        return;
+  const fetchToolData = useCallback(
+    async (currentPage = 1, loadMore = false) => {
+      if (!loadMore) {
+        setIsLoading(true);
       }
 
-      if (toolsData) {
-        if (loadMore) {
-          setTools((prevTools) => [...prevTools, ...toolsData]);
-        } else {
-          setTools(toolsData);
+      try {
+        const supabase = createClient();
+
+        // Get category name from slug (format it for display)
+        const formattedCategoryName = slug
+          .split("-")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+        setCategoryName(formattedCategoryName);
+
+        // Then fetch tools for this category with pagination
+        const from = (currentPage - 1) * itemsPerPage;
+        const to = from + itemsPerPage - 1;
+
+        const { data: toolsData, error: toolsError } = await supabase
+          .from("category_item_detail")
+          .select("*")
+          .eq("category_handle", slug)
+          .order("month_visited_count", { ascending: false })
+          .range(from, to);
+
+        if (toolsError) {
+          console.error("Error fetching tools:", toolsError);
+          return;
         }
 
-        // Check if we have more items to load
-        setHasMore(toolsData.length === itemsPerPage);
+        if (toolsData) {
+          if (loadMore) {
+            setTools((prevTools) => [...prevTools, ...toolsData]);
+          } else {
+            setTools(toolsData);
+          }
+
+          // Check if we have more items to load
+          setHasMore(toolsData.length === itemsPerPage);
+        }
+      } catch (error) {
+        console.error("Error fetching tool data:", error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching tool data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [slug]
+  );
 
   useEffect(() => {
     fetchToolData(1);
-  }, [slug]);
+  }, [slug, fetchToolData]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
