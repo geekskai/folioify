@@ -1,4 +1,4 @@
-import { createClient } from "@/db/supabase/client";
+import { createClient } from "@/lib/supabase";
 import { SectionContainer } from "./SectionContainer";
 import { Suspense } from "react";
 import { FeaturedSection } from "./sections/FeaturedSection";

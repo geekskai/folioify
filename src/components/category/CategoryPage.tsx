@@ -73,7 +73,7 @@ export function CategoryPage({ group }: CategoryPageProps) {
 
       try {
         // Import the client dynamically to avoid SSR issues
-        const { createClient } = await import("@/db/supabase/client");
+        const { createClient } = await import("@/lib/supabase");
         const supabase = createClient();
 
         // Fetch category groups

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/db/supabase/client";
+import { createServerClient } from "@/lib/supabase";
 import { z } from "zod";
 
 // 简化验证模式

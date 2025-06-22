@@ -1,4 +1,4 @@
-import { createServerClient } from "@/db/supabase/client";
+import { createServerClient } from "@/lib/supabase";
 
 // Define the response types based on the API structure
 interface ToolifyResponse {

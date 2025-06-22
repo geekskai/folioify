@@ -6,7 +6,7 @@ import { Search, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
-import { createClient } from "@/db/supabase/client";
+import { createClient } from "@/lib/supabase";
 
 interface ServerSearchResult {
   id: string | number;

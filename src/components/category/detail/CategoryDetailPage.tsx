@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Home } from "lucide-react";
-import { createClient } from "@/db/supabase/client";
+import { createClient } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 
 interface Tool {

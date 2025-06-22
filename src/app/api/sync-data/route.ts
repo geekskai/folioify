@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "../../../db/supabase/client";
+import { createServerClient } from "@/lib/supabase";
 
 // API响应接口定义
 interface ApiResponse {

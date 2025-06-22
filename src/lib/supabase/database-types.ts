@@ -287,6 +287,54 @@ export type Database = {
         };
         Relationships: [];
       };
+      web_navigation: {
+        Row: {
+          id: number;
+          name: string;
+          title: string;
+          content: string;
+          detail: string;
+          url: string;
+          image_url: string;
+          thumbnail_url: string;
+          collection_time: string;
+          tag_name: string | null;
+          website_data: string | null;
+          star_rating: number;
+          category_name: string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          title: string;
+          content: string;
+          detail: string;
+          url: string;
+          image_url: string;
+          thumbnail_url: string;
+          collection_time: string;
+          tag_name?: string | null;
+          website_data?: string | null;
+          star_rating?: number;
+          category_name: string;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+          title?: string;
+          content?: string;
+          detail?: string;
+          url?: string;
+          image_url?: string;
+          thumbnail_url?: string;
+          collection_time?: string;
+          tag_name?: string | null;
+          website_data?: string | null;
+          star_rating?: number;
+          category_name?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

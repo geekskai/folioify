@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { createClient } from "@/db/supabase/client";
+import { createClient } from "@/lib/supabase";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Tables } from "@/db/supabase/types";
+import { Tables } from "@/lib/supabase";
 import { SectionList } from "./toolbox/SectionList";
 
 // 定义工具项的通用类型

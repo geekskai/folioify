@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bun --bun next dev",
-    "build": "contentlayer build || true && bun --bun next build",
+    "build": "bun run blog && bun --bun next build",
     "start": "bun --bun next start",
     "lint": "bun --bun next lint",
     "blog": "contentlayer build || true",

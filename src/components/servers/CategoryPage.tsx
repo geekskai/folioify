@@ -6,7 +6,7 @@ import { CategoryContent } from "./CategoryContent";
 import { CategoryContentSkeleton } from "./CategoryContentSkeleton";
 import { HeroSection } from "./HeroSection";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/db/supabase/client";
+import { createClient } from "@/lib/supabase";
 
 interface CategoryPageProps {
   category: string;

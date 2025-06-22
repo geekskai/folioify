@@ -1,4 +1,4 @@
-import { createClient } from "@/db/supabase/client";
+import { createClient } from "@/lib/supabase";
 import { ToolItem } from "../SectionList";
 
 export async function fetchSectionData(tableName: string): Promise<ToolItem[]> {
