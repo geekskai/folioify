@@ -1,5 +1,5 @@
 import { createClient } from "./client";
-import { Database, CategoryWithTools, ToolWithDetails } from "./types";
+import { CategoryWithTools, ToolWithDetails } from "./types";
 
 // Use the centralized client creation function
 const supabase = createClient();
