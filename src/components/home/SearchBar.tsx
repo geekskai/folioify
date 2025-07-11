@@ -142,6 +142,8 @@ export function SearchBar() {
         setShowSuggestions(false);
       }
     };
+    const isClient = typeof window !== "undefined";
+    if (!isClient) return;
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {

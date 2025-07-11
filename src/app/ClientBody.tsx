@@ -11,11 +11,15 @@ export default function ClientBody({
 }) {
   // Remove any extension-added elements during hydration
   useEffect(() => {
+    const isClient = typeof window !== "undefined";
+    if (!isClient) return;
     // This runs only on the client after hydration
     document.body.className = "antialiased";
 
     // Remove LastPass elements that might cause hydration issues
     const removeLastPassElements = () => {
+      const isClient = typeof window !== "undefined";
+      if (!isClient) return;
       const lastPassElements = document.querySelectorAll(
         "[data-lastpass-icon-root]"
       );
@@ -29,6 +33,8 @@ export default function ClientBody({
 
     // Also run when DOM changes to catch delayed injections
     const observer = new MutationObserver(() => {
+      const isClient = typeof window !== "undefined";
+      if (!isClient) return;
       removeLastPassElements();
     });
 

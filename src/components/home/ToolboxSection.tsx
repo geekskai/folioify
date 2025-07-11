@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { createClient } from "@/lib/supabase";
+import { createServerClient } from "@/lib/supabase";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Tables } from "@/lib/supabase";
 import { SectionList } from "./toolbox/SectionList";
@@ -25,7 +25,7 @@ type SectionData = {
 };
 
 export async function ToolboxSection() {
-  const supabase = createClient();
+  const supabase = createServerClient();
 
   // 获取所有表格数据
   const { data: featuredList, error: featuredError } = await supabase

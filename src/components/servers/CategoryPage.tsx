@@ -6,7 +6,7 @@ import { CategoryContent } from "./CategoryContent";
 import { CategoryContentSkeleton } from "./CategoryContentSkeleton";
 import { HeroSection } from "./HeroSection";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase";
+import { createServerClient } from "@/lib/supabase";
 
 interface CategoryPageProps {
   category: string;
@@ -89,7 +89,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const initialScrollDone = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  const supabase = createServerClient();
   const dataCache = useRef<Record<string, CacheItem>>({});
 
   // 获取当前页码
@@ -487,7 +487,8 @@ export function CategoryPage({ category }: CategoryPageProps) {
       // 等待DOM更新完成后再滚动
       setTimeout(() => {
         const element = sectionRefs.current[category];
-        if (element) {
+        const isClient = typeof window !== "undefined";
+        if (element && isClient) {
           // 使用更平滑的滚动
           const headerOffset = 80; // 调整这个值来控制滚动的偏移量
           const elementPosition = element.getBoundingClientRect().top;

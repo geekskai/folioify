@@ -9,6 +9,7 @@ import { ContentSkeleton } from "./ContentSkeleton";
 import { HeroSection } from "./HeroSection";
 import { FeaturedSection } from "./FeaturedSection";
 import { useRouter } from "next/navigation";
+import { createServerClient } from "@/lib/supabase";
 
 interface CategoryPageProps {
   group: string;
@@ -73,8 +74,8 @@ export function CategoryPage({ group }: CategoryPageProps) {
 
       try {
         // Import the client dynamically to avoid SSR issues
-        const { createClient } = await import("@/lib/supabase");
-        const supabase = createClient();
+        // const { createClient } = await import("@/lib/supabase");
+        const supabase = createServerClient();
 
         // Fetch category groups
         const { data: groups, error: groupsError } = await supabase
@@ -149,6 +150,10 @@ export function CategoryPage({ group }: CategoryPageProps) {
           .filter((section) => section !== null)
           .map((section) => section as CategorySection);
 
+        console.log(
+          `🚀 ~ fetchAllCategoryData ~ validSections:`,
+          validSections
+        );
         // 存储所有分类数据
         setAllCategorySections(validSections);
         dataFetched.current = true;
@@ -175,7 +180,9 @@ export function CategoryPage({ group }: CategoryPageProps) {
       // 等待DOM更新完成后再滚动
       setTimeout(() => {
         const element = sectionRefs.current[activeSection];
-        if (element) {
+
+        const isClient = typeof window !== "undefined";
+        if (element && isClient) {
           // 使用更平滑的滚动
           const headerOffset = 80; // 调整这个值来控制滚动的偏移量
           const elementPosition = element.getBoundingClientRect().top;
@@ -213,7 +220,8 @@ export function CategoryPage({ group }: CategoryPageProps) {
 
       // 滚动到对应位置
       const element = sectionRefs.current[sectionId];
-      if (element) {
+      const isClient = typeof window !== "undefined";
+      if (element && isClient) {
         const headerOffset = 80; // 调整这个值来控制滚动的偏移量
         const elementPosition = element.getBoundingClientRect().top;
         const offsetPosition =

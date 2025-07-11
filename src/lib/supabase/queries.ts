@@ -1,8 +1,8 @@
-import { createClient } from "./client";
+import { createServerClient } from "./client";
 import { CategoryWithTools, ToolWithDetails } from "./types";
 
 // Use the centralized client creation function
-const supabase = createClient();
+const supabase = createServerClient();
 
 /**
  * Get list of all categories

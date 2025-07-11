@@ -1,5 +1,5 @@
 // Re-export client functions
-export { createClient, createServerClient } from "./client";
+export {  createServerClient } from "./client";
 
 // Re-export types
 export type {

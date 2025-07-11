@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Home } from "lucide-react";
-import { createClient } from "@/lib/supabase";
+import { createServerClient } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 
 interface Tool {
@@ -40,7 +40,7 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
       }
 
       try {
-        const supabase = createClient();
+        const supabase = createServerClient();
 
         // Get category name from slug (format it for display)
         const formattedCategoryName = slug

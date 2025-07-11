@@ -6,7 +6,7 @@ import { Search, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
-import { createClient } from "@/lib/supabase";
+import { createServerClient } from "@/lib/supabase";
 
 interface ServerSearchResult {
   id: string | number;
@@ -35,7 +35,7 @@ export function ServerSearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = createServerClient();
 
   // Use debounce to reduce search frequency
   const debouncedSearchTerm = useDebounce(searchQuery, 300);
@@ -43,6 +43,8 @@ export function ServerSearchBar() {
   // Handle search submission
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    const isClient = typeof window !== "undefined";
+    if (!isClient) return;
     if (searchQuery.trim()) {
       // Get the current URL path
       const currentPath = window.location.pathname;
@@ -56,7 +58,8 @@ export function ServerSearchBar() {
   // Handle suggestion click
   const handleSuggestionClick = (suggestion: ServerSearchResult) => {
     setSearchQuery(suggestion.name);
-
+    const isClient = typeof window !== "undefined";
+    if (!isClient) return;
     // Get the current URL path
     const currentPath = window.location.pathname;
 
@@ -69,7 +72,8 @@ export function ServerSearchBar() {
   const clearSearch = () => {
     setSearchQuery("");
     setSuggestions([]);
-
+    const isClient = typeof window !== "undefined";
+    if (!isClient) return;
     // Get the current URL path
     const currentPath = window.location.pathname;
 
@@ -104,6 +108,8 @@ export function ServerSearchBar() {
         setShowSuggestions(false);
       }
     };
+    const isClient = typeof window !== "undefined";
+    if (!isClient) return;
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {

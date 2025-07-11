@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase";
+import { createServerClient } from "@/lib/supabase";
 import { ToolItem } from "../SectionList";
 
 export async function fetchSectionData(tableName: string): Promise<ToolItem[]> {
-  const supabase = createClient();
+  const supabase = createServerClient();
   const { data, error } = await supabase
     .from(
       tableName as
