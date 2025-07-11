@@ -144,12 +144,21 @@ async function fetchAndSaveToolifyData(handle: string, maxPages = 3) {
 
 export async function POST(request: NextRequest) {
   try {
-    // 简单的API密钥验证
+    // API密钥验证
     const authHeader = request.headers.get("authorization");
     const expectedAuth = `Bearer ${process.env.SYNC_API_SECRET}`;
 
-    if (process.env.SYNC_API_SECRET && authHeader !== expectedAuth) {
-      return NextResponse.json({ error: "未授权访问" }, { status: 401 });
+    // 如果设置了API密钥，则必须验证
+    if (process.env.SYNC_API_SECRET) {
+      if (!authHeader || authHeader !== expectedAuth) {
+        console.error("未授权访问尝试:", {
+          hasAuth: !!authHeader,
+          authMatch: authHeader === expectedAuth,
+        });
+        return NextResponse.json({ error: "未授权访问" }, { status: 401 });
+      }
+    } else {
+      console.warn("警告: SYNC_API_SECRET 未设置，跳过身份验证");
     }
 
     const body = await request.json().catch(() => ({}));
@@ -207,6 +216,21 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("同步API错误:", error);
+
+    // 记录详细的错误信息用于调试
+    const errorDetails = {
+      message: error instanceof Error ? error.message : "未知错误",
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString(),
+      requestInfo: {
+        method: request.method,
+        url: request.url,
+        headers: Object.fromEntries(request.headers.entries()),
+      },
+    };
+
+    console.error("详细错误信息:", errorDetails);
+
     return NextResponse.json(
       {
         error: "内部服务器错误",
