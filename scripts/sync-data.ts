@@ -1,6 +1,6 @@
 // import fetch from "node-fetch";
 import dotenv from "dotenv";
-import { createServerClient } from "../src/db/supabase/client";
+import { createServerClient } from "../src/lib/supabase";
 
 // Load environment variables
 dotenv.config();

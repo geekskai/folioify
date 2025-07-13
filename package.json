@@ -8,11 +8,7 @@
     "start": "bun --bun next start",
     "lint": "bun --bun next lint",
     "blog": "contentlayer build || true",
-    "sync": "bun run scripts/sync-data.ts",
-    "sync:complete": "bun run scripts/complete-sync-data.ts",
-    "sync:api-test": "bun run scripts/test-sync-api.ts",
-    "sync:check-config": "bun run scripts/check-config.ts",
-    "sync:setup": "bun run scripts/setup-automation.ts"
+    "sync": "bun run scripts/sync-data.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
