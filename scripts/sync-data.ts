@@ -46,9 +46,12 @@ interface ToolData {
 // Check if environment variables are set
 if (
   !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  !process.env.SUPABASE_SERVICE_ROLE_KEY
+  !process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
 ) {
   console.error("Missing Supabase environment variables");
+  console.error("Required variables:");
+  console.error("- NEXT_PUBLIC_SUPABASE_URL");
+  console.error("- NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY");
   process.exit(1);
 }
 
