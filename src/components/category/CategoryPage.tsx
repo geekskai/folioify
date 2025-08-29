@@ -3,11 +3,9 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { CategorySidebar } from "./CategorySidebar";
 import { CategoryToolList } from "./CategoryToolList";
-// import { CategoryHeader } from "./CategoryHeader";
 import { CategorySkeleton } from "./CategorySkeleton";
 import { ContentSkeleton } from "./ContentSkeleton";
 import { HeroSection } from "./HeroSection";
-import { FeaturedSection } from "./FeaturedSection";
 import { useRouter } from "next/navigation";
 import { createServerClient } from "@/lib/supabase";
 
