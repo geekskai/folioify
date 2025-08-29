@@ -86,11 +86,25 @@ export function CategoryPage({ category }: CategoryPageProps) {
     Record<string, number>
   >({});
 
-  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const initialScrollDone = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const supabase = createServerClient();
   const dataCache = useRef<Record<string, CacheItem>>({});
+
+  // 滚动到内容区域的函数
+  const scrollToContent = useCallback(() => {
+    if (contentRef.current && typeof window !== "undefined") {
+      const headerOffset = 80; // 调整这个值来控制滚动的偏移量
+      const elementPosition = contentRef.current.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  }, []);
 
   // 获取当前页码
   const getCurrentPage = useCallback(() => {
@@ -477,7 +491,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
     fetchAllCategoryData,
   ]);
 
-  // 初始化滚动到指定分类
+  // 初始化滚动到内容区域
   useEffect(() => {
     if (
       !isLoading &&
@@ -486,25 +500,11 @@ export function CategoryPage({ category }: CategoryPageProps) {
     ) {
       // 等待DOM更新完成后再滚动
       setTimeout(() => {
-        const element = sectionRefs.current[category];
-        const isClient = typeof window !== "undefined";
-        if (element && isClient) {
-          // 使用更平滑的滚动
-          const headerOffset = 80; // 调整这个值来控制滚动的偏移量
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition =
-            elementPosition + window.pageYOffset - headerOffset;
-
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth",
-          });
-
-          initialScrollDone.current = true;
-        }
+        scrollToContent();
+        initialScrollDone.current = true;
       }, 300); // 增加延迟，确保DOM已完全渲染
     }
-  }, [isLoading, category, categorySections]);
+  }, [isLoading, categorySections, scrollToContent]);
 
   // 处理分类点击
   const handleCategoryClick = useCallback(
@@ -522,8 +522,13 @@ export function CategoryPage({ category }: CategoryPageProps) {
 
       // 更新URL参数，重置页码到1
       router.push(`/mcp-servers?category=${categoryName}&page=1${searchParam}`);
+
+      // 滚动到内容区域
+      setTimeout(() => {
+        scrollToContent();
+      }, 100); // 短暂延迟确保状态更新完成
     },
-    [activeSection, router, getCurrentSearch]
+    [activeSection, router, getCurrentSearch, scrollToContent]
   );
 
   // 处理分页变化
