@@ -15,133 +15,19 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 检查环境变量
-        run: |
-          echo "检查必要的环境变量..."
-          if [ -z "${{ vars.VERCEL_DOMAIN }}" ]; then
-            echo "❌ VERCEL_DOMAIN 未设置"
-            exit 1
-          fi
-          if [ -z "${{ secrets.SYNC_API_SECRET }}" ]; then
-            echo "❌ SYNC_API_SECRET 未设置"
-            exit 1
-          fi
-          echo "✅ 环境变量检查通过"
-          echo "域名: ${{ vars.VERCEL_DOMAIN }}"
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
 
-      - name: API健康检查
-        run: |
-          echo "检查API健康状态..."
-          health_response=$(curl -s -w "HTTPSTATUS:%{http_code}" "${{ vars.VERCEL_DOMAIN }}/api/sync-data")
-          http_code=$(echo $health_response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
-          response_body=$(echo $health_response | sed -e 's/HTTPSTATUS:.*//g')
+      - name: 安装依赖
+        run: bun install
 
-          echo "健康检查HTTP状态码: $http_code"
-          echo "健康检查响应: $response_body"
-
-          if [ "$http_code" -ne 200 ]; then
-            echo "❌ API健康检查失败"
-            exit 1
-          fi
-          echo "✅ API健康检查通过"
-
-      - name: 数据同步 - 第1批
-        id: batch1
-        run: |
-          echo "开始第1批数据同步..."
-
-          # 使用更可靠的curl命令
-          response=$(curl -s -w "HTTPSTATUS:%{http_code}" \
-            -X POST "${{ vars.VERCEL_DOMAIN }}/api/sync-data" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ secrets.SYNC_API_SECRET }}" \
-            -d '{"batchSize": 3, "offset": 0}' \
-            --max-time 300 \
-            --retry 2 \
-            --retry-delay 10 \
-            --location)
-
-          # 解析响应
-          http_code=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
-          response_body=$(echo $response | sed -e 's/HTTPSTATUS:.*//g')
-
-          echo "HTTP状态码: $http_code"
-          echo "响应内容: $response_body"
-
-          # 检查状态码
-          if [ "$http_code" -ne 200 ]; then
-            echo "❌ 第1批同步失败，状态码: $http_code"
-            echo "错误详情: $response_body"
-            exit 1
-          fi
-
-          echo "✅ 第1批同步成功"
-
-      - name: 等待间隔
-        run: |
-          echo "等待30秒后继续下一批..."
-          sleep 30
-
-      - name: 数据同步 - 第2批
-        id: batch2
-        run: |
-          echo "开始第2批数据同步..."
-
-          response=$(curl -s -w "HTTPSTATUS:%{http_code}" \
-            -X POST "${{ vars.VERCEL_DOMAIN }}/api/sync-data" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ secrets.SYNC_API_SECRET }}" \
-            -d '{"batchSize": 3, "offset": 3}' \
-            --max-time 300 \
-            --retry 2 \
-            --retry-delay 10 \
-            --location)
-
-          http_code=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
-          response_body=$(echo $response | sed -e 's/HTTPSTATUS:.*//g')
-
-          echo "HTTP状态码: $http_code"
-          echo "响应内容: $response_body"
-
-          if [ "$http_code" -ne 200 ]; then
-            echo "⚠️ 第2批同步失败，但继续执行，状态码: $http_code"
-            echo "错误详情: $response_body"
-          else
-            echo "✅ 第2批同步成功"
-          fi
-
-      - name: 等待间隔
-        run: |
-          echo "等待30秒后继续下一批..."
-          sleep 30
-
-      - name: 数据同步 - 第3批
-        id: batch3
-        run: |
-          echo "开始第3批数据同步..."
-
-          response=$(curl -s -w "HTTPSTATUS:%{http_code}" \
-            -X POST "${{ vars.VERCEL_DOMAIN }}/api/sync-data" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ secrets.SYNC_API_SECRET }}" \
-            -d '{"batchSize": 3, "offset": 6}' \
-            --max-time 300 \
-            --retry 2 \
-            --retry-delay 10 \
-            --location)
-
-          http_code=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
-          response_body=$(echo $response | sed -e 's/HTTPSTATUS:.*//g')
-
-          echo "HTTP状态码: $http_code"
-          echo "响应内容: $response_body"
-
-          if [ "$http_code" -ne 200 ]; then
-            echo "⚠️ 第3批同步失败，但继续执行，状态码: $http_code"
-            echo "错误详情: $response_body"
-          else
-            echo "✅ 第3批同步成功"
-          fi
+      - name: 执行数据同步
+        run: bun run sync
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY }}
 
       - name: 同步完成通知
         if: always()
