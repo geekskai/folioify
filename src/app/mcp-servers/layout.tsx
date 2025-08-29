@@ -9,14 +9,40 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Folioify Clone | Design Tools and Community",
+  title:
+    "MCP Servers Directory | AI Model Context Protocol Tools & Integrations",
   description:
-    "Folioify is a platform for designers to find tools, share articles, and connect with the global design community.",
+    "Discover MCP (Model Context Protocol) servers and tools for AI integration. Find the best MCP servers for Claude, ChatGPT, and other AI models. Browse verified MCP tools for enhanced AI capabilities and workflow automation.",
+  keywords: [
+    "MCP servers",
+    "Model Context Protocol",
+    "AI MCP tools",
+    "Claude MCP servers",
+    "ChatGPT MCP integration",
+    "AI model extensions",
+    "MCP directory",
+    "AI workflow tools",
+    "AI integration tools",
+    "MCP protocol tools",
+  ],
+  openGraph: {
+    title: "MCP Servers Directory | AI Model Context Protocol Tools",
+    description:
+      "Discover MCP servers and tools for AI integration. Find the best MCP servers for Claude, ChatGPT, and other AI models.",
+    type: "website",
+    url: "https://www.folioify.com/mcp-servers",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MCP Servers Directory | AI Model Context Protocol Tools",
+    description:
+      "Discover MCP servers and tools for AI integration. Find the best MCP servers for enhanced AI capabilities.",
+  },
   icons: {
     icon: "/favicon.ico",
   },
   alternates: {
-    canonical: `https://www.folioify.com/mcp-servers`,
+    canonical: "https://www.folioify.com/mcp-servers",
   },
 };
 

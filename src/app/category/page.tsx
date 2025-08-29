@@ -1,25 +1,50 @@
-// 修改这个文件以解决searchParams错误
+// AI Tools Category Page - Optimized for SEO and user discovery
 import { Suspense } from "react";
 import { CategoryPage } from "@/components/category/CategoryPage";
 import { CategorySkeleton } from "@/components/category/CategorySkeleton";
 import { Metadata } from "next";
 
-// 添加动态渲染配置，确保服务器端能获取最新数据
+// Enable dynamic rendering to ensure fresh data for AI tools
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Folioify Clone | Design Tools and Community",
+  title: "AI Tools Categories | Browse by Use Case & Industry",
   description:
-    "Folioify is a platform for designers to find tools, share articles, and connect with the global design community.",
+    "Explore AI tools organized by categories including writing, image generation, chatbots, automation, business intelligence, and more. Find the perfect AI solution for your specific needs with our comprehensive directory.",
+  keywords: [
+    "AI tools categories",
+    "AI tools by category",
+    "AI writing tools",
+    "AI image generators",
+    "AI chatbots",
+    "AI automation tools",
+    "business AI tools",
+    "AI productivity tools",
+    "machine learning tools",
+    "AI software categories",
+  ],
+  openGraph: {
+    title: "AI Tools Categories | Browse by Use Case & Industry",
+    description:
+      "Explore AI tools organized by categories. Find the perfect AI solution for your specific needs.",
+    type: "website",
+    url: "https://www.folioify.com/category",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Tools Categories | Browse by Use Case & Industry",
+    description:
+      "Explore AI tools organized by categories. Find the perfect AI solution for your specific needs.",
+  },
   icons: {
     icon: "/favicon.ico",
   },
   alternates: {
-    canonical: `https://www.folioify.com/category`,
+    canonical: "https://www.folioify.com/category",
   },
 };
 
-// 定义 searchParams 类型为 Promise
+// Define searchParams type as Promise for Next.js 15+ compatibility
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function Page({
@@ -27,10 +52,10 @@ export default async function Page({
 }: {
   searchParams: SearchParams;
 }) {
-  // 等待解析 Promise
+  // Await Promise resolution for search parameters
   const resolvedParams = await searchParams;
 
-  // 获取 group 参数，确保它是字符串类型
+  // Extract group parameter with default fallback to popular AI category
   const group =
     typeof resolvedParams.group === "string"
       ? resolvedParams.group

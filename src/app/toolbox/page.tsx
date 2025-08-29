@@ -4,6 +4,40 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AI Tools Directory | Discover 1000+ Best AI Tools & Software",
+  description:
+    "Browse our comprehensive directory of AI tools and software. Find the perfect AI solution for your business, creative projects, and productivity needs. Compare features, pricing, and reviews of verified AI tools.",
+  keywords: [
+    "AI tools directory",
+    "AI software catalog",
+    "best AI tools",
+    "AI tools comparison",
+    "artificial intelligence tools",
+    "AI productivity tools",
+    "business AI tools",
+    "AI automation software",
+    "machine learning tools",
+    "AI writing tools",
+    "AI image generators",
+    "AI chatbots directory",
+  ],
+  openGraph: {
+    title: "AI Tools Directory | Discover 1000+ Best AI Tools & Software",
+    description:
+      "Browse our comprehensive directory of AI tools and software. Find the perfect AI solution for your needs.",
+    type: "website",
+    url: "https://www.folioify.com/toolbox",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Tools Directory | Discover 1000+ Best AI Tools & Software",
+    description:
+      "Browse our comprehensive directory of AI tools and software. Find the perfect AI solution for your needs.",
+  },
+};
 
 // Mock data for categories
 const categories = [
@@ -95,9 +129,9 @@ export default function ToolboxPage() {
         <section className="relative mb-12 pb-12 border-b">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Find the tool,{" "}
+              Find the AI tool,{" "}
               <span className="relative">
-                make your thing.
+                transform your work.
                 <span className="absolute bottom-0 left-0 w-full h-1 bg-folioify-blue"></span>
               </span>
             </h1>
@@ -105,7 +139,7 @@ export default function ToolboxPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
               <Input
                 type="search"
-                placeholder="Search 1000s of tools..."
+                placeholder="Search 1000s of AI tools..."
                 className="pl-10 pr-4 py-6 text-lg rounded-full"
               />
             </div>
@@ -236,11 +270,12 @@ export default function ToolboxPage() {
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="w-full md:w-2/3 space-y-6">
                 <h2 className="text-2xl md:text-3xl font-bold">
-                  Get a weekly list of the best tools
+                  Get a weekly list of the best AI tools
                 </h2>
                 <p className="text-muted-foreground">
-                  Join 25,000+ creatives who enjoy a regular dose of inspiration
-                  and motivation, delivered to your inbox every week.
+                  Join 25,000+ professionals who stay ahead with the latest AI
+                  tools, reviews, and productivity insights delivered to your
+                  inbox every week.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 max-w-lg">
                   <Input

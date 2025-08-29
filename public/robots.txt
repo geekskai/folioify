@@ -1,0 +1,38 @@
+# AI Tools Directory - Robots.txt
+# Optimized for search engine crawling and indexing
+
+User-agent: *
+Allow: /
+
+# Priority pages for AI tools discovery
+Allow: /category/
+Allow: /toolbox/
+Allow: /mcp-servers/
+Allow: /blog/
+Allow: /newsletter/
+
+# Disallow admin and API routes
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /test-logo/
+Disallow: /logo-test/
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://www.folioify.com/sitemap.xml
+
+# Special instructions for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 2

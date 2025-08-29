@@ -5,7 +5,7 @@ import { Metadata, ResolvingMetadata } from "next";
 // Add dynamic rendering to ensure we get the latest data
 export const dynamic = "force-dynamic";
 
-// Generate metadata for SEO
+// Generate SEO-optimized metadata for AI tools category pages
 export async function generateMetadata(
   { params }: { params: { slug: string } },
   parent: ResolvingMetadata
@@ -13,15 +13,49 @@ export async function generateMetadata(
   const resolvedParams = await Promise.resolve(params);
   const slug = resolvedParams.slug;
 
-  // Format the slug for display
+  // Format slug for display with AI tools context
   const formattedTitle = slug
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
+  // Create SEO-optimized title and description for AI tools
+  const seoTitle = `Best ${formattedTitle} AI Tools in 2025 | Compare Features & Pricing`;
+  const seoDescription = `Discover the top ${formattedTitle.toLowerCase()} AI tools and software. Compare features, pricing, and user reviews. Find the perfect AI solution for ${formattedTitle.toLowerCase()} to boost your productivity and efficiency.`;
+
   return {
-    title: `Best ${formattedTitle} Tools in 2025 | Folioify`,
-    description: `Discover the top ${formattedTitle.toLowerCase()} tools to enhance your productivity and creativity. Compare features and find the perfect solution for your needs.`,
+    title: seoTitle,
+    description: seoDescription,
+    keywords: [
+      `${formattedTitle.toLowerCase()} AI tools`,
+      `best ${formattedTitle.toLowerCase()} AI`,
+      `AI ${formattedTitle.toLowerCase()} software`,
+      `${formattedTitle.toLowerCase()} automation`,
+      `AI tools for ${formattedTitle.toLowerCase()}`,
+      `${formattedTitle.toLowerCase()} AI solutions`,
+      `artificial intelligence ${formattedTitle.toLowerCase()}`,
+      `${formattedTitle.toLowerCase()} AI comparison`,
+    ],
+    openGraph: {
+      title: seoTitle,
+      description: seoDescription,
+      type: "website",
+      url: `https://www.folioify.com/category/${slug}`,
+      images: [
+        {
+          url: `/images/categories/${slug}-og.jpg`,
+          width: 1200,
+          height: 630,
+          alt: `Best ${formattedTitle} AI Tools`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seoTitle,
+      description: seoDescription,
+      images: [`/images/categories/${slug}-twitter.jpg`],
+    },
     alternates: {
       canonical: `https://www.folioify.com/category/${slug}`,
     },

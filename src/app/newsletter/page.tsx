@@ -1,6 +1,36 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AI Tools Newsletter | Weekly AI Updates & Tool Discoveries",
+  description:
+    "Subscribe to our weekly AI tools newsletter. Get the latest AI tool releases, reviews, and industry insights delivered to your inbox. Join 25,000+ AI enthusiasts and professionals.",
+  keywords: [
+    "AI tools newsletter",
+    "AI news subscription",
+    "weekly AI updates",
+    "AI tool releases",
+    "artificial intelligence newsletter",
+    "AI industry insights",
+    "AI productivity newsletter",
+    "machine learning news",
+  ],
+  openGraph: {
+    title: "AI Tools Newsletter | Weekly AI Updates & Tool Discoveries",
+    description:
+      "Subscribe to our weekly AI tools newsletter. Get the latest AI tool releases, reviews, and industry insights.",
+    type: "website",
+    url: "https://www.folioify.com/newsletter",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Tools Newsletter | Weekly AI Updates & Tool Discoveries",
+    description:
+      "Subscribe to our weekly AI tools newsletter. Get the latest AI tool releases and industry insights.",
+  },
+};
 
 export default function NewsletterPage() {
   return (
@@ -8,12 +38,12 @@ export default function NewsletterPage() {
       <div className="container max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Folioify Newsletter
+            AI Tools Newsletter
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Join 25,000+ designers, developers, and creative professionals who
-            receive our weekly curated digest of design tools, resources, and
-            inspiration.
+            Join 25,000+ AI enthusiasts, developers, and business professionals
+            who receive our weekly curated digest of AI tools, reviews, and
+            industry insights.
           </p>
         </div>
 
@@ -24,9 +54,9 @@ export default function NewsletterPage() {
                 Subscribe to our weekly newsletter
               </h2>
               <p className="text-muted-foreground">
-                Every Thursday, we'll send you a handpicked selection of
-                articles, tools, and resources to help you stay on top of design
-                trends and boost your creativity.
+                Every Thursday, we'll send you a handpicked selection of AI
+                tools, reviews, and insights to help you stay on top of AI
+                trends and boost your productivity.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 max-w-lg">
                 <Input
@@ -58,26 +88,27 @@ export default function NewsletterPage() {
           <h2 className="text-2xl font-bold mb-6">What you'll receive</h2>
           <div className="grid gap-6 md:grid-cols-3">
             <div className="bg-background rounded-lg p-6 border">
-              <div className="mb-4 text-3xl">🔍</div>
-              <h3 className="text-lg font-medium mb-2">Curated Content</h3>
+              <div className="mb-4 text-3xl">🤖</div>
+              <h3 className="text-lg font-medium mb-2">AI Tool Reviews</h3>
               <p className="text-muted-foreground">
-                Hand-picked articles, tutorials, and resources from around the
-                web
+                In-depth reviews and comparisons of the latest AI tools and
+                software
               </p>
             </div>
             <div className="bg-background rounded-lg p-6 border">
-              <div className="mb-4 text-3xl">🛠️</div>
-              <h3 className="text-lg font-medium mb-2">Design Tools</h3>
+              <div className="mb-4 text-3xl">⚡</div>
+              <h3 className="text-lg font-medium mb-2">AI Productivity Tips</h3>
               <p className="text-muted-foreground">
-                The latest and most useful design and development tools
+                Practical tips and tutorials on using AI tools for maximum
+                productivity
               </p>
             </div>
             <div className="bg-background rounded-lg p-6 border">
-              <div className="mb-4 text-3xl">💡</div>
-              <h3 className="text-lg font-medium mb-2">Inspiration</h3>
+              <div className="mb-4 text-3xl">📈</div>
+              <h3 className="text-lg font-medium mb-2">Industry Insights</h3>
               <p className="text-muted-foreground">
-                Inspiring websites, projects, and design ideas to spark
-                creativity
+                Latest AI industry trends, market analysis, and business
+                applications
               </p>
             </div>
           </div>

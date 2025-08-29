@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { CategorySkeleton } from "@/components/category/CategorySkeleton";
 import { CategoryPage } from "@/components/servers/CategoryPage";
 
-// 定义 searchParams 为 Promise 类型
+// Define searchParams as Promise type for Next.js 15+ compatibility
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function ServerPage({
@@ -11,10 +11,10 @@ export default async function ServerPage({
 }: {
   searchParams: SearchParams;
 }) {
-  // 等待解析 Promise
+  // Await Promise resolution for search parameters
   const resolvedParams = await searchParams;
 
-  // 获取 category 参数，确保它是字符串类型
+  // Extract category parameter with default fallback to popular MCP category
   const category =
     typeof resolvedParams.category === "string"
       ? resolvedParams.category
