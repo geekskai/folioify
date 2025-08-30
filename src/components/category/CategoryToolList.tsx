@@ -18,9 +18,7 @@ export function CategoryToolList({ tools }: CategoryToolListProps) {
         <Link
           key={tool.id}
           target="_blank"
-          href={`/category/${
-            tool.handle || tool.name.toLowerCase().replace(/\s+/g, "-")
-          }`}
+          href={`/category/${tool.handle}`}
           className="block p-4 border border-gray-200 rounded-lg hover:border-violet-300 hover:shadow transition-all duration-200"
         >
           <div className="flex justify-between items-center">
