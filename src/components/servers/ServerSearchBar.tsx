@@ -8,6 +8,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import { createServerClient } from "@/lib/supabase";
 
+// 在组件外部创建单例supabase客户端
+const supabase = createServerClient();
+
 interface ServerSearchResult {
   id: string | number;
   name: string;
@@ -35,7 +38,6 @@ export function ServerSearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const supabase = createServerClient();
 
   // Use debounce to reduce search frequency
   const debouncedSearchTerm = useDebounce(searchQuery, 300);
@@ -178,7 +180,7 @@ export function ServerSearchBar() {
     };
 
     searchServers();
-  }, [debouncedSearchTerm, supabase]);
+  }, [debouncedSearchTerm]);
 
   return (
     <div className="relative w-full max-w-2xl mx-auto">

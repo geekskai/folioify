@@ -9,6 +9,9 @@ import { HeroSection } from "./HeroSection";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createServerClient } from "@/lib/supabase";
 
+// 在组件外部创建单例supabase客户端
+const supabase = createServerClient();
+
 interface CategoryPageProps {
   category: string;
 }
@@ -87,10 +90,8 @@ export function CategoryPage({ category }: CategoryPageProps) {
     Record<string, number>
   >({});
 
-  const initialScrollDone = useRef(false);
+  // const initialScrollDone = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
-  const supabase = createServerClient();
-  const dataCache = useRef<Record<string, CacheItem>>({});
 
   // 滚动到内容区域的函数
   const scrollToContent = useMemoizedFn(() => {
@@ -107,48 +108,19 @@ export function CategoryPage({ category }: CategoryPageProps) {
     }
   });
 
-  // 获取当前页码
-  const getCurrentPage = useMemoizedFn(() => {
-    const pageParam = searchParams.get("page");
-    return pageParam ? parseInt(pageParam, 10) : 1;
-  });
+  // 直接从searchParams计算当前值，避免不必要的函数包装
+  const currentCategoryName = searchParams.get("category") || "all";
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const currentSearch = searchParams.get("search") || "";
 
-  // 获取当前分类
-  const getCurrentCategory = useMemoizedFn(() => {
-    const categoryParam = searchParams.get("category");
-    return categoryParam || "all"; // 默认为"all"而不是category
-  });
-
-  // 获取当前搜索关键词
-  const getCurrentSearch = useMemoizedFn(() => {
-    const searchParam = searchParams.get("search");
-    return searchParam || "";
-  });
-
-  // 确保activeSection始终与URL参数同步
+  // 确保activeSection始终与URL参数同步 - 移除activeSection依赖避免循环
   useEffect(() => {
-    const currentCategory = getCurrentCategory();
-    if (currentCategory !== activeSection) {
-      setActiveSection(currentCategory);
-      initialScrollDone.current = false; // 重置滚动状态，允许重新滚动
-    }
-  }, [getCurrentCategory, activeSection]);
+    setActiveSection(currentCategoryName);
+  }, [currentCategoryName]);
 
   // 获取所有分类数据和总数据量（合并为一个请求）
   useEffect(() => {
     const fetchCategoriesAndCounts = async () => {
-      // 检查缓存
-      if (dataCache.current.main?.categories) {
-        setCategorySections(dataCache.current.main.categories);
-        if (dataCache.current.main.categoryCounts) {
-          setCategoryToolCounts(dataCache.current.main.categoryCounts);
-        }
-        if (dataCache.current.main.totalCount !== undefined) {
-          setTotalItemsCount(dataCache.current.main.totalCount);
-        }
-        return;
-      }
-
       try {
         // 1. 获取所有分类
         const { data: a_mcp_category } = await supabase
@@ -184,40 +156,30 @@ export function CategoryPage({ category }: CategoryPageProps) {
 
           setCategoryToolCounts(counts);
           setTotalItemsCount(totalCount);
-
-          // 缓存数据以避免重复请求
-          dataCache.current.main = {
-            categories,
-            categoryCounts: counts,
-            totalCount,
-          };
+        } else {
+          // 如果没有分类数据，确保设置加载状态为false
+          setIsLoading(false);
         }
       } catch (error) {
         console.error("获取分类数据失败:", error);
+        setIsLoading(false);
       }
     };
 
     fetchCategoriesAndCounts();
-  }, [supabase]);
+  }, []);
 
   // 优化的所有分类数据获取函数
   const fetchAllCategoryData = useMemoizedFn(
-    async (page: number, itemsPerPage: number) => {
-      const searchQuery = getCurrentSearch();
-      const cacheKey = `all_${page}_${itemsPerPage}_${searchQuery}`;
-
-      // 检查缓存
-      if (
-        dataCache.current[cacheKey]?.tools &&
-        dataCache.current[cacheKey]?.pagination
-      ) {
-        // 使用缓存数据
-        setCurrentPagination(dataCache.current[cacheKey].pagination!);
-        return dataCache.current[cacheKey].tools!;
-      }
-
+    async (
+      page: number,
+      itemsPerPage: number,
+      searchQuery: string,
+      categories: CategorySection[],
+      totalCount: number
+    ) => {
       let allTools: Tool[] = [];
-      const categoriesToFetch = categorySections;
+      const categoriesToFetch = categories;
       const itemsPerCategory = 2; // 每个分类获取2条数据
 
       try {
@@ -301,72 +263,68 @@ export function CategoryPage({ category }: CategoryPageProps) {
                 )
               )
             : Math.ceil(
-                totalItemsCount / (itemsPerCategory * categoriesToFetch.length)
+                totalCount / (itemsPerCategory * categoriesToFetch.length)
               ),
           itemsPerPage: itemsPerCategory * categoriesToFetch.length,
-          totalItems: searchQuery ? totalSearchResults : totalItemsCount,
+          totalItems: searchQuery ? totalSearchResults : totalCount,
         };
 
-        setCurrentPagination(pagination);
-
-        // 缓存结果
-        dataCache.current[cacheKey] = {
-          tools: allTools,
-          pagination,
-        };
-
-        return allTools;
+        return { tools: allTools, pagination };
       } catch (error) {
         console.error("获取所有分类数据失败:", error);
-        return [];
+        return {
+          tools: [],
+          pagination: {
+            currentPage: page,
+            totalPages: 1,
+            itemsPerPage,
+            totalItems: 0,
+          },
+        };
       }
     }
   );
 
-  // 优化的获取当前分类工具数据
-  useEffect(() => {
-    const fetchCategoryTools = async () => {
-      if (categorySections.length === 0) return;
+  const fetchCategoryTools = useMemoizedFn(
+    async (
+      categoryName: string,
+      page: number,
+      searchQuery: string,
+      categories: CategorySection[],
+      toolCounts: Record<string, number>,
+      totalCount: number
+    ) => {
+      if (categories.length === 0) {
+        setIsLoading(false);
+        setIsContentLoading(false);
+        return;
+      }
 
       setIsContentLoading(true);
       try {
-        const currentCategoryName = getCurrentCategory();
-        const currentPage = getCurrentPage();
-        const searchQuery = getCurrentSearch();
         const itemsPerPage = 10; // 每页显示10条数据
 
-        // 构建缓存键
-        const cacheKey = `${currentCategoryName}_${currentPage}_${searchQuery}`;
-
-        // 检查缓存
-        if (
-          dataCache.current[cacheKey]?.tools &&
-          dataCache.current[cacheKey]?.pagination
-        ) {
-          setCurrentCategoryTools(dataCache.current[cacheKey].tools!);
-          setCurrentPagination(dataCache.current[cacheKey].pagination!);
-          setIsContentLoading(false);
-          setIsLoading(false);
-          return;
-        }
-
-        if (currentCategoryName === "all") {
+        if (categoryName === "all") {
           // 使用封装的函数获取所有分类数据
-          const allTools = await fetchAllCategoryData(
-            currentPage,
-            itemsPerPage
+          const result = await fetchAllCategoryData(
+            page,
+            itemsPerPage,
+            searchQuery,
+            categories,
+            totalCount
           );
-          setCurrentCategoryTools(allTools);
+          setCurrentCategoryTools(result.tools);
+          setCurrentPagination(result.pagination);
           setIsContentLoading(false);
           setIsLoading(false);
           return;
         }
 
         // 找到当前分类的信息
-        const currentCategoryInfo = categorySections.find(
+        const currentCategoryInfo = categories.find(
           (section) =>
-            section.category_name === currentCategoryName ||
-            section.id === currentCategoryName
+            section.category_name === categoryName ||
+            section.id === categoryName
         );
 
         if (!currentCategoryInfo) {
@@ -391,7 +349,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
         const query = supabase.from(tableName);
 
         // 计算分页偏移量
-        const from = (currentPage - 1) * itemsPerPage;
+        const from = (page - 1) * itemsPerPage;
         const to = from + itemsPerPage - 1;
 
         // 构建查询条件
@@ -403,14 +361,13 @@ export function CategoryPage({ category }: CategoryPageProps) {
         // 并行执行计数查询和数据查询
         const [countResult, dataResult] = await Promise.all([
           // 只在需要时获取总数
-          searchQuery || !categoryToolCounts[currentCategoryInfo.category_name]
+          searchQuery || !toolCounts[currentCategoryInfo.category_name]
             ? supabase
                 .from(tableName)
                 .select("*", { count: "exact", head: true })
                 .ilike("mcpName", searchQuery ? `%${searchQuery}%` : "%%")
             : Promise.resolve({
-                count:
-                  categoryToolCounts[currentCategoryInfo.category_name] || 0,
+                count: toolCounts[currentCategoryInfo.category_name] || 0,
               }),
 
           // 获取实际数据
@@ -422,7 +379,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
 
         // 设置分页信息
         const pagination = {
-          currentPage,
+          currentPage: page,
           totalPages,
           itemsPerPage,
           totalItems,
@@ -460,12 +417,6 @@ export function CategoryPage({ category }: CategoryPageProps) {
           );
 
           setCurrentCategoryTools(processedTools);
-
-          // 缓存结果
-          dataCache.current[cacheKey] = {
-            tools: processedTools,
-            pagination,
-          };
         } else {
           // 如果没有数据，设置为空数组
           setCurrentCategoryTools([]);
@@ -477,44 +428,37 @@ export function CategoryPage({ category }: CategoryPageProps) {
         setIsContentLoading(false);
         setIsLoading(false);
       }
-    };
-
-    fetchCategoryTools();
+    }
+  );
+  // 优化的获取当前分类工具数据 - 简化依赖，避免过度执行
+  useEffect(() => {
+    if (categorySections.length > 0) {
+      fetchCategoryTools(
+        currentCategoryName,
+        currentPage,
+        currentSearch,
+        categorySections,
+        categoryToolCounts,
+        totalItemsCount
+      );
+    }
   }, [
-    searchParams,
+    fetchCategoryTools,
+    currentCategoryName,
+    currentPage,
+    currentSearch,
     categorySections,
     categoryToolCounts,
-    supabase,
-    getCurrentCategory,
-    getCurrentPage,
-    getCurrentSearch,
-    fetchAllCategoryData,
+    totalItemsCount,
   ]);
-
-  // 初始化滚动到内容区域
-  useEffect(() => {
-    if (
-      !isLoading &&
-      !initialScrollDone.current &&
-      categorySections.length > 0
-    ) {
-      // 等待DOM更新完成后再滚动
-      setTimeout(() => {
-        scrollToContent();
-        initialScrollDone.current = true;
-      }, 300); // 增加延迟，确保DOM已完全渲染
-    }
-  }, [isLoading, categorySections, scrollToContent]);
 
   // 处理分类点击
   const handleCategoryClick = useMemoizedFn((categoryName: string) => {
     if (categoryName === activeSection) return; // 避免重复点击
 
-    setIsContentLoading(true);
     setActiveSection(categoryName);
 
     // 获取当前搜索词（如果有）
-    const currentSearch = getCurrentSearch();
     const searchParam = currentSearch
       ? `&search=${encodeURIComponent(currentSearch)}`
       : "";
@@ -530,15 +474,10 @@ export function CategoryPage({ category }: CategoryPageProps) {
 
   // 处理分页变化
   const handlePageChange = useMemoizedFn((page: number) => {
-    // 获取当前分类
-    const currentCategoryName = getCurrentCategory();
     // 获取当前搜索词（如果有）
-    const currentSearch = getCurrentSearch();
     const searchParam = currentSearch
       ? `&search=${encodeURIComponent(currentSearch)}`
       : "";
-
-    setIsContentLoading(true);
 
     // 更新URL，保持当前分类但更改页码
     router.push(

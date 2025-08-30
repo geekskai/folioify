@@ -14,11 +14,11 @@ export default async function ServerPage({
   // Await Promise resolution for search parameters
   const resolvedParams = await searchParams;
 
-  // Extract category parameter with default fallback to popular MCP category
+  // Extract category parameter with default fallback to all servers
   const category =
     typeof resolvedParams.category === "string"
       ? resolvedParams.category
-      : "text-writing";
+      : "all";
   return (
     <Suspense fallback={<CategorySkeleton />}>
       <CategoryPage category={category} />
