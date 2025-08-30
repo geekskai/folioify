@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState, useRef, useCallback, Suspense } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
+import { useMemoizedFn } from "ahooks";
 import { CategorySidebar } from "./CategorySidebar";
 import { CategorySkeleton } from "./CategorySkeleton";
 import { CategoryContent } from "./CategoryContent";
@@ -92,7 +93,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
   const dataCache = useRef<Record<string, CacheItem>>({});
 
   // 滚动到内容区域的函数
-  const scrollToContent = useCallback(() => {
+  const scrollToContent = useMemoizedFn(() => {
     if (contentRef.current && typeof window !== "undefined") {
       const headerOffset = 80; // 调整这个值来控制滚动的偏移量
       const elementPosition = contentRef.current.getBoundingClientRect().top;
@@ -104,25 +105,25 @@ export function CategoryPage({ category }: CategoryPageProps) {
         behavior: "smooth",
       });
     }
-  }, []);
+  });
 
   // 获取当前页码
-  const getCurrentPage = useCallback(() => {
+  const getCurrentPage = useMemoizedFn(() => {
     const pageParam = searchParams.get("page");
     return pageParam ? parseInt(pageParam, 10) : 1;
-  }, [searchParams]);
+  });
 
   // 获取当前分类
-  const getCurrentCategory = useCallback(() => {
+  const getCurrentCategory = useMemoizedFn(() => {
     const categoryParam = searchParams.get("category");
     return categoryParam || "all"; // 默认为"all"而不是category
-  }, [searchParams]);
+  });
 
   // 获取当前搜索关键词
-  const getCurrentSearch = useCallback(() => {
+  const getCurrentSearch = useMemoizedFn(() => {
     const searchParam = searchParams.get("search");
     return searchParam || "";
-  }, [searchParams]);
+  });
 
   // 确保activeSection始终与URL参数同步
   useEffect(() => {
@@ -200,7 +201,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
   }, [supabase]);
 
   // 优化的所有分类数据获取函数
-  const fetchAllCategoryData = useCallback(
+  const fetchAllCategoryData = useMemoizedFn(
     async (page: number, itemsPerPage: number) => {
       const searchQuery = getCurrentSearch();
       const cacheKey = `all_${page}_${itemsPerPage}_${searchQuery}`;
@@ -319,8 +320,7 @@ export function CategoryPage({ category }: CategoryPageProps) {
         console.error("获取所有分类数据失败:", error);
         return [];
       }
-    },
-    [categorySections, supabase, totalItemsCount, getCurrentSearch]
+    }
   );
 
   // 优化的获取当前分类工具数据
@@ -507,50 +507,44 @@ export function CategoryPage({ category }: CategoryPageProps) {
   }, [isLoading, categorySections, scrollToContent]);
 
   // 处理分类点击
-  const handleCategoryClick = useCallback(
-    (categoryName: string) => {
-      if (categoryName === activeSection) return; // 避免重复点击
+  const handleCategoryClick = useMemoizedFn((categoryName: string) => {
+    if (categoryName === activeSection) return; // 避免重复点击
 
-      setIsContentLoading(true);
-      setActiveSection(categoryName);
+    setIsContentLoading(true);
+    setActiveSection(categoryName);
 
-      // 获取当前搜索词（如果有）
-      const currentSearch = getCurrentSearch();
-      const searchParam = currentSearch
-        ? `&search=${encodeURIComponent(currentSearch)}`
-        : "";
+    // 获取当前搜索词（如果有）
+    const currentSearch = getCurrentSearch();
+    const searchParam = currentSearch
+      ? `&search=${encodeURIComponent(currentSearch)}`
+      : "";
 
-      // 更新URL参数，重置页码到1
-      router.push(`/mcp-servers?category=${categoryName}&page=1${searchParam}`);
+    // 更新URL参数，重置页码到1
+    router.push(`/mcp-servers?category=${categoryName}&page=1${searchParam}`);
 
-      // 滚动到内容区域
-      setTimeout(() => {
-        scrollToContent();
-      }, 100); // 短暂延迟确保状态更新完成
-    },
-    [activeSection, router, getCurrentSearch, scrollToContent]
-  );
+    // 滚动到内容区域
+    setTimeout(() => {
+      scrollToContent();
+    }, 500); // 短暂延迟确保状态更新完成
+  });
 
   // 处理分页变化
-  const handlePageChange = useCallback(
-    (page: number) => {
-      // 获取当前分类
-      const currentCategoryName = getCurrentCategory();
-      // 获取当前搜索词（如果有）
-      const currentSearch = getCurrentSearch();
-      const searchParam = currentSearch
-        ? `&search=${encodeURIComponent(currentSearch)}`
-        : "";
+  const handlePageChange = useMemoizedFn((page: number) => {
+    // 获取当前分类
+    const currentCategoryName = getCurrentCategory();
+    // 获取当前搜索词（如果有）
+    const currentSearch = getCurrentSearch();
+    const searchParam = currentSearch
+      ? `&search=${encodeURIComponent(currentSearch)}`
+      : "";
 
-      setIsContentLoading(true);
+    setIsContentLoading(true);
 
-      // 更新URL，保持当前分类但更改页码
-      router.push(
-        `/mcp-servers?category=${currentCategoryName}&page=${page}${searchParam}`
-      );
-    },
-    [getCurrentCategory, getCurrentSearch, router]
-  );
+    // 更新URL，保持当前分类但更改页码
+    router.push(
+      `/mcp-servers?category=${currentCategoryName}&page=${page}${searchParam}`
+    );
+  });
 
   // 获取当前分类信息
   const currentCategoryInfo = categorySections.find(
