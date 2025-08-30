@@ -128,7 +128,7 @@ export function getCategoryMetadata(slug: string) {
     .join(" ");
 
   return {
-    title: `Best ${formattedTitle} AI Tools in 2025 | Compare Features & Pricing`,
+    title: `Best ${formattedTitle} AI Tools in 2025`,
     description: `Discover the top ${formattedTitle.toLowerCase()} AI tools and software. Compare features, pricing, and user reviews. Find the perfect AI solution for ${formattedTitle.toLowerCase()}.`,
     keywords: [
       `${formattedTitle.toLowerCase()} AI tools`,

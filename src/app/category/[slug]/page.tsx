@@ -20,7 +20,7 @@ export async function generateMetadata(
     .join(" ");
 
   // Create SEO-optimized title and description for AI tools
-  const seoTitle = `Best ${formattedTitle} AI Tools in 2025 | Compare Features & Pricing`;
+  const seoTitle = `Best ${formattedTitle} AI Tools in 2025`;
   const seoDescription = `Discover the top ${formattedTitle.toLowerCase()} AI tools and software. Compare features, pricing, and user reviews. Find the perfect AI solution for ${formattedTitle.toLowerCase()} to boost your productivity and efficiency.`;
 
   return {
