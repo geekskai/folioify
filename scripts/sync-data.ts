@@ -79,7 +79,7 @@ async function saveToolToSupabase(tool: ToolData, categoryHandle: string) {
     // Log detailed information for the first few tools to debug
     if (tool.id < 100) {
       console.log(
-        `Debug - Inserting tool data:`,
+        `🔍 Debug - Inserting tool data:`,
         JSON.stringify(toolData, null, 2)
       );
     }
@@ -90,7 +90,7 @@ async function saveToolToSupabase(tool: ToolData, categoryHandle: string) {
 
     if (error) {
       console.error(
-        `Error saving tool ${tool.id} to Supabase:`,
+        `❌ Error saving tool ${tool.id} to Supabase:`,
         error,
         `Status: ${status}`
       );
@@ -98,14 +98,14 @@ async function saveToolToSupabase(tool: ToolData, categoryHandle: string) {
     } else if (status >= 400) {
       // Sometimes error is empty but status indicates failure
       console.error(
-        `Error status ${status} saving tool ${tool.id}, but no error object`
+        `❌ Error status ${status} saving tool ${tool.id}, but no error object`
       );
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error(`Error in saveToolToSupabase for tool ${tool.id}:`, error);
+    console.error(`❌ Error in saveToolToSupabase for tool ${tool.id}:`, error);
     return false;
   }
 }
@@ -113,18 +113,18 @@ async function saveToolToSupabase(tool: ToolData, categoryHandle: string) {
 /**
  * Fetch data from Toolify API with pagination and save to Supabase
  */
-async function fetchAndSaveToolifyData(handle: string, perPage = 100) {
+async function fetchAndSaveToolifyData(handle: string, perPage = 1000) {
   let currentPage = 1;
   let hasMoreData = true;
   let totalTools = 0;
 
-  console.log(`Fetching data for category: ${handle}`);
+  console.log(`🔍 Fetching data for category: ${handle}`);
 
   // Store category information
   let categoryInfo = { handle, name: handle, tool_count: 0 };
 
   while (hasMoreData) {
-    console.log(`Fetching page ${currentPage} for category: ${handle}`);
+    console.log(`🔍 Fetching page ${currentPage} for category: ${handle}`);
 
     try {
       // Construct the API URL
@@ -143,17 +143,20 @@ async function fetchAndSaveToolifyData(handle: string, perPage = 100) {
         !responseData.data ||
         !responseData.data.data
       ) {
-        console.error(`Invalid response for category ${handle}:`, responseData);
+        console.error(
+          `❌ Invalid response for category ${handle}:`,
+          responseData
+        );
         break;
       }
 
       const pageTools = responseData.data.data;
-      console.log(`Found ${pageTools.length} tools on page ${currentPage}`);
+      console.log(`🌟 Found ${pageTools.length} tools on page ${currentPage}`);
 
       // If we got no tools, we've reached the end
       if (pageTools.length === 0) {
         hasMoreData = false;
-        console.log(`No more data available for category: ${handle}`);
+        console.log(`🔚 No more data available for category: ${handle}`);
       } else {
         // Get category info from the first tool if available
         if (pageTools.length > 0 && pageTools[0].categories) {
@@ -168,12 +171,13 @@ async function fetchAndSaveToolifyData(handle: string, perPage = 100) {
         // Save each tool
         let savedCount = 0;
         for (const tool of pageTools) {
+          console.log(`🔥 Saving tool id: ${tool.id} for category: ${handle}`);
           const success = await saveToolToSupabase(tool, handle);
           if (success) savedCount++;
         }
 
         console.log(
-          `Successfully saved ${savedCount} of ${pageTools.length} tools for category ${handle}`
+          `🚀 Successfully saved ${savedCount} of ${pageTools.length} tools for category ${handle}`
         );
 
         totalTools += savedCount;
@@ -184,12 +188,12 @@ async function fetchAndSaveToolifyData(handle: string, perPage = 100) {
         // If we got fewer tools than requested, we've reached the end
         if (pageTools.length < perPage) {
           hasMoreData = false;
-          console.log(`Reached last page for category: ${handle}`);
+          console.log(`🔚 Reached last page for category: ${handle}`);
         }
       }
     } catch (error) {
       console.error(
-        `Error fetching data for category ${handle}, page ${currentPage}:`,
+        `❌ Error fetching data for category ${handle}, page ${currentPage}:`,
         error
       );
       hasMoreData = false;
@@ -197,7 +201,7 @@ async function fetchAndSaveToolifyData(handle: string, perPage = 100) {
   }
 
   console.log(
-    `Processed a total of ${totalTools} tools for category: ${handle}`
+    `🚀 Processed a total of ${totalTools} tools for category: ${handle}`
   );
   return { totalTools, categoryInfo };
 }
@@ -206,23 +210,23 @@ async function fetchAndSaveToolifyData(handle: string, perPage = 100) {
  * Main function to fetch and store data for all categories
  */
 async function syncAllCategories() {
-  console.log("Starting sync process...");
+  console.log("💡 Starting sync process...");
 
   // Fetch category handles from the database instead of using hardcoded list
-  console.log("Fetching category handles from database...");
+  console.log("👀 Fetching category handles from database...");
   const { data: categoryValues, error } = await supabase
     .from("category_values")
     .select("handle")
     .order("tool_count", { ascending: false });
 
   if (error) {
-    console.error("Failed to fetch category handles from database:", error);
+    console.error("❌ Failed to fetch category handles from database:", error);
     return;
   }
 
   if (!categoryValues || categoryValues.length === 0) {
     console.warn(
-      "No category handles found in database. Using fallback method."
+      "⚠️ No category handles found in database. Using fallback method."
     );
     // Fallback to a few key categories if no data in database
     const fallbackCategories = [
@@ -238,7 +242,7 @@ async function syncAllCategories() {
 
   // Extract handles from the result
   const categories = categoryValues.map((item) => item.handle);
-  console.log(`Found ${categories.length} categories in database to sync.`);
+  console.log(`🔍 Found ${categories.length} categories in database to sync.`);
 
   // const categories = ["ai-paraphraser"];
 
@@ -253,12 +257,14 @@ async function syncCategoriesList(categories: string[]) {
 
   // Process each category
   for (const category of categories) {
-    console.log(`Processing category: ${category}`);
+    console.log(`💥Processing category: ${category}`);
     const result = await fetchAndSaveToolifyData(category);
     totalProcessedTools += result.totalTools;
   }
 
-  console.log(`Sync completed. Total tools processed: ${totalProcessedTools}`);
+  console.log(
+    `✅ Sync completed. Total tools processed: ${totalProcessedTools}`
+  );
 }
 
 // Run the sync process
