@@ -7,7 +7,7 @@ import { Search } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Tools Directory | Discover 1000+ Best AI Tools & Software",
+  title: "AI Tools Directory | Discover 10000+ Best AI Tools & Software",
   description:
     "Browse our comprehensive directory of AI tools and software. Find the perfect AI solution for your business, creative projects, and productivity needs. Compare features, pricing, and reviews of verified AI tools.",
   keywords: [
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "AI chatbots directory",
   ],
   openGraph: {
-    title: "AI Tools Directory | Discover 1000+ Best AI Tools & Software",
+    title: "AI Tools Directory | Discover 10000+ Best AI Tools & Software",
     description:
       "Browse our comprehensive directory of AI tools and software. Find the perfect AI solution for your needs.",
     type: "website",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Tools Directory | Discover 1000+ Best AI Tools & Software",
+    title: "AI Tools Directory | Discover 10000+ Best AI Tools & Software",
     description:
       "Browse our comprehensive directory of AI tools and software. Find the perfect AI solution for your needs.",
   },

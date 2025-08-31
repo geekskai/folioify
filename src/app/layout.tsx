@@ -11,11 +11,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "AI Tools Directory | Discover 1000+ Best AI Tools in 2025",
+    default: "AI Tools Directory | Discover 10000+ Best AI Tools in 2025",
     template: "%s | AI Tools Directory",
   },
   description:
-    "Discover the world's largest collection of AI tools and software. Find the perfect AI solution for your business, creative projects, and productivity needs. Compare features, pricing, and reviews of 1000+ verified AI tools.",
+    "Discover the world's largest collection of AI tools and software. Find the perfect AI solution for your business, creative projects, and productivity needs. Compare features, pricing, and reviews of 10000+ verified AI tools.",
   keywords: [
     "AI tools",
     "artificial intelligence software",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://www.folioify.com/",
     siteName: "AI Tools Directory",
-    title: "AI Tools Directory | Discover 1000+ Best AI Tools in 2025",
+    title: "AI Tools Directory | Discover 10000+ Best AI Tools in 2025",
     description:
       "Discover the world's largest collection of AI tools and software. Find the perfect AI solution for your business, creative projects, and productivity needs.",
     images: [
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Tools Directory | Discover 1000+ Best AI Tools in 2025",
+    title: "AI Tools Directory | Discover 10000+ Best AI Tools in 2025",
     description:
       "Discover the world's largest collection of AI tools and software. Find the perfect AI solution for your business needs.",
     images: ["/images/twitter-image.jpg"],
