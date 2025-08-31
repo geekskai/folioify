@@ -9,7 +9,7 @@ export const seoConfig = {
     "Discover the world's largest collection of AI tools and software. Find the perfect AI solution for your business, creative projects, and productivity needs.",
 
   // Default metadata
-  defaultTitle: "AI Tools Directory | Discover 1000+ Best AI Tools in 2025",
+  defaultTitle: "AI Tools Directory | Discover 20000+ Best AI Tools in 2025",
   titleTemplate: "%s | AI Tools Directory",
 
   // Core keywords for AI tools directory
