@@ -132,14 +132,6 @@ export default function RootLayout({
           crossOrigin="anonymous"
         ></script>
       </head>
-      <a href=" " target="_blank" rel="noopener noreferrer">
-        <Image
-          src="https://img.aitoolshood.com/8f8751eebc084fc5a3006212f97ebd5a.png"
-          alt="aitoolshood.com"
-          width={54}
-          height={54}
-        />
-      </a>
       <ClientBody>{children}</ClientBody>
     </html>
   );
