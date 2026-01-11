@@ -14,6 +14,7 @@ const nextConfig = {
       "prototyprwp.gumlet.io",
       "res.cloudinary.com",
       "lh3.googleusercontent.com",
+      "img.aitoolshood.com",
     ],
     remotePatterns: [
       {
